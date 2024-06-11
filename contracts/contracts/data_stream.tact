@@ -137,11 +137,14 @@ contract DataStream {
     self.storageReserve += request.notificationsCount * NOTIFICATION_PREMIUM;
 
     let batches: map<Address, SBInfo> = self.batches;
-    let batch: Address? = null;
+    let batch: Address? = request.batch;
 
-    foreach (address, info in batches) {
-      if (info.subscriptionsCount <= SUBSCRIPTION_LIMIT) {
-        batch = address;
+    // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
+    if (batch == null) {
+      foreach (address, info in batches) {
+        if (info.subscriptionsCount <= SUBSCRIPTION_LIMIT) {
+          batch = address;
+        }
       }
     }
 
@@ -164,6 +167,41 @@ contract DataStream {
 
     self.forward(response.session, (DSTSubscribeSuccess { queryId: response.queryId, batch: batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
   }
+
+//   receive(request: DSTPublishCandlestick) {
+//     let ctx: Context = context();
+
+//     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender != publisher);
+
+//     let batches: map<Address, SBInfo> = self.batches;
+//     let batch: Address? = null;
+
+//     foreach (address, info in batches) {
+//       send(SendParameters {
+//         to: address,
+//         value: 0, // TODO: 
+//         mode: 0, // TODO:
+//         body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: myAddress() }).toCell(),
+//       });
+//     }
+
+//     self.reply((DSTPublishCandlestickSuccess { queryId: response.queryId }).toCell());
+//   }
+
+//   // TODO: bounced(request: SBPublishCandlestick);
+
+//   receive(notification: SBUnsubscribeNotification) {
+//     let ctx: Context = context();
+
+//     let batch: Address = ctx.sender;
+//     let info: SBInfo? = self.batches.get(batch);
+
+//     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
+
+//     self.batches.set(batch, null);
+
+//     self.forward(notification.session, (DSTUnsubscribedNotification { queryId: response.queryId, batch: batch }).toCell(), false, null);
+//   }
 }
 
 // END Data Stream

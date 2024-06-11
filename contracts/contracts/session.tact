@@ -47,7 +47,7 @@ contract Session {
     nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount > 0);
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT + (request.notificationsCount) * NOTIFICATION_PREMIUM + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
 
-    self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, notificationsCount: request.notificationsCount }).toCell(), true, null);
+    self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, notificationsCount: request.notificationsCount, batch: self.batch }).toCell(), true, null);
   }
 
   // TODO: Implement bounced(request: SESSubscribe);
