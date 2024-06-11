@@ -162,7 +162,7 @@ contract DataStream {
 
     self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount + 1 });
 
-    self.forward(batch, (DSTSubscribeSuccess { queryId: response.queryId, batch: batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
+    self.forward(response.session, (DSTSubscribeSuccess { queryId: response.queryId, batch: batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
   }
 }
 
