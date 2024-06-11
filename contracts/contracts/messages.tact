@@ -56,19 +56,19 @@ message SESDeploySuccess {
 
 message SESSubscribe {
   queryId: Int;
-  desiredNotificationsCount: Int;
+  notificationsCount: Int;
 }
 
 message DSTSubscribe {
   queryId: Int;
   subscriber: Address;
-  desiredNotificationsCount: Int;
+  notificationsCount: Int;
 }
 
 message SBSubscribe {
   queryId: Int;
   session: Address;
-  desiredNotificationsCount: Int;
+  notificationsCount: Int;
 }
 
 message SBSubscribeSuccess {

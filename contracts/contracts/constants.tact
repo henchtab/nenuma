@@ -1,7 +1,12 @@
 // BEGIN Data Stream
 
 const DST_STORAGE_RESERVE: Int = ton("1.00");
-const DST_BATCHES_COUNT_LIMIT: Int = 10;
+
+const BATCH_LIMIT: Int = 10;
+const SUBSCRIPTION_LIMIT: Int = 100;
+
+const NOTIFICATION_PREMIUM: Int = ton("2.00");
+const NOTIFICATION_DEPOSIT: Int = ton("3.00");
 
 const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("5.00");
 const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
@@ -9,6 +14,8 @@ const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
 const ERR_ACCESS_DENIED: Int = 400;
 const ERR_INSUFFICIENT_DEPOSIT: Int = 401;
 const ERR_BATCH_LIMIT_EXCEEDED: Int = 402;
+const ERR_SUBSCRIPTION_LIMIT_EXCEEDED: Int = 403;
+const ERR_INVALID_ARGUMENT: Int = 404;
 
 // END Data Stream
 

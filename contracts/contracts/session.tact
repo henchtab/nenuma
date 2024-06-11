@@ -8,11 +8,13 @@ contract Session {
 
   stream: Address;
   subscriber: Address;
+  remainingNotificationsCount: Int;
 
   init(stream: Address, subscriber: Address) {
     self.storageReserve = SES_STORAGE_RESERVE;
     self.stream = stream;
     self.subscriber = subscriber;
+    self.remainingNotificationsCount = 0;
   }
 
   receive(request: SESDeploy) {
@@ -23,27 +25,27 @@ contract Session {
     self.notify((SESDeploySuccess { queryId: request.queryId, subscriber: self.subscriber }).toCell());
   }
 
-  // receive(request: SESSubscribe) {
-  //   let ctx: Context = context();
+  receive(request: SESSubscribe) {
+    let ctx: Context = context();
 
-  //   // TODO: ERR_ACCESS_DENIED
-  //   nativeThrowUnless(400, ctx.sender == self.subscriber);
-  //   nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT);
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.subscriber);
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount > 0);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT + (request.notificationsCount) * NOTIFICATION_PREMIUM + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
 
-  //   // check number of messages
+    self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, notificationsCount: request.notificationsCount }).toCell(), true, null);
+  }
 
-  //   self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, remainingNotificationsCount: request.remainingNotificationsCount }).toCell(), false, null);
-  // }
+  // TODO: Implement bounced(request: SESSubscribe);
 
-  // receive(response: DSTSubscribeSuccess) {
-  //   let ctx: Context = context();
+  receive(response: DSTSubscribeSuccess) {
+    let ctx: Context = context();
 
-  //   // TODO: ERR_ACCESS_DENIED
-  //   nativeThrowUnless(400, ctx.sender == self.stream);
-  //   // nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT);
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
 
-  //   self.forward(self.subscriber, (SESSubscribeSuccess { queryId: request.queryId, batch: response.batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
-  // }
+    self.remainingNotificationsCount = response.remainingNotificationsCount;
+
+    self.forward(self.subscriber, (SESSubscribeSuccess { queryId: response.queryId, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
+  }
 }
 
 // END Session

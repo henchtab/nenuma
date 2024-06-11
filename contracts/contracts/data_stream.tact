@@ -10,11 +10,6 @@ struct SBInfo {
   subscriptionsCount: Int;
 }
 
-struct SubscriptionInfo {
-  // TODO: implement 'start: Int' to make the notifications pricing predictable; if the publisher publish a bunch of candlesticks at once (e.g., 1-minute candlesticks for 11:50, 11:51, ..., 12:00), then subscribers who subscribed at 12:00 for 5 minutes will get candlesticks 11:50 to 11:55. This can be either because of the TON blockchain network congestion due to increased demand in the short-run. It also enables users to delay the start of their subscription by paying a relatively smaller fee rather than the fee for receiving the SESCandlestickPublishedNotification. This is extremely useful when issuing derivatives which initiation time is in the future. Moreover, it encourages publisher to publish candlesticks as soon as possible to avoid paying fees to the larger number of subscribers. This is because subscribers pay the 'waiting time' fee for the time difference (subscription.start - now()). Therefore, publishers have to cover the cost of 'waiting time' for the period (now() - candlestick.start) for every lately published candlestick.
-  remainingNotificationsCount: Int;
-}
-
 contract DataStream {
   storageReserve: Int;
 
@@ -46,15 +41,15 @@ contract DataStream {
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.publisher);
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT);
 
-    nativeThrowUnless(ERR_BATCH_LIMIT_EXCEEDED, self.nextBatchId < DST_BATCHES_COUNT_LIMIT);
-    
+    nativeThrowUnless(ERR_BATCH_LIMIT_EXCEEDED, self.nextBatchId < BATCH_LIMIT);
+
     let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), self.nextBatchId);
     let batch: Address = contractAddress(batchStateInit);
 
     self.forward(batch, (SBDeploy { queryId: request.queryId }).toCell(), true, batchStateInit);
   }
 
-  // TODO: handle bounced(deploy: SBDeploy);
+  // TODO: bounced(deploy: SBDeploy);
 
   receive(response: SBDeploySuccess) {
     let ctx: Context = context();
@@ -81,7 +76,7 @@ contract DataStream {
     self.forward(session, (SESDeploy { queryId: request.queryId }).toCell(), true, sessionStateInit);
   }
 
-  // TODO: handle bounced(deploy: SESDeploy);
+  // TODO: bounced(deploy: SESDeploy);
 
   receive(response: SESDeploySuccess) {
     let ctx: Context = context();
@@ -94,37 +89,47 @@ contract DataStream {
     self.forward(response.subscriber, (DSTDeploySessionSuccess { queryId: response.queryId, session: session }).toCell(), false, null);
   }
 
-  // receive(request: DSTSubscribe) {
-  //   let ctx: Context = context();
+  receive(request: DSTSubscribe) {
+    let ctx: Context = context();
 
-  //   let sessionStateInit: StateInit = initOf Session(myAddress(), response.subscriber);
-  //   let session: Address = contractAddress(sessionStateInit);
+    let sessionStateInit: StateInit = initOf Session(myAddress(), request.subscriber);
+    let session: Address = contractAddress(sessionStateInit);
 
-  //   nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
-  //   nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT);
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount > 0);
 
-  //   let batch: Address? = null;
+    // TODO: The (+1) is used for for the unsubscribe notification. It is reimbursed if the DSTUnsubscribe is sent.
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (request.notificationsCount) * NOTIFICATION_PREMIUM + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
+    self.storageReserve += request.notificationsCount * NOTIFICATION_PREMIUM;
 
-  //   // foreach (key, value in )
+    let batches: map<Address, SBInfo> = self.batches;
+    let batch: Address? = null;
 
-  //   // collect fees storageReserve += ?
-  //   // setStorageReserve()?
+    foreach (address, info in batches) {
+      if (info.subscriptionsCount <= SUBSCRIPTION_LIMIT) {
+        batch = address;
+      }
+    }
 
-  //   self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, desiredNotificationsCount: request.desiredNotificationsCount }).toCell(), true, sessionStateInit);
-  // }
+    nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
 
-  // // TODO: handle bounced(deploy: DSTSubscribe);
+    self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, sessionStateInit);
+  }
 
-  // receive(response: SBSubscribeSuccess) {
-  //   let ctx: Context = context();
+  // TODO: bounced(deploy: SBSubscribe);
 
-  //   let sessionStateInit: StateInit = initOf Session(myAddress(), response.subscriber);
-  //   let session: Address = contractAddress(sessionStateInit);
+  receive(response: SBSubscribeSuccess) {
+    let ctx: Context = context();
 
-  //   nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
+    let batch: Address = ctx.sender;
+    let info: SBInfo? = self.batches.get(batch);
 
-  //   self.forward(response.subscriber, (DSTDeploySessionSuccess { queryId: response.queryId, session: session }).toCell(), false, null);
-  // }
+    nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
+
+    self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount + 1 });
+
+    self.forward(batch, (DSTSubscribeSuccess { queryId: response.queryId, batch: batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
+  }
 }
 
 // END Data Stream
