@@ -1,43 +1,10 @@
 // BEGIN Data Stream
 
+import "./constants";
+import "./messages";
+
 import "./subscription_batch";
 import "./session";
-
-const DST_STORAGE_RESERVE: Int = ton("1.00");
-const DST_BATCHES_COUNT_LIMIT: Int = 10;
-
-const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("5.00");
-const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
-
-const ERR_ACCESS_DENIED: Int = 400;
-const ERR_INSUFFICIENT_DEPOSIT: Int = 401;
-const ERR_BATCH_LIMIT_EXCEEDED: Int = 402;
-
-message DSTDeploy {
-  queryId: Int;
-}
-
-message DSTDeploySuccess {
-  queryId: Int;
-}
-
-message DSTDeployBatch {
-  queryId: Int;
-}
-
-message DSTDeployBatchSuccess {
-  queryId: Int;
-  batch: Address; 
-}
-
-message DSTDeploySession {
-  queryId: Int;
-}
-
-message DSTDeploySessionSuccess {
-  queryId: Int;
-  session: Address; 
-}
 
 struct SBInfo {
   subscriptionsCount: Int;
@@ -87,7 +54,7 @@ contract DataStream {
     self.forward(batch, (SBDeploy { queryId: request.queryId }).toCell(), true, batchStateInit);
   }
 
-  // TODO: bounced(deploy: SBDeploy);
+  // TODO: handle bounced(deploy: SBDeploy);
 
   receive(response: SBDeploySuccess) {
     let ctx: Context = context();
@@ -95,7 +62,7 @@ contract DataStream {
     let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), self.nextBatchId);
     let batch: Address = contractAddress(batchStateInit);
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.publisher);
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == batch);
 
     self.batches.set(batch, SBInfo { subscriptionsCount: 0 });
     self.nextBatchId += 1;
@@ -114,7 +81,7 @@ contract DataStream {
     self.forward(session, (SESDeploy { queryId: request.queryId }).toCell(), true, sessionStateInit);
   }
 
-  // TODO: bounced(deploy: SESDeploy);
+  // TODO: handle bounced(deploy: SESDeploy);
 
   receive(response: SESDeploySuccess) {
     let ctx: Context = context();
@@ -126,6 +93,38 @@ contract DataStream {
 
     self.forward(response.subscriber, (DSTDeploySessionSuccess { queryId: response.queryId, session: session }).toCell(), false, null);
   }
+
+  // receive(request: DSTSubscribe) {
+  //   let ctx: Context = context();
+
+  //   let sessionStateInit: StateInit = initOf Session(myAddress(), response.subscriber);
+  //   let session: Address = contractAddress(sessionStateInit);
+
+  //   nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
+  //   nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT);
+
+  //   let batch: Address? = null;
+
+  //   // foreach (key, value in )
+
+  //   // collect fees storageReserve += ?
+  //   // setStorageReserve()?
+
+  //   self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, desiredNotificationsCount: request.desiredNotificationsCount }).toCell(), true, sessionStateInit);
+  // }
+
+  // // TODO: handle bounced(deploy: DSTSubscribe);
+
+  // receive(response: SBSubscribeSuccess) {
+  //   let ctx: Context = context();
+
+  //   let sessionStateInit: StateInit = initOf Session(myAddress(), response.subscriber);
+  //   let session: Address = contractAddress(sessionStateInit);
+
+  //   nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
+
+  //   self.forward(response.subscriber, (DSTDeploySessionSuccess { queryId: response.queryId, session: session }).toCell(), false, null);
+  // }
 }
 
 // END Data Stream
