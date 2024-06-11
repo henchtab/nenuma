@@ -23,6 +23,22 @@ contract SubscriptionBatch {
     self.subscriptionsCount = 0;
   }
 
+  get fun stream(): Address {
+    return self.stream;
+  }
+
+  get fun batchId(): Int {
+    return self.batchId;
+  }
+
+  get fun subscriptions(): map<Address, SubscriptionInfo> {
+    return self.subscriptions;
+  }
+
+  get fun subscriptionsCount(): Int {
+    return self.subscriptionsCount;
+  }
+
   receive(request: SBDeploy) {
     let ctx: Context = context();
 

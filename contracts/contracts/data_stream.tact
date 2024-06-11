@@ -27,6 +27,40 @@ contract DataStream {
     self.nextBatchId = 0;
   }
 
+  get fun storageReserve(): Int {
+    return self.storageReserve;
+  }
+
+  get fun publisher(): Address {
+    return self.publisher;
+  }
+
+  get fun topic(): String {
+    return self.topic;
+  }
+
+  get fun batches(): map<Address, SBInfo> {
+    return self.batches;
+  }
+
+  get fun nextBatchId(): Int {
+    return self.nextBatchId;
+  }
+
+  get fun batch(batchId: Int): Address {
+    let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), batchId);
+    let batch: Address = contractAddress(batchStateInit);
+
+    return batch;
+  }
+
+  get fun session(subscriber: Address): Address {
+    let sessionStateInit: StateInit = initOf Session(myAddress(), subscriber);
+    let session: Address = contractAddress(sessionStateInit);
+
+    return session;
+  }
+
   receive(request: DSTDeploy) {
     let ctx: Context = context();
 

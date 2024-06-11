@@ -8,13 +8,26 @@ contract Session {
 
   stream: Address;
   subscriber: Address;
-  remainingNotificationsCount: Int;
+  batch: Address?;
+  // remainingNotificationsCount: Int;
 
   init(stream: Address, subscriber: Address) {
     self.storageReserve = SES_STORAGE_RESERVE;
     self.stream = stream;
     self.subscriber = subscriber;
-    self.remainingNotificationsCount = 0;
+    // self.remainingNotificationsCount = 0;
+  }
+
+  get fun stream(): Address {
+    return self.stream;
+  }
+
+  get fun subscriber(): Address {
+    return self.subscriber;
+  }
+
+  get fun batch(): Address? {
+    return self.batch;
   }
 
   receive(request: SESDeploy) {
@@ -42,7 +55,9 @@ contract Session {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
 
-    self.remainingNotificationsCount = response.remainingNotificationsCount;
+    self.batch = response.batch;
+
+    // self.remainingNotificationsCount = response.remainingNotificationsCount;
 
     self.forward(self.subscriber, (SESSubscribeSuccess { queryId: response.queryId, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
   }
