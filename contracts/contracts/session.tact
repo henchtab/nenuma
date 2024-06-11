@@ -9,13 +9,15 @@ contract Session {
   stream: Address;
   subscriber: Address;
   batch: Address?;
-  // remainingNotificationsCount: Int;
 
   init(stream: Address, subscriber: Address) {
     self.storageReserve = SES_STORAGE_RESERVE;
     self.stream = stream;
     self.subscriber = subscriber;
-    // self.remainingNotificationsCount = 0;
+  }
+
+  get fun storageReserve(): Int {
+    return self.storageReserve;
   }
 
   get fun stream(): Address {

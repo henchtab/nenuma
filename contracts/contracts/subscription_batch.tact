@@ -23,6 +23,10 @@ contract SubscriptionBatch {
     self.subscriptionsCount = 0;
   }
 
+  get fun storageReserve(): Int {
+    return self.storageReserve;
+  }
+
   get fun stream(): Address {
     return self.stream;
   }
