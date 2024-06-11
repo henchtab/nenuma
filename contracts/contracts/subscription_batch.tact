@@ -1,12 +1,12 @@
 // BEGIN Subscription Batch
 
-const BSSTORAGE_RESERVE: Int = ton("1.00");
+const BS_STORAGE_RESERVE: Int = ton("1.00");
 
-message BSDeploy {
+message SBDeploy {
   queryId: Int;
 }
 
-message BSDeploySuccess {
+message SBDeploySuccess {
   queryId: Int;
   batchId: Int;
 }
@@ -18,19 +18,18 @@ contract SubscriptionBatch {
   batchId: Int;
 
   init(stream: Address, batchId: Int) {
-    self.storageReserve = BSSTORAGE_RESERVE;
+    self.storageReserve = BS_STORAGE_RESERVE;
     self.stream = stream;
     self.batchId = batchId;
   }
 
-  fun requireStream() {
-    // TODO: Substitute the 100 with a meaningful constant name.
-    nativeThrowUnless(100, sender() == self.stream);
-  }
+  receive(request: SBDeploy) {
+    let ctx: Context = context();
 
-  receive(deploy: BSDeploy) {
-    self.requireStream();
-    self.notify((BSDeploySuccess{ queryId: deploy.queryId, batchId: self.batchId }).toCell());
+    // TODO: ERR_ACCESS_DENIED
+    nativeThrowUnless(400, ctx.sender == self.stream);
+
+    self.notify(SBDeploySuccess { queryId: request.queryId, batchId: self.batchId }.toCell());
   }
 }
 

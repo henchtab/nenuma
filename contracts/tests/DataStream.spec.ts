@@ -34,12 +34,22 @@ describe("DataStream", () => {
       deploy: true,
       success: true,
     });
-
-    // Shall we test DSTDeploySuccess as well?
   });
 
-  it("Should deploy a data stream", async () => {
-    // the check is done inside beforeEach
-    // blockchain and dataStream are ready to use
+  it("(1) Should deploy a data stream", async () => {
+    // This check is done inside beforeEach.
+    // Blockchain and Data Stream are ready to use.
+  });
+
+  it("(2) Should deploy subscription batches", async () => {
+    // TODO: This check should be done inside beforeEach.
+
+    // TODO: You should try creating the 11th batch and expect the data stream to throw an error.
+
+    // The blockchain, the data stream with 10 subscription batches are ready to use.
+  });
+
+  it("(3) Should deploy a session", async () => {
+    // TODO:
   });
 });

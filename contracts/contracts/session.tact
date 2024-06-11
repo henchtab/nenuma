@@ -1,6 +1,6 @@
 // BEGIN Session
 
-const SESSTORAGE_RESERVE: Int = ton("1.00");
+const SES_STORAGE_RESERVE: Int = ton("1.00");
 
 message SESDeploy {
   queryId: Int;
@@ -18,19 +18,18 @@ contract Session {
   subscriber: Address;
 
   init(stream: Address, subscriber: Address) {
-    self.storageReserve = SESSTORAGE_RESERVE;
+    self.storageReserve = SES_STORAGE_RESERVE;
     self.stream = stream;
     self.subscriber = subscriber;
   }
 
-  fun requireStream() {
-    // TODO: Substitute the 100 with a meaningful constant name.
-    nativeThrowUnless(100, sender() == self.stream);
-  }
+  receive(request: SESDeploy) {
+    let ctx: Context = context();
 
-  receive(deploy: BSDeploy) {
-    self.requireStream();
-    self.notify((SESDeploySuccess{ queryId: deploy.queryId, subscriber: self.subscriber }).toCell());
+    // TODO: ERR_ACCESS_DENIED
+    nativeThrowUnless(400, ctx.sender == self.stream);
+
+    self.notify((SESDeploySuccess{ queryId: request.queryId, subscriber: self.subscriber }).toCell());
   }
 }
 
