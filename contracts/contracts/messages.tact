@@ -39,6 +39,29 @@ message DSTSubscribeSuccess {
   remainingNotificationsCount: Int;
 }
 
+struct Candlestick {
+  start: Int as uint32;
+  end: Int as uint32;
+  open: Int as uint32;
+  close: Int as uint32;
+  high: Int as uint32;
+  low: Int as uint32;
+}
+
+message DSTPublishCandlestick { 
+  queryId: Int; 
+  candlestick: Candlestick;
+}
+
+message DSTPublishCandlestickSuccess {
+  queryId: Int;
+}
+
+message DSTUnsubscribedNotification {
+  queryId: Int;
+  remainingNotificationsCount: Int;
+}
+
 // END Data Stream
 
 
@@ -65,6 +88,28 @@ message SBSubscribeSuccess {
   remainingNotificationsCount: Int;
 }
 
+message SBPublishCandlestick {
+  queryId: Int;
+  candlestick: Candlestick;
+  publisher: Address;
+}
+
+message SBCandlestickPublishedNotification {
+  queryId: Int;
+  candlestick: Candlestick;
+  remainingNotificationsCount: Int;
+}
+
+message SBUnsubscribedNotification {
+  queryId: Int;
+  session: Address;
+  remainingNotificationsCount: Int;
+}
+
+message SBPublishCandlestickSuccess {
+  queryId: Int;
+}
+
 // END Subscription Batch
 
 
@@ -89,55 +134,6 @@ message SESSubscribeSuccess {
   remainingNotificationsCount: Int;
 }
 
-// END Session
-
-
-struct Candlestick {
-  start: Int as uint32;
-  end: Int as uint32;
-  open: Int as uint32;
-  close: Int as uint32;
-  high: Int as uint32;
-  low: Int as uint32;
-}
-
-message DSTPublishCandlestick { 
-  queryId: Int; 
-  candlestick: Candlestick;
-}
-
-message SBPublishCandlestick {
-  queryId: Int;
-  candlestick: Candlestick;
-  publisher: Address;
-}
-
-message DSTPublishCandlestickSuccess {
-  queryId: Int;
-}
-
-message SBCandlestickPublishedNotification {
-  queryId: Int;
-  candlestick: Candlestick;
-  remainingNotificationsCount: Int;
-}
-
-message SBUnsubscribedNotification {
-  queryId: Int;
-  session: Address;
-  // remainingNotificationsCount: Int; = 0
-}
-
-message SBPublishCandlestickSuccess {
-  queryId: Int;
-}
-
-message DSTUnsubscribedNotification {
-  queryId: Int;
-  // batch: Address;
-  // remainingNotificationsCount: Int; = 0
-}
-
 message SESCandlestickPublishedNotification {
   queryId: Int;
   candlestick: Candlestick;
@@ -146,6 +142,40 @@ message SESCandlestickPublishedNotification {
 
 message SESUnsubscribedNotification {
   queryId: Int;
-  // candlestick: Candlestick;
-  // remainingNotificationsCount: Int; = 0
+  remainingNotificationsCount: Int;
 }
+
+// END Session
+
+
+message SESUnsubscribe { 
+  queryId: Int;
+}
+
+message SBUnsubscribe {
+  queryId: Int;
+}
+
+message SESDestroy {
+  queryId: Int;
+}
+
+message SESDestroySuccess {
+  queryId: Int;
+}
+
+// message SBUnsubscribeSuccess {
+//   queryId: Int;
+//   session: Address;
+//   remainingNotificationsCount: Int;
+// }
+
+// message DSTUnsubscribeSuccess {
+//   queryId: Int;
+//   remainingNotificationsCount: Int;
+// }
+
+// message SESUnsubscribeSuccess { 
+//   queryId: Int;
+//   remainingNotificationsCount: Int;
+// }

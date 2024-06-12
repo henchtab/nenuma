@@ -102,7 +102,7 @@ contract SubscriptionBatch {
           to: self.stream, 
           value: NOTIFICATION_DEPOSIT, 
           mode: SendIgnoreErrors, 
-          body: (SBUnsubscribedNotification { queryId: request.queryId, session }).toCell(),
+          body: (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: 0 }).toCell(),
         });
       } 
       
@@ -114,6 +114,21 @@ contract SubscriptionBatch {
     }
 
     self.forward(request.publisher, (SBPublishCandlestickSuccess { queryId: request.queryId }).toCell(), false, null);
+  }
+
+  receive(request: SBUnsubscribe) {
+    let ctx: Context = context();
+
+    let session: Address = ctx.sender;
+    let info: SubscriptionInfo? = self.subscriptions.get(session);
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_UNSUBSCRIBE_DEPOSIT);
+
+    self.storageReserve -= NOTIFICATION_DEPOSIT * (info!!.remainingNotificationsCount + 1);
+    self.subscriptions.set(session, null);
+
+    self.forward(self.stream, (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: info!!.remainingNotificationsCount }).toCell(), false, null);
   }
 }
 

@@ -77,7 +77,33 @@ contract Session {
 
     self.batch = null;
 
-    self.forward(self.subscriber, (SESUnsubscribedNotification { queryId: notification.queryId }).toCell(), false, null);
+    self.forward(self.subscriber, (SESUnsubscribedNotification { queryId: notification.queryId, remainingNotificationsCount: notification.remainingNotificationsCount }).toCell(), false, null);
+  }
+
+  receive(request: SESUnsubscribe) {
+    let ctx: Context = context();
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.subscriber);
+    nativeThrowUnless(ERR_STREAM_NOT_SUBSCRIBED, self.batch != null);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_UNSUBSCRIBE_DEPOSIT);
+
+    self.forward(self.batch!!, (SBUnsubscribe { queryId: request.queryId }).toCell(), true, null);
+  }
+
+  // TODO: bounced(request: SESUnsubscribe);
+
+  receive(request: SESDestroy) {
+    let ctx: Context = context();
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.subscriber);
+    nativeThrowUnless(ERR_STREAM_SUBSCRIBED, self.batch == null);
+
+    send(SendParameters { 
+      to: self.subscriber, 
+      value: NOTIFICATION_DEPOSIT, 
+      mode: SendRemainingBalance + SendDestroyIfZero, 
+      body: (SESDestroySuccess { queryId: request.queryId }).toCell(),
+    });
   }
 }
 

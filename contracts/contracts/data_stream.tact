@@ -205,9 +205,10 @@ contract DataStream {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
 
-    self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount - 1 });
+    self.batches.set(batch, SBInfo { subscriptionsCount: (info!!.subscriptionsCount - 1) });
+    self.storageReserve -= NOTIFICATION_PREMIUM * notification.remainingNotificationsCount;
 
-    self.forward(notification.session, (DSTUnsubscribedNotification { queryId: notification.queryId }).toCell(), false, null);
+    self.forward(notification.session, (DSTUnsubscribedNotification { queryId: notification.queryId, remainingNotificationsCount: notification.remainingNotificationsCount }).toCell(), false, null);
   }
 }
 
