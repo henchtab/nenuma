@@ -220,6 +220,8 @@ contract DataStream {
 
     let batches: map<Address, SBInfo> = self.batches;
 
+    let subscriptionsCount: Int = 0;
+
     foreach (address, info in batches) {
       send(SendParameters { 
         to: address, 
@@ -227,15 +229,17 @@ contract DataStream {
         mode: SendPayGasSeparately,
         body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: self.publisher }).toCell()
       });
+
+      subscriptionsCount += info.subscriptionsCount;
     }
 
-    self.storageReserve -= NOTIFICATION_PREMIUM * self.subscriptionsCount;
+    self.storageReserve -= NOTIFICATION_PREMIUM * subscriptionsCount;
 
     nativeReserve(myBalance() - ctx.value, ReserveExact);
 
     send(SendParameters {
       to: self.publisher,
-      value: NOTIFICATION_PREMIUM * self.subscriptionsCount,
+      value: NOTIFICATION_PREMIUM * subscriptionsCount,
       mode: SendRemainingBalance,
       body: (DSTPublishCandlestickSuccess { queryId: request.queryId }).toCell(),
     });
