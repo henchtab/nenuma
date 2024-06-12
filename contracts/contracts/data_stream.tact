@@ -186,7 +186,6 @@ contract DataStream {
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.publisher);
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_PUBLISH_CANDLESTICK_DEPOSIT);
 
-
     let batches: map<Address, SBInfo> = self.batches;
 
     foreach (address, info in batches) {
@@ -194,7 +193,7 @@ contract DataStream {
         to: address, 
         value: SB_PUBLISH_CANDLESTICK_DEPOSIT,
         mode: SendPayGasSeparately,
-        body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: myAddress() }).toCell()
+        body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: self.publisher }).toCell()
       });
     }
 
