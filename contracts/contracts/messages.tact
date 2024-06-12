@@ -40,12 +40,12 @@ message DSTSubscribeSuccess {
 }
 
 struct Candlestick {
-  start: Int as uint32;
-  end: Int as uint32;
-  open: Int as uint32;
-  close: Int as uint32;
-  high: Int as uint32;
-  low: Int as uint32;
+  start: Int;
+  end: Int;
+  open: Int;
+  close: Int;
+  high: Int;
+  low: Int;
 }
 
 message DSTPublishCandlestick { 
@@ -184,53 +184,76 @@ message SESDestroySuccess {
 
 // Step 1
 
-message BRGDeploy {
-  queryId: Int;
-}
+// message BRGDeploy {
+//   queryId: Int;
+// }
 
-message BRGDeploySuccess {
-  queryId: Int;
-}
+// message BRGDeploySuccess {
+//   queryId: Int;
+// }
 
-// Step 2
+// // Step 2
 
-message BRGDeployBroker {
-  queryId: Int;
-  stream: Address;
-}
+// message BRGDeployBroker {
+//   queryId: Int;
+//   stream: Address;
+// }
 
-message BRKDeploy {
-  queryId: Int;
-}
+// message BRKDeploy {
+//   queryId: Int;
+// }
 
-message BRKDeploySuccess {
-  queryId: Int;
-  stream: Address;
-}
+// message BRKDeploySuccess {
+//   queryId: Int;
+//   stream: Address;
+// }
 
-message BRGDeployBrokerSuccess {
-  queryId: Int;
-  broker: Address;
-}
+// message BRGDeployBrokerSuccess {
+//   queryId: Int;
+//   broker: Address;
+// }
 
-// Step 4
+// // Step 4
 
-message BRGDeployAccount {
-  queryId: Int;
-}
+// message BRGDeployAccount {
+//   queryId: Int;
+// }
 
-message BRADeploy {
-  queryId: Int;
-}
+// message BRADeploy {
+//   queryId: Int;
+// }
 
-message BRADeploySuccess {
-  queryId: Int;
-  trader: Address;
-}
+// message BRADeploySuccess {
+//   queryId: Int;
+//   trader: Address;
+// }
 
-message BRGDeployAccountSuccess {
-  queryId: Int;
-  account: Address;
-}
+// message BRGDeployAccountSuccess {
+//   queryId: Int;
+//   account: Address;
+// }
 
-// END Brokerage
+// // Step 3
+
+// // Deposits the value
+// message BRKDeposit {
+//   queryId: Int;
+//   deposit: Int;
+// }
+
+// message BRKDepositSuccess {
+//   queryId: Int;
+// }
+
+// // Step 7
+
+// // Withdraws the value
+// message BRKWithdraw {
+//   queryId: Int;
+// }
+
+// message BRKWithdrawSuccess {
+//   queryId: Int;
+// }
+
+// // END Brokerage
