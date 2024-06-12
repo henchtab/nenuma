@@ -14,6 +14,9 @@ const SUBSCRIPTION_LIMIT: Int = 100;
 
 const DECIMALS: Int = 2;
 
+const BRK_DEPOSIT_DEPOSIT: Int = ton("6.00");
+const BRK_WITHDRAW_DEPOSIT: Int = ton("4.00");
+
 const NOTIFICATION_PREMIUM: Int = ton("2.00");
 const NOTIFICATION_DEPOSIT: Int = ton("3.00");
 

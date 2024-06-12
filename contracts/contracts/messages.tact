@@ -184,76 +184,76 @@ message SESDestroySuccess {
 
 // Step 1
 
-// message BRGDeploy {
-//   queryId: Int;
-// }
+message BRGDeploy {
+  queryId: Int;
+}
 
-// message BRGDeploySuccess {
-//   queryId: Int;
-// }
+message BRGDeploySuccess {
+  queryId: Int;
+}
 
 // // Step 2
 
-// message BRGDeployBroker {
-//   queryId: Int;
-//   stream: Address;
-// }
+message BRGDeployBroker {
+  queryId: Int;
+  stream: Address;
+}
 
-// message BRKDeploy {
-//   queryId: Int;
-// }
+message BRKDeploy {
+  queryId: Int;
+}
 
-// message BRKDeploySuccess {
-//   queryId: Int;
-//   stream: Address;
-// }
+message BRKDeploySuccess {
+  queryId: Int;
+  stream: Address;
+}
 
-// message BRGDeployBrokerSuccess {
-//   queryId: Int;
-//   broker: Address;
-// }
+message BRGDeployBrokerSuccess {
+  queryId: Int;
+  broker: Address;
+}
 
 // // Step 4
 
-// message BRGDeployAccount {
-//   queryId: Int;
-// }
+message BRGDeployAccount {
+  queryId: Int;
+}
 
-// message BRADeploy {
-//   queryId: Int;
-// }
+message BRADeploy {
+  queryId: Int;
+}
 
-// message BRADeploySuccess {
-//   queryId: Int;
-//   trader: Address;
-// }
+message BRADeploySuccess {
+  queryId: Int;
+  trader: Address;
+}
 
-// message BRGDeployAccountSuccess {
-//   queryId: Int;
-//   account: Address;
-// }
+message BRGDeployAccountSuccess {
+  queryId: Int;
+  account: Address;
+}
 
 // // Step 3
 
-// // Deposits the value
-// message BRKDeposit {
-//   queryId: Int;
-//   deposit: Int;
-// }
+// Deposits the value
+message BRKDeposit {
+  queryId: Int;
+  deposit: Int;
+}
 
-// message BRKDepositSuccess {
-//   queryId: Int;
-// }
+message BRKDepositSuccess {
+  queryId: Int;
+}
 
 // // Step 7
 
-// // Withdraws the value
-// message BRKWithdraw {
-//   queryId: Int;
-// }
+// Withdraws the value
+message BRKWithdraw {
+  queryId: Int;
+}
 
-// message BRKWithdrawSuccess {
-//   queryId: Int;
-// }
+message BRKWithdrawSuccess {
+  queryId: Int;
+}
 
 // // END Brokerage
