@@ -17,13 +17,14 @@ const DECIMALS: Int = 2;
 const BRK_DEPOSIT_DEPOSIT: Int = ton("6.00");
 const BRK_WITHDRAW_DEPOSIT: Int = ton("4.00");
 
-const NOTIFICATION_PREMIUM: Int = ton("2.00");
-const NOTIFICATION_DEPOSIT: Int = ton("3.00");
+const NOTIFICATION_PREMIUM: Int = ton("1.00");
+const NOTIFICATION_DEPOSIT: Int = ton("1.00");
 
 const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("5.00");
 const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
 
-const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("3.00");
+const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("900.00");
+const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("50.00");
 
 const ERR_ACCESS_DENIED: Int = 400;
 const ERR_INSUFFICIENT_DEPOSIT: Int = 401;
