@@ -229,7 +229,14 @@ contract DataStream {
       });
     }
 
-    self.notify((DSTPublishCandlestickSuccess { queryId: request.queryId }).toCell());
+    nativeReserve(myBalance() - ctx.value, ReserveExact);
+
+    send(SendParameters {
+      to: self.publisher,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (DSTPublishCandlestickSuccess { queryId: request.queryId }).toCell(),
+    });
   }
 
   // TODO: bounced(request: SBPublishCandlestick);
