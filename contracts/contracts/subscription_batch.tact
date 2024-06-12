@@ -65,16 +65,55 @@ contract SubscriptionBatch {
     let info: SubscriptionInfo? = self.subscriptions.get(session);
 
     let remainingNotificationsCount: Int = request.notificationsCount;
-    
+
     if (info != null) {
-      remainingNotificationsCount += info!!.remainingNotificationsCount;      
+      remainingNotificationsCount += info!!.remainingNotificationsCount;
     } else {
-      self.subscriptionsCount += 1; 
+      self.subscriptionsCount += 1;
     }
 
     self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount });
-    
+
     self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount }).toCell());
+  }
+
+  receive(request: SBPublishCandlestick) {
+    let ctx: Context = context();
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_PUBLISH_CANDLESTICK_DEPOSIT);
+
+    let subscriptions: map<Address, SubscriptionInfo> = self.subscriptions;
+
+    foreach (session, info in subscriptions) {
+      self.storageReserve -= NOTIFICATION_DEPOSIT;
+
+      send(SendParameters { 
+        to: session, 
+        value: NOTIFICATION_DEPOSIT, 
+        mode: SendIgnoreErrors, 
+        body: (SBCandlestickPublishedNotification { queryId: request.queryId, candlestick: request.candlestick, remainingNotificationsCount: (info.remainingNotificationsCount - 1) }).toCell(),
+      });
+
+      if (info.remainingNotificationsCount == 2) {
+        self.storageReserve -= NOTIFICATION_DEPOSIT;
+
+        send(SendParameters { 
+          to: self.stream, 
+          value: NOTIFICATION_DEPOSIT, 
+          mode: SendIgnoreErrors, 
+          body: (SBUnsubscribedNotification { queryId: request.queryId, session }).toCell(),
+        });
+      } 
+      
+      if (info.remainingNotificationsCount == 2) {
+        self.subscriptions.set(session, null);
+      } else {
+        self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info.remainingNotificationsCount - 1) });
+      }
+    }
+
+    self.forward(request.publisher, (SBPublishCandlestickSuccess { queryId: request.queryId }).toCell(), false, null);
   }
 }
 

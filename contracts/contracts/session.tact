@@ -50,7 +50,7 @@ contract Session {
     self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, notificationsCount: request.notificationsCount, batch: self.batch }).toCell(), true, null);
   }
 
-  // TODO: Implement bounced(request: SESSubscribe);
+  // TODO: bounced(request: SESSubscribe);
 
   receive(response: DSTSubscribeSuccess) {
     let ctx: Context = context();
@@ -59,9 +59,25 @@ contract Session {
 
     self.batch = response.batch;
 
-    // self.remainingNotificationsCount = response.remainingNotificationsCount;
-
     self.forward(self.subscriber, (SESSubscribeSuccess { queryId: response.queryId, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
+  }
+
+  receive(notification: SBCandlestickPublishedNotification) {
+    let ctx: Context = context();
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.batch);
+
+    self.forward(self.subscriber, (SESCandlestickPublishedNotification { queryId: notification.queryId, candlestick: notification.candlestick, remainingNotificationsCount: notification.remainingNotificationsCount }).toCell(), false, null);
+  }
+
+  receive(notification: DSTUnsubscribedNotification) {
+    let ctx: Context = context();
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
+
+    self.batch = null;
+
+    self.forward(self.subscriber, (SESUnsubscribedNotification { queryId: notification.queryId }).toCell(), false, null);
   }
 }
 

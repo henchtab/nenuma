@@ -136,24 +136,30 @@ contract DataStream {
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (request.notificationsCount) * NOTIFICATION_PREMIUM + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
     self.storageReserve += request.notificationsCount * NOTIFICATION_PREMIUM;
 
+    if (request.batch != null) {
+      self.forward(request.batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
+      nativeThrow(0);
+    }
+
     let batches: map<Address, SBInfo> = self.batches;
-    let batch: Address? = request.batch;
+    let batch: Address? = null;
 
     // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
-    if (batch == null) {
-      foreach (address, info in batches) {
-        if (info.subscriptionsCount <= SUBSCRIPTION_LIMIT) {
-          batch = address;
-        }
+    foreach (address, info in batches) {
+      if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
+        batch = address;
       }
     }
 
     nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
 
-    self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, sessionStateInit);
+    self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
   }
 
-  // TODO: bounced(deploy: SBSubscribe);
+  // bounced(deploy: bounced<SBSubscribe>) {
+  //   self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount - 1 });
+  //   // TODO: rollback
+  // }
 
   receive(response: SBSubscribeSuccess) {
     let ctx: Context = context();
@@ -163,45 +169,42 @@ contract DataStream {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
 
-    self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount + 1 });
-
     self.forward(response.session, (DSTSubscribeSuccess { queryId: response.queryId, batch: batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
   }
 
-//   receive(request: DSTPublishCandlestick) {
-//     let ctx: Context = context();
+  receive(request: DSTPublishCandlestick) {
+    let ctx: Context = context();
 
-//     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender != publisher);
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender != self.publisher);
 
-//     let batches: map<Address, SBInfo> = self.batches;
-//     let batch: Address? = null;
+    let batches: map<Address, SBInfo> = self.batches;
 
-//     foreach (address, info in batches) {
-//       send(SendParameters {
-//         to: address,
-//         value: 0, // TODO: 
-//         mode: 0, // TODO:
-//         body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: myAddress() }).toCell(),
-//       });
-//     }
+    foreach (address, info in batches) {
+      send(SendParameters { 
+        to: address, 
+        value: SB_PUBLISH_CANDLESTICK_DEPOSIT,
+        mode: SendIgnoreErrors,
+        body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: myAddress() }).toCell()
+      });
+    }
 
-//     self.reply((DSTPublishCandlestickSuccess { queryId: response.queryId }).toCell());
-//   }
+    self.notify((DSTPublishCandlestickSuccess { queryId: request.queryId }).toCell());
+  }
 
-//   // TODO: bounced(request: SBPublishCandlestick);
+  // TODO: bounced(request: SBPublishCandlestick);
 
-//   receive(notification: SBUnsubscribeNotification) {
-//     let ctx: Context = context();
+  receive(notification: SBUnsubscribedNotification) {
+    let ctx: Context = context();
 
-//     let batch: Address = ctx.sender;
-//     let info: SBInfo? = self.batches.get(batch);
+    let batch: Address = ctx.sender;
+    let info: SBInfo? = self.batches.get(batch);
 
-//     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
+    nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
 
-//     self.batches.set(batch, null);
+    self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount - 1 });
 
-//     self.forward(notification.session, (DSTUnsubscribedNotification { queryId: response.queryId, batch: batch }).toCell(), false, null);
-//   }
+    self.forward(notification.session, (DSTUnsubscribedNotification { queryId: notification.queryId }).toCell(), false, null);
+  }
 }
 
 // END Data Stream
