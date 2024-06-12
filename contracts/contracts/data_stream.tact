@@ -143,7 +143,7 @@ contract DataStream {
 
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (NOTIFICATION_PREMIUM + NOTIFICATION_DEPOSIT) * request.notificationsCount);
     
-    self.storageReserve += NOTIFICATION_PREMIUM + request.notificationsCount;
+    self.storageReserve += NOTIFICATION_PREMIUM * request.notificationsCount;
 
     let batch: Address? = null;
 
@@ -229,11 +229,13 @@ contract DataStream {
       });
     }
 
+    self.storageReserve -= NOTIFICATION_PREMIUM * self.subscriptionsCount;
+
     nativeReserve(myBalance() - ctx.value, ReserveExact);
 
     send(SendParameters {
       to: self.publisher,
-      value: 0,
+      value: NOTIFICATION_PREMIUM * self.subscriptionsCount,
       mode: SendRemainingBalance,
       body: (DSTPublishCandlestickSuccess { queryId: request.queryId }).toCell(),
     });
