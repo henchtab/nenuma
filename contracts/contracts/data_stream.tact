@@ -243,9 +243,16 @@ contract DataStream {
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
 
     self.batches.set(batch, SBInfo { subscriptionsCount: (info!!.subscriptionsCount - 1) });
-    self.storageReserve -= NOTIFICATION_PREMIUM * notification.remainingNotificationsCount;
+ 
+    let reimbursement: Int = NOTIFICATION_PREMIUM * notification.remainingNotificationsCount;
+    self.storageReserve -= reimbursement;
 
-    self.forward(notification.session, (DSTUnsubscribedNotification { queryId: notification.queryId, remainingNotificationsCount: notification.remainingNotificationsCount }).toCell(), false, null);
+    send(SendParameters { 
+      to: notification.session, 
+      value: reimbursement, 
+      mode: SendRemainingValue, 
+      body: (DSTUnsubscribedNotification { queryId: notification.queryId, remainingNotificationsCount: notification.remainingNotificationsCount }).toCell(),
+    });
   }
 }
 

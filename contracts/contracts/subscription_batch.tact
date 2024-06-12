@@ -160,10 +160,17 @@ contract SubscriptionBatch {
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_UNSUBSCRIBE_DEPOSIT);
 
-    self.storageReserve -= NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount;
     self.subscriptions.set(session, null);
 
-    self.forward(self.stream, (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: info!!.remainingNotificationsCount }).toCell(), false, null);
+    let remainingDeposit: Int = NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount;
+    self.storageReserve -= remainingDeposit;
+
+    send(SendParameters { 
+      to: self.stream, 
+      value: remainingDeposit, 
+      mode: SendRemainingValue, 
+      body: (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: info!!.remainingNotificationsCount }).toCell(),
+    });
   }
 }
 
