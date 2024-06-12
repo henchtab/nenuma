@@ -56,25 +56,35 @@ contract SubscriptionBatch {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
     nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, self.subscriptionsCount <= SUBSCRIPTION_LIMIT);
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount > 0);
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
-
-    self.storageReserve += (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT;
 
     let session: Address = request.session;
     let info: SubscriptionInfo? = self.subscriptions.get(session);
 
-    let remainingNotificationsCount: Int = request.notificationsCount;
+    // let remainingNotificationsCount: Int = request.notificationsCount;
 
-    if (info != null) {
-      remainingNotificationsCount += info!!.remainingNotificationsCount;
-    } else {
+    if (info == null) {
+
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+      nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
+
+      self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
+      self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: request.notificationsCount });      
+      
       self.subscriptionsCount += 1;
+
+      self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: request.notificationsCount }).toCell());
+    
+    } else {
+
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+      nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
+
+      self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
+      self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) });
+
+      self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) }).toCell());    
+    
     }
-
-    self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount });
-
-    self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount }).toCell());
   }
 
   receive(request: SBPublishCandlestick) {
@@ -125,7 +135,7 @@ contract SubscriptionBatch {
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_UNSUBSCRIBE_DEPOSIT);
 
-    self.storageReserve -= NOTIFICATION_DEPOSIT * (info!!.remainingNotificationsCount + 1);
+    self.storageReserve -= NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount;
     self.subscriptions.set(session, null);
 
     self.forward(self.stream, (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: info!!.remainingNotificationsCount }).toCell(), false, null);

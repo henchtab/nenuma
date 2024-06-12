@@ -134,18 +134,18 @@ contract DataStream {
     let session: Address = contractAddress(sessionStateInit);
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount > 0);
 
-    // TODO: The (+1) is used for for the unsubscribe notification. It is reimbursed if the DSTUnsubscribe is sent.
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (request.notificationsCount) * NOTIFICATION_PREMIUM + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
-    self.storageReserve += request.notificationsCount * NOTIFICATION_PREMIUM;
-
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (NOTIFICATION_PREMIUM + NOTIFICATION_DEPOSIT) * request.notificationsCount);
+    self.storageReserve += NOTIFICATION_PREMIUM + request.notificationsCount;
 
     // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
     if (request.batch != null) {
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
       self.forward(request.batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
       nativeThrow(0); // TODO: crapcoding?
     }
+
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
 
     let batches: map<Address, SBInfo> = self.batches;
     let batch: Address? = null;
