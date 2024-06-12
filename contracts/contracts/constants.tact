@@ -2,6 +2,13 @@
 
 const DST_STORAGE_RESERVE: Int = ton("1.00");
 
+const BRG_STORAGE_RESERVE: Int = ton("13.00");
+const BRK_STORAGE_RESERVE: Int = ton("14.00");
+const BRA_STORAGE_RESERVE: Int = ton("15.00");
+
+const BRG_DEPLOY_BROKER_DEPOSIT: Int = ton("20");
+const BRG_DEPLOY_ACCOUNT_DEPOSIT: Int = ton("30");
+
 const BATCH_LIMIT: Int = 10;
 const SUBSCRIPTION_LIMIT: Int = 100;
 

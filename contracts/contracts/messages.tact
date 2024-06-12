@@ -179,3 +179,58 @@ message SESDestroySuccess {
 //   queryId: Int;
 //   remainingNotificationsCount: Int;
 // }
+
+// BEGIN Brokerage
+
+// Step 1
+
+message BRGDeploy {
+  queryId: Int;
+}
+
+message BRGDeploySuccess {
+  queryId: Int;
+}
+
+// Step 2
+
+message BRGDeployBroker {
+  queryId: Int;
+  stream: Address;
+}
+
+message BRKDeploy {
+  queryId: Int;
+}
+
+message BRKDeploySuccess {
+  queryId: Int;
+  stream: Address;
+}
+
+message BRGDeployBrokerSuccess {
+  queryId: Int;
+  broker: Address;
+}
+
+// Step 4
+
+message BRGDeployAccount {
+  queryId: Int;
+}
+
+message BRADeploy {
+  queryId: Int;
+}
+
+message BRADeploySuccess {
+  queryId: Int;
+  trader: Address;
+}
+
+message BRGDeployAccountSuccess {
+  queryId: Int;
+  account: Address;
+}
+
+// END Brokerage
