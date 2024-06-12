@@ -99,7 +99,7 @@ contract DataStream {
     self.forward(self.publisher, (DSTDeployBatchSuccess { queryId: response.queryId, batch: batch }).toCell(), false, null);
   }
 
-  receive(request: SESDeploy) {
+  receive(request: DSTDeploySession) {
     let ctx: Context = context();
 
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT);
