@@ -135,34 +135,66 @@ contract DataStream {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
 
+    if (request.batch == null) {
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+    } else {
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+    }
+
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (NOTIFICATION_PREMIUM + NOTIFICATION_DEPOSIT) * request.notificationsCount);
+    
     self.storageReserve += NOTIFICATION_PREMIUM + request.notificationsCount;
 
-    // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
-    if (request.batch != null) {
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
-      self.forward(request.batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
-      nativeThrow(0); // TODO: crapcoding?
-    }
-
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
-
-    let batches: map<Address, SBInfo> = self.batches;
     let batch: Address? = null;
 
-    foreach (address, info in batches) {
-      if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
-        batch = address;
+    if (request.batch == null) {
+      let batches: map<Address, SBInfo> = self.batches;
+
+      foreach (address, info in batches) {
+        if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
+          batch = address;
+        }
       }
+
+      nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
+    } else {
+      batch = request.batch;      
     }
 
-    nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
-
     let info: SBInfo? = self.batches.get(batch!!);
-    self.batches.set(batch!!, SBInfo { subscriptionsCount: info!!.subscriptionsCount + 1 });
 
-    self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
-  }
+    nativeThrowUnless(ERR_BATCH_NOT_FOUND, info != null);
+
+    self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
+
+    self.forward(batch!!, (SBSubscribe { queryId: (request.queryId), session: session, notificationsCount: (request.notificationsCount) }).toCell(), true, null);
+  } 
+
+    // // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
+    // if (request.batch != null) {
+    //   nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+    //   self.forward(request.batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
+    //   nativeThrow(0); // TODO: crapcoding?
+    // }
+
+    // nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+
+    // let batches: map<Address, SBInfo> = self.batches;
+    // let batch: Address? = null;
+
+    // foreach (address, info in batches) {
+    //   if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
+    //     batch = address;
+    //   }
+    // }
+
+    // nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
+
+    // let info: SBInfo? = self.batches.get(batch!!);
+    // self.batches.set(batch!!, SBInfo { subscriptionsCount: info!!.subscriptionsCount + 1 });
+
+    // self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
+  // }
 
   // bounced(deploy: bounced<SBSubscribe>) {
   //   self.batches.set(batch, SBInfo { subscriptionsCount: info!!.subscriptionsCount - 1 });
@@ -177,7 +209,7 @@ contract DataStream {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
 
-    self.forward(response.session, (DSTSubscribeSuccess { queryId: response.queryId, batch: batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
+    self.forward(response.session, (DSTSubscribeSuccess { queryId: response.queryId, batch, remainingNotificationsCount: response.remainingNotificationsCount }).toCell(), false, null);
   }
 
   receive(request: DSTPublishCandlestick) {

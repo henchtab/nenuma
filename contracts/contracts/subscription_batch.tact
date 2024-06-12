@@ -60,32 +60,57 @@ contract SubscriptionBatch {
     let session: Address = request.session;
     let info: SubscriptionInfo? = self.subscriptions.get(session);
 
-    // let remainingNotificationsCount: Int = request.notificationsCount;
+    if (info == null) {
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+    } else {
+      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+    }
+
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
+
+    self.storageReserve += NOTIFICATION_DEPOSIT * request.notificationsCount;
+
+    let remainingNotificationsCount: Int = request.notificationsCount;
+
+    if (info != null) {
+      remainingNotificationsCount += info!!.remainingNotificationsCount;
+    }
+    
+    self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount }); 
 
     if (info == null) {
-
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
-      nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
-
-      self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
-      self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: request.notificationsCount });      
-      
       self.subscriptionsCount += 1;
-
-      self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: request.notificationsCount }).toCell());
-    
-    } else {
-
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
-      nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
-
-      self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
-      self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) });
-
-      self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) }).toCell());    
-    
     }
+
+    self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount }).toCell());
   }
+
+  //   // let remainingNotificationsCount: Int = request.notificationsCount;
+
+  //   if (info == null) {
+
+  //     nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+  //     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
+
+  //     self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
+  //     self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: request.notificationsCount });      
+      
+  //     self.subscriptionsCount += 1;
+
+  //     self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: request.notificationsCount }).toCell());
+    
+  //   } else {
+
+  //     nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+  //     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
+
+  //     self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
+  //     self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) });
+
+  //     self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) }).toCell());    
+    
+  //   }
+  // }
 
   receive(request: SBPublishCandlestick) {
     let ctx: Context = context();
