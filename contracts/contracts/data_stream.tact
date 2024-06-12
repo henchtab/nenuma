@@ -165,7 +165,9 @@ contract DataStream {
 
     nativeThrowUnless(ERR_BATCH_NOT_FOUND, info != null);
 
-    self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
+    if (request.batch == null) {
+      self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
+    }
 
     self.forward(batch!!, (SBSubscribe { queryId: (request.queryId), session: session, notificationsCount: (request.notificationsCount) }).toCell(), true, null);
   } 
@@ -219,7 +221,6 @@ contract DataStream {
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_PUBLISH_CANDLESTICK_DEPOSIT);
 
     let batches: map<Address, SBInfo> = self.batches;
-
     let subscriptionsCount: Int = 0;
 
     foreach (address, info in batches) {
