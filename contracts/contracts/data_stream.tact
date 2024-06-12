@@ -47,6 +47,10 @@ contract DataStream {
     return self.nextBatchId;
   }
 
+  get fun decimals(): Int {
+    return DECIMALS;
+  }
+
   get fun batch(batchId: Int): Address {
     let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), batchId);
     let batch: Address = contractAddress(batchStateInit);
