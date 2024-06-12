@@ -4,13 +4,19 @@ import '@ton/test-utils';
 import { Session } from '../build/DataStream/tact_Session';
 import { SubscriptionBatch } from '../build/DataStream/tact_SubscriptionBatch';
 import {
-  Candlestick,
-  DataStream,
-  storeDSTDeployBatchSuccess,
-  storeSESCandlestickPublishedNotification,
-  storeSESSubscribeSuccess,
-  storeSESUnsubscribedNotification,
+    Candlestick,
+    DataStream,
+    loadSESCandlestickPublishedNotification,
+    storeDSTDeployBatchSuccess,
+    storeDSTSubscribe,
+    storeSESCandlestickPublishedNotification,
+    storeSESDestroy,
+    storeSESDestroySuccess,
+    storeSESSubscribeSuccess,
+    storeSESUnsubscribedNotification,
 } from '../wrappers/DataStream';
+import { printTransactions } from './utils';
+import { formatCoinsPure } from '@ton/sandbox/dist/utils/printTransactionFees';
 
 // TODO:
 const BATCH_LIMIT = 3;
@@ -170,6 +176,12 @@ describe('DataStream', () => {
             $$type: 'SubscriptionInfo',
             remainingNotificationsCount: 6n,
         });
+
+        const batchesInfo = (await dataStream.getBatches()).values();
+        expect(batchesInfo.at(-1)).toMatchObject({
+            $$type: 'SBInfo',
+            subscriptionsCount: 1n,
+        });
     });
 
     it('(4B) Should add more messages to the subscription', async () => {
@@ -207,12 +219,35 @@ describe('DataStream', () => {
 
         expect(subscriptionBatchAddress).toBeDefined();
 
+        const body1 = new Builder();
+        storeDSTSubscribe({
+            $$type: 'DSTSubscribe',
+            batch: subscriptionBatchAddress!,
+            notificationsCount: 5n,
+            queryId: 0n,
+            subscriber: alice.address,
+        })(body1);
+        const DSTSubscribe = body1.endCell();
+
+        expect(SESSubscribe.transactions).toHaveTransaction({
+            from: session.address,
+            to: dataStream.address,
+            success: true,
+            body: DSTSubscribe,
+        });
+
         const subscriptionBatch = blockchain.openContract(SubscriptionBatch.fromAddress(subscriptionBatchAddress!));
         const subscriptionInfo = (await subscriptionBatch.getSubscriptions()).get(session.address);
 
         expect(subscriptionInfo).toMatchObject({
             $$type: 'SubscriptionInfo',
             remainingNotificationsCount: 11n,
+        });
+
+        const batchesInfo = (await dataStream.getBatches()).values();
+        expect(batchesInfo.at(-1)).toMatchObject({
+            $$type: 'SBInfo',
+            subscriptionsCount: 1n,
         });
     });
 
@@ -419,4 +454,166 @@ describe('DataStream', () => {
     //         });
     //     }
     // });
+
+    it('(6) Should send a message to unsubscribe Bob from the data stream and refund her', async () => {
+        const DSTDeploySession = await dataStream.send(
+            bob.getSender(),
+            {
+                value: toNano('100'),
+            },
+            {
+                $$type: 'DSTDeploySession',
+                queryId: 0n,
+            },
+        );
+
+        const sessionAddress = await dataStream.getSession(bob.address);
+        const session = blockchain.openContract(Session.fromAddress(sessionAddress));
+
+        const SESSubscribe = await session.send(
+            bob.getSender(),
+            {
+                value: toNano('100'),
+            },
+            {
+                $$type: 'SESSubscribe',
+                queryId: 0n,
+                notificationsCount: 5n,
+            },
+        );
+
+        const body1 = new Builder();
+        storeSESSubscribeSuccess({
+            $$type: 'SESSubscribeSuccess',
+            queryId: 0n,
+            remainingNotificationsCount: 5n,
+        })(body1);
+        const SESSubscribeSuccess = body1.endCell();
+
+        expect(SESSubscribe.transactions).toHaveTransaction({
+            from: session.address,
+            to: bob.address,
+            success: true,
+            body: SESSubscribeSuccess,
+        });
+
+        printTransactions('SESSubscribe', SESSubscribe.transactions);
+
+        // Publish 2 candlesticks
+        for (let index = 5; index > 3; index--) {
+            const candlestick: Candlestick = {
+                $$type: 'Candlestick',
+                start: 1718207640000n,
+                end: 1718207699999n,
+                open: 6969709n,
+                close: 6969774n,
+                high: 6970129n,
+                low: 6966979n,
+            };
+
+            const DSTPublishCandlestick = await dataStream.send(
+                publisher.getSender(),
+                {
+                    value: toNano('1000'),
+                },
+                {
+                    $$type: 'DSTPublishCandlestick',
+                    queryId: 1n,
+                    candlestick,
+                },
+            );
+
+            printTransactions(`DSTPublishCandlestick ${index}`, DSTPublishCandlestick.transactions);
+
+            const body = new Builder();
+            storeSESCandlestickPublishedNotification({
+                $$type: 'SESCandlestickPublishedNotification',
+                candlestick,
+                queryId: 1n,
+                remainingNotificationsCount: BigInt(index) - 1n,
+            })(body);
+            const SESCandlestickPublishedNotification = body.endCell();
+
+            expect(DSTPublishCandlestick.transactions).toHaveTransaction({
+                from: session.address,
+                to: bob.address,
+                success: true,
+                body: SESCandlestickPublishedNotification,
+            });
+        }
+
+        const batchAddress = await session.getBatch();
+        console.log('batchAddress', batchAddress);
+
+        const batch = blockchain.openContract(SubscriptionBatch.fromAddress(batchAddress!));
+        console.log(await batch.getSubscriptions());
+
+        const SESUnsubscribe = await session.send(
+            bob.getSender(),
+            {
+                value: toNano('100'),
+            },
+            {
+                $$type: 'SESUnsubscribe',
+                queryId: 0n,
+            },
+        );
+
+        printTransactions('SESUnsubscribe', SESUnsubscribe.transactions);
+
+        console.log(await batch.getSubscriptions());
+
+        const body2 = new Builder();
+        storeSESUnsubscribedNotification({
+            $$type: 'SESUnsubscribedNotification',
+            queryId: 0n,
+            remainingNotificationsCount: 3n,
+        })(body2);
+        const SESUnsubscribedNotification = body2.endCell();
+
+        expect(SESUnsubscribe.transactions).toHaveTransaction({
+            from: session.address,
+            to: bob.address,
+            success: true,
+            body: SESUnsubscribedNotification,
+        });
+    });
+
+    it('(7) Should destroy a session', async () => {
+        const sessionAddress = await dataStream.getSession(alice.address);
+        const session = blockchain.openContract(Session.fromAddress(sessionAddress));
+
+        const DSTDestroySession = await session.send(
+            alice.getSender(),
+            {
+                value: toNano('1'),
+            },
+            {
+                $$type: 'SESDestroy',
+                queryId: 0n,
+            },
+        );
+
+        const body = new Builder();
+        storeSESDestroySuccess({
+            $$type: 'SESDestroySuccess',
+            queryId: 0n,
+        })(body);
+        const SESDestroySuccess = body.endCell();
+
+        expect(DSTDestroySession.transactions).toHaveTransaction({
+            from: alice.address,
+            to: session.address,
+            success: true,
+            exitCode: 0,
+            destroyed: true,
+        });
+
+        expect(DSTDestroySession.transactions).toHaveTransaction({
+            from: session.address,
+            to: alice.address,
+            success: true,
+            body: SESDestroySuccess,
+        });
+    });
 });
