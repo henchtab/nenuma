@@ -221,6 +221,7 @@ contract DataStream {
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_PUBLISH_CANDLESTICK_DEPOSIT);
 
     let batches: map<Address, SBInfo> = self.batches;
+
     let subscriptionsCount: Int = 0;
 
     foreach (address, info in batches) {
@@ -236,7 +237,7 @@ contract DataStream {
 
     self.storageReserve -= NOTIFICATION_PREMIUM * subscriptionsCount;
 
-    nativeReserve(myBalance() - ctx.value, ReserveExact);
+    nativeReserve(myBalance() - ctx.value - NOTIFICATION_PREMIUM * subscriptionsCount, ReserveExact);
 
     send(SendParameters {
       to: self.publisher,
