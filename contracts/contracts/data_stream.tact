@@ -183,7 +183,7 @@ contract DataStream {
   receive(request: DSTPublishCandlestick) {
     let ctx: Context = context();
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender != self.publisher);
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.publisher);
 
     let batches: map<Address, SBInfo> = self.batches;
 
