@@ -136,15 +136,16 @@ contract DataStream {
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (request.notificationsCount) * NOTIFICATION_PREMIUM + (request.notificationsCount + 1) * NOTIFICATION_DEPOSIT);
     self.storageReserve += request.notificationsCount * NOTIFICATION_PREMIUM;
 
+
+    // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
     if (request.batch != null) {
       self.forward(request.batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
-      nativeThrow(0);
+      nativeThrow(0); // TODO: crapcoding?
     }
 
     let batches: map<Address, SBInfo> = self.batches;
     let batch: Address? = null;
 
-    // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
     foreach (address, info in batches) {
       if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
         batch = address;
@@ -152,6 +153,9 @@ contract DataStream {
     }
 
     nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
+
+    let info: SBInfo? = self.batches.get(batch!!);
+    self.batches.set(batch!!, SBInfo { subscriptionsCount: info!!.subscriptionsCount + 1 });
 
     self.forward(batch!!, (SBSubscribe { queryId: request.queryId, session: session, notificationsCount: request.notificationsCount }).toCell(), true, null);
   }
