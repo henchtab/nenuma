@@ -12,6 +12,8 @@ const BRG_DEPLOY_ACCOUNT_DEPOSIT: Int = ton("30");
 const BATCH_LIMIT: Int = 10;
 const SUBSCRIPTION_LIMIT: Int = 100;
 
+const DECIMALS: Int = 2;
+
 const NOTIFICATION_PREMIUM: Int = ton("2.00");
 const NOTIFICATION_DEPOSIT: Int = ton("3.00");
 
