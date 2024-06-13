@@ -15,8 +15,12 @@ contract Broker {
     self.stream = stream;
   }
 
+  get fun balance(): Int {
+    return myBalance();
+  }
+
   get fun storageReserve(): Int {
-    return self.storageReserve;
+    return BRK_STORAGE_RESERVE;
   }
 
   get fun brokerage(): Address {
