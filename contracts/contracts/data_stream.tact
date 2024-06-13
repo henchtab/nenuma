@@ -27,13 +27,43 @@ contract DataStream {
     self.nextBatchId = 0;
   }
 
-  get fun storageReserve(): Int {
-    return self.storageReserve;
-  }
-
   get fun balance(): Int {
     return myBalance();
   }
+
+  get fun storageReserve(): Int {
+    return DST_STORAGE_RESERVE;
+  }
+
+  get fun deployDeposit(): Int {
+    return DST_DEPLOY_DEPOSIT;
+  }
+
+  get fun deployBatchDeposit(): Int {
+    return DST_DEPLOY_BATCH_DEPOSIT;
+  }
+
+  get fun deploySessionDeposit(): Int {
+    return DST_DEPLOY_SESSION_DEPOSIT;
+  }
+
+  get fun publishCandlestickDeposit(): Int {
+    return DST_PUBLISH_CANDLESTICK_DEPOSIT;
+  }
+
+  get fun notificationDeposit(): Int {
+    return NOTIFICATION_DEPOSIT;
+  }
+
+  get fun notificationPremium(): Int {
+    return NOTIFICATION_PREMIUM;
+  }
+
+  get fun subscribeDeposit(notificationsCount: Int): Int {
+    return DST_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT) * notificationsCount + (NOTIFICATION_PREMIUM) * (notificationsCount - 1);
+  }
+
+  // END DEPOSITS
 
   get fun publisherAddress(): Address {
     return self.publisher;
@@ -141,9 +171,13 @@ contract DataStream {
       nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
     }
 
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (NOTIFICATION_PREMIUM + NOTIFICATION_DEPOSIT) * request.notificationsCount);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (NOTIFICATION_DEPOSIT) * request.notificationsCount + (NOTIFICATION_PREMIUM) * (request.notificationsCount - 1));
     
-    self.storageReserve += NOTIFICATION_PREMIUM * request.notificationsCount;
+    if (request.batch == null) {
+      self.storageReserve += NOTIFICATION_PREMIUM * (request.notificationsCount - 1);
+    } else {
+      self.storageReserve += NOTIFICATION_PREMIUM * request.notificationsCount;
+    }
 
     let batch: Address? = null;
 
@@ -168,6 +202,8 @@ contract DataStream {
     if (request.batch == null) {
       self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
     }
+
+    dump(self.storageReserve);
 
     self.forward(batch!!, (SBSubscribe { queryId: (request.queryId), session: session, notificationsCount: (request.notificationsCount) }).toCell(), true, null);
   } 
@@ -262,8 +298,13 @@ contract DataStream {
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
 
     self.batches.set(batch, SBInfo { subscriptionsCount: (info!!.subscriptionsCount - 1) });
+
+    let reimbursement: Int = 0;
+
+    if (notification.remainingNotificationsCount > 1) {
+      reimbursement = NOTIFICATION_PREMIUM * (notification.remainingNotificationsCount - 1);
+    }
  
-    let reimbursement: Int = NOTIFICATION_PREMIUM * notification.remainingNotificationsCount;
     self.storageReserve -= reimbursement;
 
     send(SendParameters { 

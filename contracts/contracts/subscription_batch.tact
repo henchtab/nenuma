@@ -23,12 +23,24 @@ contract SubscriptionBatch {
     self.subscriptionsCount = 0;
   }
 
-  get fun storageReserve(): Int {
-    return self.storageReserve;
-  }
-
   get fun balance(): Int {
     return myBalance();
+  }
+
+  get fun storageReserve(): Int {
+    return SB_STORAGE_RESERVE;
+  }
+
+  get fun subscribeDeposit(notificationsCount: Int): Int {
+    return SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * notificationsCount;
+  }
+
+  get fun publishCandlestickDeposit(): Int {
+    return SB_PUBLISH_CANDLESTICK_DEPOSIT;
+  }
+
+  get fun unsubscribeDeposit(): Int {
+    return SB_UNSUBSCRIBE_DEPOSIT;
   }
 
   get fun streamAddress(): Address {
