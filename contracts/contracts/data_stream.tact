@@ -31,7 +31,11 @@ contract DataStream {
     return self.storageReserve;
   }
 
-  get fun publisher(): Address {
+  get fun balance(): Int {
+    return myBalance();
+  }
+
+  get fun publisherAddress(): Address {
     return self.publisher;
   }
 
@@ -47,18 +51,18 @@ contract DataStream {
     return self.nextBatchId;
   }
 
-  get fun decimals(): Int {
+  get fun DECIMALS(): Int {
     return DECIMALS;
   }
 
-  get fun batch(batchId: Int): Address {
+  get fun batchAddress(batchId: Int): Address {
     let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), batchId);
     let batch: Address = contractAddress(batchStateInit);
 
     return batch;
   }
 
-  get fun session(subscriber: Address): Address {
+  get fun sessionAddress(subscriber: Address): Address {
     let sessionStateInit: StateInit = initOf Session(myAddress(), subscriber);
     let session: Address = contractAddress(sessionStateInit);
 

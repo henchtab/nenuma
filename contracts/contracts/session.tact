@@ -20,15 +20,19 @@ contract Session {
     return self.storageReserve;
   }
 
-  get fun stream(): Address {
+  get fun balance(): Int {
+    return myBalance();
+  }
+
+  get fun streamAddress(): Address {
     return self.stream;
   }
 
-  get fun subscriber(): Address {
+  get fun subscriberAddress(): Address {
     return self.subscriber;
   }
 
-  get fun batch(): Address? {
+  get fun batchAddress(): Address? {
     return self.batch;
   }
 

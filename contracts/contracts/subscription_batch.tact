@@ -27,7 +27,11 @@ contract SubscriptionBatch {
     return self.storageReserve;
   }
 
-  get fun stream(): Address {
+  get fun balance(): Int {
+    return myBalance();
+  }
+
+  get fun streamAddress(): Address {
     return self.stream;
   }
 
