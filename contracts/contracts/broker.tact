@@ -55,7 +55,7 @@ contract Broker {
 
     let owner: Address = ctx.sender;
 
-    self.storageReserve == myBalance() - BRK_DEPOSIT_DEPOSIT;
+    self.storageReserve = myBalance() - BRK_DEPOSIT_DEPOSIT;
 
     self.forward(owner, (BRKDepositSuccess { queryId: request.queryId }).toCell(), true, null);
   }
