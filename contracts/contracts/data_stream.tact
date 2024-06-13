@@ -35,10 +35,6 @@ contract DataStream {
     return DST_STORAGE_RESERVE;
   }
 
-  get fun deployDeposit(): Int {
-    return DST_DEPLOY_DEPOSIT;
-  }
-
   get fun deployBatchDeposit(): Int {
     return DST_DEPLOY_BATCH_DEPOSIT;
   }
@@ -202,8 +198,6 @@ contract DataStream {
     if (request.batch == null) {
       self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
     }
-
-    dump(self.storageReserve);
 
     self.forward(batch!!, (SBSubscribe { queryId: (request.queryId), session: session, notificationsCount: (request.notificationsCount) }).toCell(), true, null);
   } 
