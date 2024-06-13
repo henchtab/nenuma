@@ -2,25 +2,26 @@ import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
 import { toNano } from "@ton/core";
 import { Brokerage } from "../wrappers/Brokerage";
 import "@ton/test-utils";
-import { TransactionsLogger } from "./utils";
+import { ShrekLogger } from "./utils";
 
 describe("Brokerage", () => {
   let blockchain: Blockchain;
   let owner: SandboxContract<TreasuryContract>;
   let brokerage: SandboxContract<Brokerage>;
 
-  const logger = new TransactionsLogger();
+  // Step 1
+  const logger = new ShrekLogger();
 
   beforeEach(async () => {
     blockchain = await Blockchain.create();
 
     owner = await blockchain.treasury("owner");
-    logger.addContract(owner, "Owner");
+    logger.addContract(owner, "Owner"); // Step 2
 
     brokerage = blockchain.openContract(
       await Brokerage.fromInit(owner.address),
     );
-    logger.addContract(brokerage, "Brokerage");
+    logger.addContract(brokerage, "Brokerage"); // Step 3
 
     const BRGDeploy = await brokerage.send(
       owner.getSender(),
@@ -40,7 +41,7 @@ describe("Brokerage", () => {
       success: true,
     });
 
-    logger.logTransactions(BRGDeploy.transactions);
+    logger.logTransactions(BRGDeploy.transactions); // Step 4
   });
 
   it("(1) Should deploy a brokerage", async () => {
