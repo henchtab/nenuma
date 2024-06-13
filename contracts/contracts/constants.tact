@@ -14,38 +14,40 @@ const ERR_BATCH_NOT_FOUND: Int = 407;
 
 // BEGIN Data Stream
 
-const DST_STORAGE_RESERVE: Int = ton("1.00");
+const DST_STORAGE_RESERVE: Int = ton("0.05");
 
 const BATCH_LIMIT: Int = 10;
 const SUBSCRIPTION_LIMIT: Int = 100;
 const DECIMALS: Int = 2;
 
-const NOTIFICATION_PREMIUM: Int = ton("1.00");
-const NOTIFICATION_DEPOSIT: Int = ton("1.00");
+const NOTIFICATION_PREMIUM: Int = ton("0.001");
+const NOTIFICATION_DEPOSIT: Int = ton("0.02");
 
-const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("5.00");
-const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
-const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("900.00");
-const DST_SUBSCRIBE_DEPOSIT: Int = ton("20.00");
+const DST_DEPLOY_DEPOSIT: Int = ton("0.06");
+const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("0.09");
+const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("0.09");
+const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("1");
+const DST_SUBSCRIBE_DEPOSIT: Int = ton("0.5");
 
 // END Data Stream
 
 
 // BEGIN Subsription Batch
 
-const SB_STORAGE_RESERVE: Int = ton("1.00");
-const SB_SUBSCRIBE_DEPOSIT: Int = ton("10.00");
-const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("50.00");
-const SB_UNSUBSCRIBE_DEPOSIT: Int = ton("20.00");
+const SB_STORAGE_RESERVE: Int = ton("0.05");
+const SB_SUBSCRIBE_DEPOSIT: Int = ton("0.9");
+const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("0.5");
+const SB_UNSUBSCRIBE_DEPOSIT: Int = ton("0.8");
 
 // END Subscription Batch
 
 
 // BEGIN Session
 
-const SES_STORAGE_RESERVE: Int = ton("1.00");
-const SES_SUBSCRIBE_DEPOSIT: Int = ton("30.00");
-const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("10.00");
+const SES_STORAGE_RESERVE: Int = ton("0.05");
+const SES_SUBSCRIBE_DEPOSIT: Int = ton("1");
+const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("1");
+const SES_DESTROY_DEPOSIT: Int = ton("0.1");
 
 // END Session
 

@@ -32,6 +32,10 @@ contract Session {
     return SES_UNSUBSCRIBE_DEPOSIT;
   }
 
+  get fun destroyDeposit(): Int {
+    return SES_DESTROY_DEPOSIT;
+  }
+
   get fun streamAddress(): Address {
     return self.stream;
   }
