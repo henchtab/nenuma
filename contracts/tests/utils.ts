@@ -1,4 +1,4 @@
-import { Contract, Transaction } from "@ton/core";
+import { Address, Contract, Transaction } from "@ton/core";
 import { SandboxContract } from "@ton/sandbox";
 
 export class ShrekLogger {
@@ -9,10 +9,18 @@ export class ShrekLogger {
   }
 
   addContract<F extends Contract>(
-    contract: SandboxContract<F>,
+    contract: SandboxContract<F> | Address | string,
     label: string,
   ) {
-    const address = contract.address.toString();
+    let address;
+
+    if (typeof contract === "object" && "address" in contract) {
+      address = (contract as SandboxContract<F>).address.toString();
+    } else if (typeof contract === "string") {
+      address = contract;
+    } else {
+      address = contract.toString();
+    }
 
     if (this.contractLabels.get(address)) {
       throw new Error(
@@ -75,12 +83,11 @@ export class ShrekLogger {
       : "The swamp keeps its secrets...";
 
     const valuesOut = tx.outMessages.values().length == 0
-      ? ("No coins leave this swamp today!")
+      ? ("0")
       : (tx.outMessages.values()
         .filter((message) => message.info.type === "internal")
         // @ts-ignore
-        .map((message) => formatCoins(message.info.value.coins))
-        .join("\n"));
+        .map((message) => formatCoins(message.info.value.coins)));
 
     const forwardIn = tx.inMessage?.info.type === "internal"
       ? formatCoins(tx.inMessage.info.forwardFee)
@@ -164,7 +171,7 @@ export function formatCoins(
 ): string {
   if (value === undefined || value === null) return "N/A";
 
-  return `${formatCoinsPure(value, precision)} TON`;
+  return formatCoinsPure(value, precision);
 }
 
 // END HELPERS
