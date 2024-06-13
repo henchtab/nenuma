@@ -238,7 +238,6 @@ message BRGDeployAccountSuccess {
 // Deposits the value
 message BRKDeposit {
   queryId: Int;
-  deposit: Int;
 }
 
 message BRKDepositSuccess {

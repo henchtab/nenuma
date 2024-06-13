@@ -38,16 +38,16 @@ contract Broker {
   receive(request: BRKDeposit) {
     let ctx: Context = context();
 
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= BRK_DEPOSIT_DEPOSIT + request.deposit);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value > BRK_DEPOSIT_DEPOSIT);
 
     let brokerageStateInit: StateInit = initOf Brokerage(ctx.sender);
     let brokerage: Address = contractAddress(brokerageStateInit);
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, brokerage != self.brokerage);
+    nativeThrowUnless(ERR_ACCESS_DENIED, brokerage == self.brokerage);
 
     let owner: Address = ctx.sender;
 
-    self.storageReserve += request.deposit;
+    self.storageReserve == myBalance() - BRK_DEPOSIT_DEPOSIT;
 
     self.forward(owner, (BRKDepositSuccess { queryId: request.queryId }).toCell(), true, null);
   }
@@ -60,7 +60,7 @@ contract Broker {
     let brokerageStateInit: StateInit = initOf Brokerage(ctx.sender);
     let brokerage: Address = contractAddress(brokerageStateInit);
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, brokerage != self.brokerage);
+    nativeThrowUnless(ERR_ACCESS_DENIED, brokerage == self.brokerage);
 
     let owner: Address = ctx.sender;
 
