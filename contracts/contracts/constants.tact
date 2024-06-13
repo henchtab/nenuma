@@ -1,30 +1,4 @@
-// BEGIN Data Stream
-
-const DST_STORAGE_RESERVE: Int = ton("1.00");
-
-const BRG_STORAGE_RESERVE: Int = ton("13.00");
-const BRK_STORAGE_RESERVE: Int = ton("14.00");
-const BRA_STORAGE_RESERVE: Int = ton("15.00");
-
-const BRG_DEPLOY_BROKER_DEPOSIT: Int = ton("20");
-const BRG_DEPLOY_ACCOUNT_DEPOSIT: Int = ton("30");
-
-const BATCH_LIMIT: Int = 10;
-const SUBSCRIPTION_LIMIT: Int = 100;
-
-const DECIMALS: Int = 2;
-
-const BRK_DEPOSIT_DEPOSIT: Int = ton("6.00");
-const BRK_WITHDRAW_DEPOSIT: Int = ton("4.00");
-
-const NOTIFICATION_PREMIUM: Int = ton("1.00");
-const NOTIFICATION_DEPOSIT: Int = ton("1.00");
-
-const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("5.00");
-const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
-
-const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("900.00");
-const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("50.00");
+// BEGIN Errors
 
 const ERR_ACCESS_DENIED: Int = 400;
 const ERR_INSUFFICIENT_DEPOSIT: Int = 401;
@@ -35,23 +9,67 @@ const ERR_STREAM_NOT_SUBSCRIBED: Int = 405;
 const ERR_STREAM_SUBSCRIBED: Int = 406;
 const ERR_BATCH_NOT_FOUND: Int = 407;
 
+// END Errors
+
+
+// BEGIN Data Stream
+
+const DST_STORAGE_RESERVE: Int = ton("1.00");
+
+const BATCH_LIMIT: Int = 10;
+const SUBSCRIPTION_LIMIT: Int = 100;
+const DECIMALS: Int = 2;
+
+const NOTIFICATION_PREMIUM: Int = ton("1.00");
+const NOTIFICATION_DEPOSIT: Int = ton("1.00");
+
+const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("5.00");
+const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("5.00");
+const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("900.00");
+const DST_SUBSCRIBE_DEPOSIT: Int = ton("20.00");
+
 // END Data Stream
+
 
 // BEGIN Subsription Batch
 
-const BS_STORAGE_RESERVE: Int = ton("1.00");
+const SB_STORAGE_RESERVE: Int = ton("1.00");
+const SB_SUBSCRIBE_DEPOSIT: Int = ton("10.00");
+const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("50.00");
+const SB_UNSUBSCRIBE_DEPOSIT: Int = ton("20.00");
 
 // END Subscription Batch
+
 
 // BEGIN Session
 
 const SES_STORAGE_RESERVE: Int = ton("1.00");
-
-const  SB_SUBSCRIBE_DEPOSIT: Int = 10 * 1_000_000_000;
-const DST_SUBSCRIBE_DEPOSIT: Int = 20 * 1_000_000_000;
-const SES_SUBSCRIBE_DEPOSIT: Int = 30 * 1_000_000_000;
-
-const SES_UNSUBSCRIBE_DEPOSIT: Int = 10 * 1_000_000_000;
-const  SB_UNSUBSCRIBE_DEPOSIT: Int = 20 * 1_000_000_000;
+const SES_SUBSCRIBE_DEPOSIT: Int = ton("30.00");
+const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("10.00");
 
 // END Session
+
+
+// BEGIN Brokerage
+
+const BRG_STORAGE_RESERVE: Int = ton("13.00");
+const BRG_DEPLOY_BROKER_DEPOSIT: Int = ton("20");
+const BRG_DEPLOY_ACCOUNT_DEPOSIT: Int = ton("30");
+
+// END Brokerage
+
+
+// BEGIN Broker
+
+const BRK_STORAGE_RESERVE: Int = ton("14.00");
+const BRK_DEPOSIT_DEPOSIT: Int = ton("6.00");
+const BRK_WITHDRAW_DEPOSIT: Int = ton("4.00");
+
+// END Broker
+
+
+// BEGIN Brokerage Account
+
+const BRA_STORAGE_RESERVE: Int = ton("15.00");
+
+// END Brokerage Account
