@@ -24,8 +24,8 @@ contract Session {
     return SES_STORAGE_RESERVE;
   }
 
-  get fun subscribeDeposit(notificationsCount: Int): Int {
-    return SES_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT) * notificationsCount + (NOTIFICATION_PREMIUM) * (notificationsCount - 1);
+  get fun subscribeDeposit(): Int {
+    return SES_SUBSCRIBE_DEPOSIT;
   }
 
   get fun unsubscribeDeposit(): Int {
@@ -63,13 +63,16 @@ contract Session {
 
     if (self.batch == null) {
       nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+      nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT) * request.notificationsCount + (NOTIFICATION_PREMIUM) * (request.notificationsCount - 1));
+    
+      self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, notificationsCount: request.notificationsCount }).toCell(), true, null);
+    
     } else {
       nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+      nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT) * request.notificationsCount + (NOTIFICATION_PREMIUM) * request.notificationsCount);
+    
+      self.forward(self.stream, (DSTTopUpSubscription { queryId: request.queryId, subscriber: self.subscriber, batch: self.batch!!, notificationsCount: request.notificationsCount }).toCell(), true, null);
     }
-
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT) * request.notificationsCount + (NOTIFICATION_PREMIUM) * (request.notificationsCount - 1));
-
-    self.forward(self.stream, (DSTSubscribe { queryId: request.queryId, subscriber: self.subscriber, notificationsCount: request.notificationsCount, batch: self.batch }).toCell(), true, null);
   }
 
   // TODO: bounced(request: SESSubscribe);

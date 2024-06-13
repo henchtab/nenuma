@@ -9,15 +9,12 @@ struct SubscriptionInfo {
 }
 
 contract SubscriptionBatch {
-  storageReserve: Int;
-
   stream: Address;
   batchId: Int;
   subscriptions: map<Address, SubscriptionInfo>;
   subscriptionsCount: Int;
 
   init(stream: Address, batchId: Int) {
-    self.storageReserve = SB_STORAGE_RESERVE;
     self.stream = stream;
     self.batchId = batchId;
     self.subscriptionsCount = 0;
@@ -29,18 +26,6 @@ contract SubscriptionBatch {
 
   get fun storageReserve(): Int {
     return SB_STORAGE_RESERVE;
-  }
-
-  get fun subscribeDeposit(notificationsCount: Int): Int {
-    return SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * notificationsCount;
-  }
-
-  get fun publishCandlestickDeposit(): Int {
-    return SB_PUBLISH_CANDLESTICK_DEPOSIT;
-  }
-
-  get fun unsubscribeDeposit(): Int {
-    return SB_UNSUBSCRIBE_DEPOSIT;
   }
 
   get fun streamAddress(): Address {
@@ -62,82 +47,87 @@ contract SubscriptionBatch {
   receive(request: SBDeploy) {
     let ctx: Context = context();
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
+    nativeReserve(SB_STORAGE_RESERVE, ReserveExact | ReserveAddOriginalBalance);
 
-    self.notify(SBDeploySuccess { queryId: request.queryId, batchId: self.batchId }.toCell());
+    send(SendParameters {
+      to: ctx.sender,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: SBDeploySuccess { queryId: request.queryId, batchId: self.batchId }.toCell(),
+    });
   }
 
   receive(request: SBSubscribe) {
     let ctx: Context = context();
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
-    nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, self.subscriptionsCount <= SUBSCRIPTION_LIMIT);
+
+    dump("KAKA");
+    dump(self.subscriptionsCount);
+
+    nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, self.subscriptionsCount < SUBSCRIPTION_LIMIT);
+    self.subscriptionsCount += 1;
+
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+    
+    nativeReserve(NOTIFICATION_DEPOSIT * request.notificationsCount, ReserveExact | ReserveAddOriginalBalance);
 
     let session: Address = request.session;
     let info: SubscriptionInfo? = self.subscriptions.get(session);
 
-    if (info == null) {
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
-    } else {
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
-    }
-
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
-
-    self.storageReserve += NOTIFICATION_DEPOSIT * request.notificationsCount;
+    // TODO: ERR_INVALID_ARGUMENT --> ERR_SESSION_ALREADY_EXISTS;
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, info == null);
 
     let remainingNotificationsCount: Int = request.notificationsCount;
-
-    if (info != null) {
-      remainingNotificationsCount += info!!.remainingNotificationsCount;
-    }
     
-    self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount }); 
+    self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount });
 
-    if (info == null) {
-      self.subscriptionsCount += 1;
-    }
-
-    self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount }).toCell());
+    send(SendParameters {
+      to: ctx.sender,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount }).toCell(),
+    });
   }
 
-  //   // let remainingNotificationsCount: Int = request.notificationsCount;
+  receive(request: SBTopUpSubscription) {
+    let ctx: Context = context();
 
-  //   if (info == null) {
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
 
-  //     nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
-  //     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
-
-  //     self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
-  //     self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: request.notificationsCount });      
-      
-  //     self.subscriptionsCount += 1;
-
-  //     self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: request.notificationsCount }).toCell());
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
     
-  //   } else {
+    nativeReserve(NOTIFICATION_DEPOSIT * request.notificationsCount, ReserveExact | ReserveAddOriginalBalance);
 
-  //     nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
-  //     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_SUBSCRIBE_DEPOSIT + NOTIFICATION_DEPOSIT * request.notificationsCount);
+    let session: Address = request.session;
+    let info: SubscriptionInfo? = self.subscriptions.get(session);
 
-  //     self.storageReserve += (request.notificationsCount) * NOTIFICATION_DEPOSIT;
-  //     self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) });
+    // TODO: ERR_INVALID_ARGUMENT --> ERR_SESSION_NOT_FOUND;
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, info != null);
 
-  //     self.notify((SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount: (info!!.remainingNotificationsCount + request.notificationsCount) }).toCell());    
+    let remainingNotificationsCount: Int = info!!.remainingNotificationsCount + request.notificationsCount;
     
-  //   }
-  // }
+    self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount });
+
+    send(SendParameters {
+      to: ctx.sender,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (SBSubscribeSuccess { queryId: request.queryId, session, remainingNotificationsCount }).toCell(),
+    });
+  }
 
   receive(request: SBPublishCandlestick) {
     let ctx: Context = context();
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_PUBLISH_CANDLESTICK_DEPOSIT);
+    // nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_PUBLISH_CANDLESTICK_DEPOSIT);
 
     let subscriptions: map<Address, SubscriptionInfo> = self.subscriptions;
+    let notificationsCount: Int = 0;
 
     foreach (session, info in subscriptions) {
-      self.storageReserve -= NOTIFICATION_DEPOSIT;
+      notificationsCount += 1;
 
       send(SendParameters { 
         to: session, 
@@ -146,8 +136,10 @@ contract SubscriptionBatch {
         body: (SBCandlestickPublishedNotification { queryId: request.queryId, candlestick: request.candlestick, remainingNotificationsCount: (info.remainingNotificationsCount - 1) }).toCell(),
       });
 
+      self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info.remainingNotificationsCount - 1) });
+
       if (info.remainingNotificationsCount == 2) {
-        self.storageReserve -= NOTIFICATION_DEPOSIT;
+        notificationsCount += 1;
 
         send(SendParameters { 
           to: self.stream, 
@@ -155,16 +147,20 @@ contract SubscriptionBatch {
           mode: SendIgnoreErrors, 
           body: (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: 0 }).toCell(),
         });
-      } 
-      
-      if (info.remainingNotificationsCount == 2) {
+
         self.subscriptions.set(session, null);
-      } else {
-        self.subscriptions.set(session, SubscriptionInfo { remainingNotificationsCount: (info.remainingNotificationsCount - 1) });
+        self.subscriptionsCount -= 1;
       }
     }
 
-    self.forward(request.publisher, (SBPublishCandlestickSuccess { queryId: request.queryId }).toCell(), false, null);
+    nativeReserve(NOTIFICATION_DEPOSIT * notificationsCount, ReserveExact | ReserveInvertSign | ReserveAddOriginalBalance);
+
+    send(SendParameters {
+      to: request.publisher,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (SBPublishCandlestickSuccess { queryId: request.queryId }).toCell(),
+    });
   }
 
   receive(request: SBUnsubscribe) {
@@ -174,19 +170,16 @@ contract SubscriptionBatch {
     let info: SubscriptionInfo? = self.subscriptions.get(session);
 
     nativeThrowUnless(ERR_ACCESS_DENIED, info != null);
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_UNSUBSCRIBE_DEPOSIT);
 
+    self.subscriptionsCount -= 1;
     self.subscriptions.set(session, null);
-    self.subscriptionsCount -= info!!.remainingNotificationsCount;
 
-    let remainingDeposit: Int = NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount;
-
-    self.storageReserve -= remainingDeposit;
+    nativeReserve(NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount, ReserveExact | ReserveInvertSign | ReserveAddOriginalBalance);
 
     send(SendParameters { 
       to: self.stream, 
-      value: remainingDeposit, 
-      mode: SendRemainingValue, 
+      value: NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount, 
+      mode: SendRemainingBalance, 
       body: (SBUnsubscribedNotification { queryId: request.queryId, session, remainingNotificationsCount: info!!.remainingNotificationsCount }).toCell(),
     });
   }

@@ -30,7 +30,6 @@ message DSTSubscribe {
   queryId: Int;
   subscriber: Address;
   notificationsCount: Int;
-  batch: Address?;
 }
 
 message DSTSubscribeSuccess {
@@ -126,6 +125,19 @@ message SESDeploySuccess {
 
 message SESSubscribe {
   queryId: Int;
+  notificationsCount: Int;
+}
+
+message DSTTopUpSubscription {
+  queryId: Int;
+  subscriber: Address;
+  batch: Address;
+  notificationsCount: Int;
+}
+
+message SBTopUpSubscription {
+  queryId: Int;
+  session: Address;
   notificationsCount: Int;
 }
 

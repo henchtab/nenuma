@@ -55,9 +55,6 @@ contract DataStream {
     return NOTIFICATION_PREMIUM;
   }
 
-  get fun subscribeDeposit(notificationsCount: Int): Int {
-    return DST_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT) * notificationsCount + (NOTIFICATION_PREMIUM) * (notificationsCount - 1);
-  }
 
   // END DEPOSITS
 
@@ -161,46 +158,49 @@ contract DataStream {
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
 
-    if (request.batch == null) {
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
-    } else {
-      nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
-    }
-
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT + (NOTIFICATION_DEPOSIT) * request.notificationsCount + (NOTIFICATION_PREMIUM) * (request.notificationsCount - 1));
-    
-    if (request.batch == null) {
-      self.storageReserve += NOTIFICATION_PREMIUM * (request.notificationsCount - 1);
-    } else {
-      self.storageReserve += NOTIFICATION_PREMIUM * request.notificationsCount;
-    }
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 2);
+    nativeReserve((NOTIFICATION_PREMIUM) * (request.notificationsCount - 1), ReserveExact | ReserveAddOriginalBalance);
 
     let batch: Address? = null;
+    let batches: map<Address, SBInfo> = self.batches;
 
-    if (request.batch == null) {
-      let batches: map<Address, SBInfo> = self.batches;
-
-      foreach (address, info in batches) {
-        if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
-          batch = address;
-        }
+    foreach (address, info in batches) {
+      if (info.subscriptionsCount < SUBSCRIPTION_LIMIT) {
+        batch = address;
       }
-
-      nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
-    } else {
-      batch = request.batch;      
     }
 
+    nativeThrowUnless(ERR_SUBSCRIPTION_LIMIT_EXCEEDED, batch != null);
     let info: SBInfo? = self.batches.get(batch!!);
 
-    nativeThrowUnless(ERR_BATCH_NOT_FOUND, info != null);
+    self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
 
-    if (request.batch == null) {
-      self.batches.set(batch!!, SBInfo { subscriptionsCount: (info!!.subscriptionsCount + 1) });
-    }
-
-    self.forward(batch!!, (SBSubscribe { queryId: (request.queryId), session: session, notificationsCount: (request.notificationsCount) }).toCell(), true, null);
+    send(SendParameters {
+      to: batch!!,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (SBSubscribe { queryId: (request.queryId), session: session, notificationsCount: (request.notificationsCount) }).toCell(),
+    });
   } 
+
+  receive(request: DSTTopUpSubscription) {
+    let ctx: Context = context();
+
+    let sessionStateInit: StateInit = initOf Session(myAddress(), request.subscriber);
+    let session: Address = contractAddress(sessionStateInit);
+
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == session);
+
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.notificationsCount >= 1);
+    nativeReserve((NOTIFICATION_PREMIUM) * request.notificationsCount, ReserveExact | ReserveAddOriginalBalance);
+
+    send(SendParameters {
+      to: request.batch,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (SBTopUpSubscription { queryId: (request.queryId), session: session, notificationsCount: request.notificationsCount }).toCell(),
+    });
+  }
 
     // // The session already has an appointed batch, then there is no need to allocate a new one, when subscribing for additional messages.
     // if (request.batch != null) {
