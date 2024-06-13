@@ -23,6 +23,10 @@ contract Broker {
     return BRK_STORAGE_RESERVE;
   }
 
+  get fun depositDeposit(): Int {
+    return BRK_DEPOSIT_DEPOSIT;
+  }
+
   get fun brokerage(): Address {
     return self.brokerage;
   }
