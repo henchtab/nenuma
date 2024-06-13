@@ -83,7 +83,7 @@ export class ShrekLogger {
       : "The swamp keeps its secrets...";
 
     const valuesOut = tx.outMessages.values().length == 0
-      ? ("0")
+      ? ("No coins!")
       : (tx.outMessages.values()
         .filter((message) => message.info.type === "internal")
         // @ts-ignore
