@@ -73,8 +73,14 @@ contract Broker {
     let owner: Address = ctx.sender;
 
     self.storageReserve = BRK_STORAGE_RESERVE;
+    nativeReserve(BRK_STORAGE_RESERVE, ReserveExact);
 
-    self.forward(owner, (BRKWithdrawSuccess { queryId: request.queryId }).toCell(), true, null);
+    send(SendParameters {
+      to: owner,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (BRKWithdrawSuccess { queryId: request.queryId }).toCell(),
+    });
   }
 }
 
