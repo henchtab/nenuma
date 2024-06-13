@@ -17,7 +17,7 @@ contract SubscriptionBatch {
   subscriptionsCount: Int;
 
   init(stream: Address, batchId: Int) {
-    self.storageReserve = BS_STORAGE_RESERVE;
+    self.storageReserve = SB_STORAGE_RESERVE;
     self.stream = stream;
     self.batchId = batchId;
     self.subscriptionsCount = 0;
@@ -165,8 +165,10 @@ contract SubscriptionBatch {
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SB_UNSUBSCRIBE_DEPOSIT);
 
     self.subscriptions.set(session, null);
+    self.subscriptionsCount -= info!!.remainingNotificationsCount;
 
     let remainingDeposit: Int = NOTIFICATION_DEPOSIT * info!!.remainingNotificationsCount;
+
     self.storageReserve -= remainingDeposit;
 
     send(SendParameters { 

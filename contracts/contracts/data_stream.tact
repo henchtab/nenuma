@@ -51,10 +51,6 @@ contract DataStream {
     return self.nextBatchId;
   }
 
-  get fun DECIMALS(): Int {
-    return DECIMALS;
-  }
-
   get fun batchAddress(batchId: Int): Address {
     let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), batchId);
     let batch: Address = contractAddress(batchStateInit);
@@ -229,23 +225,27 @@ contract DataStream {
     let subscriptionsCount: Int = 0;
 
     foreach (address, info in batches) {
-      send(SendParameters { 
-        to: address, 
-        value: SB_PUBLISH_CANDLESTICK_DEPOSIT,
-        mode: SendPayGasSeparately,
-        body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: self.publisher }).toCell()
-      });
+      if (info.subscriptionsCount > 0) {
+        send(SendParameters { 
+          to: address, 
+          value: SB_PUBLISH_CANDLESTICK_DEPOSIT,
+          mode: SendPayGasSeparately,
+          body: (SBPublishCandlestick { queryId: request.queryId, candlestick: request.candlestick, publisher: self.publisher }).toCell()
+        });
 
-      subscriptionsCount += info.subscriptionsCount;
+        subscriptionsCount += info.subscriptionsCount;
+      }
     }
 
-    self.storageReserve -= NOTIFICATION_PREMIUM * subscriptionsCount;
+    let premium: Int = NOTIFICATION_PREMIUM * subscriptionsCount;
 
-    nativeReserve(myBalance() - ctx.value - NOTIFICATION_PREMIUM * subscriptionsCount, ReserveExact);
+    self.storageReserve -= premium;
+
+    nativeReserve(myBalance() - ctx.value - premium, ReserveExact);
 
     send(SendParameters {
       to: self.publisher,
-      value: NOTIFICATION_PREMIUM * subscriptionsCount,
+      value: premium,
       mode: SendRemainingBalance,
       body: (DSTPublishCandlestickSuccess { queryId: request.queryId }).toCell(),
     });
