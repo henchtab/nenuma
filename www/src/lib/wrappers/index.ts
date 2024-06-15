@@ -804,7 +804,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         );
       };
 
-      const withdraw = async (args: { queryId: bigint; amount: bigint }) => {
+      const withdraw = async (args: { queryId: bigint; }) => {
         const owner = $tonConnectUI.account?.address;
 
         if (!owner) {
