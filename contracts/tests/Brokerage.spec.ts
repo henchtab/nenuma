@@ -1,12 +1,12 @@
-import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
-import { Builder, toNano } from '@ton/core';
-import { Brokerage, storeBRGDeploySuccess } from '../wrappers/Brokerage';
-import '@ton/test-utils';
-import { ShrekLogger, formatCoins } from './utils';
-import { DataStream } from '../wrappers/DataStream';
-import { Broker } from '../wrappers/Broker';
+import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
+import { Builder, toNano } from "@ton/core";
+import { Brokerage, storeBRGDeploySuccess } from "../wrappers/Brokerage";
+import "@ton/test-utils";
+import { formatCoins, ShrekLogger } from "./utils";
+import { DataStream } from "../wrappers/DataStream";
+import { Broker } from "../wrappers/Broker";
 
-describe('Brokerage', () => {
+describe("Brokerage", () => {
   const DST_DEPLOY_DEPOSIT = toNano(0.06);
 
   let blockchain: Blockchain;
@@ -25,20 +25,22 @@ describe('Brokerage', () => {
     blockchain = await Blockchain.create();
     logger = new ShrekLogger();
 
-    owner = await blockchain.treasury('owner');
-    logger.addContract(owner, 'Owner');
+    owner = await blockchain.treasury("owner");
+    logger.addContract(owner, "Owner");
 
-    publisher = await blockchain.treasury('publisher');
-    logger.addContract(publisher, 'Publisher');
+    publisher = await blockchain.treasury("publisher");
+    logger.addContract(publisher, "Publisher");
 
-    alice = await blockchain.treasury('alice');
-    logger.addContract(alice, 'Alice');
+    alice = await blockchain.treasury("alice");
+    logger.addContract(alice, "Alice");
 
-    bob = await blockchain.treasury('bob');
-    logger.addContract(bob, 'Bob');
+    bob = await blockchain.treasury("bob");
+    logger.addContract(bob, "Bob");
 
-    stream = blockchain.openContract(await DataStream.fromInit(publisher.address, 'candlestick.1.BTCUSDT'));
-    logger.addContract(stream, 'Data Stream');
+    stream = blockchain.openContract(
+      await DataStream.fromInit(publisher.address, "candlestick.1.BTCUSDT"),
+    );
+    logger.addContract(stream, "Data Stream");
 
     const DSTDeployResult = await stream.send(
       publisher.getSender(),
@@ -46,7 +48,7 @@ describe('Brokerage', () => {
         value: DST_DEPLOY_DEPOSIT,
       },
       {
-        $$type: 'DSTDeploy',
+        $$type: "DSTDeploy",
         queryId: 0n,
       },
     );
@@ -63,17 +65,19 @@ describe('Brokerage', () => {
     expect(await stream.getBalance()).toBe(await stream.getStorageReserve());
   });
 
-  it('(1) Should deploy a brokerage', async () => {
-    brokerage = blockchain.openContract(await Brokerage.fromInit(owner.address));
-    logger.addContract(brokerage, 'Brokerage'); // Step 3
+  it("(1) Should deploy a brokerage", async () => {
+    brokerage = blockchain.openContract(
+      await Brokerage.fromInit(owner.address),
+    );
+    logger.addContract(brokerage, "Brokerage"); // Step 3
 
     const BRGDeploy = await brokerage.send(
       owner.getSender(),
       {
-        value: toNano('70.00'),
+        value: toNano("70.00"),
       },
       {
-        $$type: 'BRGDeploy',
+        $$type: "BRGDeploy",
         queryId: 0n,
       },
     );
@@ -88,19 +92,19 @@ describe('Brokerage', () => {
     });
   });
 
-  it('(2) Should deploy a broker', async () => {
+  it("(2) Should deploy a broker", async () => {
     const BRGDeployBroker = await brokerage.send(
       owner.getSender(),
       {
-        value: toNano('100.00'),
+        value: toNano("100.00"),
       },
       {
-        $$type: 'BRGDeployBroker',
+        $$type: "BRGDeployBroker",
         queryId: 0n,
         stream: stream.address,
       },
     );
-    logger.logTransactions(BRGDeployBroker.transactions, 'Broker Deploy');
+    logger.logTransactions(BRGDeployBroker.transactions, "Broker Deploy");
 
     expect(BRGDeployBroker.transactions).toHaveTransaction({
       from: brokerage.address,
@@ -110,24 +114,24 @@ describe('Brokerage', () => {
     });
   });
 
-  it('(3) Should fund broker', async () => {
+  it("(3) Should deposit 100 Toncoins to the broker; should withdraw all Toncoins from the broker; should deposit 100 Toncoins to the broker again", async () => {
     const brokerAddress = await brokerage.getBroker(stream.address);
     const broker = blockchain.openContract(Broker.fromAddress(brokerAddress));
-    logger.addContract(broker, 'Broker');
+    logger.addContract(broker, "Broker");
 
     expect(await broker.getBalance()).toBe(await broker.getStorageReserve());
 
     const BRKDeposit = await broker.send(
       owner.getSender(),
       {
-        value: toNano('100.00'),
+        value: toNano("100.00"),
       },
       {
-        $$type: 'BRKDeposit',
+        $$type: "BRKDeposit",
         queryId: 0n,
       },
     );
-    logger.logTransactions(BRKDeposit.transactions, 'Broker Deposit');
+    logger.logTransactions(BRKDeposit.transactions, "Broker Deposit");
 
     expect(BRKDeposit.transactions).toHaveTransaction({
       from: owner.address,
@@ -137,20 +141,21 @@ describe('Brokerage', () => {
     });
 
     expect(await broker.getBalance()).toBeLessThanOrEqual(
-      (await broker.getStorageReserve()) + toNano('100.00') - (await broker.getDepositDeposit()),
+      (await broker.getStorageReserve()) + toNano("100.00") -
+        (await broker.getDepositDeposit()),
     );
 
     const BRKWithdraw = await broker.send(
       owner.getSender(),
       {
-        value: toNano('100.00'),
+        value: toNano("50.00"),
       },
       {
-        $$type: 'BRKWithdraw',
+        $$type: "BRKWithdraw",
         queryId: 1n,
       },
     );
-    logger.logTransactions(BRKWithdraw.transactions, 'Broker Withdraw');
+    logger.logTransactions(BRKWithdraw.transactions, "Broker Withdraw");
 
     expect(BRKWithdraw.transactions).toHaveTransaction({
       from: owner.address,
@@ -164,14 +169,14 @@ describe('Brokerage', () => {
     const BRKDeposit2 = await broker.send(
       owner.getSender(),
       {
-        value: toNano('100.00'),
+        value: toNano("100.00"),
       },
       {
-        $$type: 'BRKDeposit',
+        $$type: "BRKDeposit",
         queryId: 2n,
       },
     );
-    logger.logTransactions(BRKDeposit2.transactions, 'Broker Deposit 2');
+    logger.logTransactions(BRKDeposit2.transactions, "Broker Deposit 2");
 
     expect(BRKDeposit2.transactions).toHaveTransaction({
       from: owner.address,
@@ -181,25 +186,28 @@ describe('Brokerage', () => {
     });
 
     expect(await broker.getBalance()).toBeLessThanOrEqual(
-      (await broker.getStorageReserve()) + toNano('100.00') - (await broker.getDepositDeposit()),
+      (await broker.getStorageReserve()) + toNano("100.00") -
+        (await broker.getDepositDeposit()),
     );
   });
 
-  it('(4) Should deploy a brokerage account', async () => {
+  it("(4) Should deploy a brokerage account", async () => {
     const BRGDeployAccount = await brokerage.send(
       alice.getSender(),
       {
-        value: toNano('100.00'),
+        value: toNano("100.00"),
       },
       {
-        $$type: 'BRGDeployAccount',
+        $$type: "BRGDeployAccount",
         queryId: 0n,
       },
     );
 
     const accountAddress = await brokerage.getAccount(alice.address);
-    const brokerageAccount = blockchain.openContract(Brokerage.fromAddress(accountAddress));
-    logger.addContract(brokerageAccount, 'Brokerage Account');
+    const brokerageAccount = blockchain.openContract(
+      Brokerage.fromAddress(accountAddress),
+    );
+    logger.addContract(brokerageAccount, "Brokerage Account");
 
     expect(BRGDeployAccount.transactions).toHaveTransaction({
       from: brokerage.address,
@@ -208,6 +216,6 @@ describe('Brokerage', () => {
       exitCode: 0,
     });
 
-    logger.logTransactions(BRGDeployAccount.transactions, 'Account Deploy');
+    logger.logTransactions(BRGDeployAccount.transactions, "Account Deploy");
   });
 });
