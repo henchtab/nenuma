@@ -10,9 +10,8 @@ export const tonConnectUI = readable<TonConnectUI>(undefined, (set) => {
   }
 
   const sdk = new TonConnectUI({
-    // TODO: Change the manifest URL to your own
     manifestUrl:
-      'https://raw.githubusercontent.com/ton-connect/demo-telegram-bot/master/tonconnect-manifest.json',
+      'https://nenuma.telegram-mini-apps.manuvantara.com/tonconnect-manifest.json',
     widgetRootId: 'ton-connect'
   });
 
