@@ -102,5 +102,3 @@ Join our [Telegram channel](https://t.me/NenumaCommunity) for updates and suppor
 - [Nenuma Interface](https://github.com/dreamqip/nenuma-interface)
 - [Nenuma Documentation](https://nenuma.telegram-mini-apps.manuvantara.com/docs)
 ```
-
-Feel free to customize this README to better fit your project's specifics and any additional information you'd like to include.
