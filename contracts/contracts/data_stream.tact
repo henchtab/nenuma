@@ -108,7 +108,9 @@ contract DataStream {
     self.forward(batch, (SBDeploy { queryId: request.queryId }).toCell(), true, batchStateInit);
   }
 
-  // TODO: bounced(deploy: SBDeploy);
+  bounced(deploy: SBDeploy) {
+    self.forward(self.publisher, "SBDeployError".asComment(), false, null);
+  }
 
   receive(response: SBDeploySuccess) {
     let ctx: Context = context();
@@ -127,7 +129,7 @@ contract DataStream {
   receive(request: DSTDeploySession) {
     let ctx: Context = context();
 
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_BATCH_DEPOSIT);
+    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_SESSION_DEPOSIT);
 
     let sessionStateInit: StateInit = initOf Session(myAddress(), ctx.sender);
     let session: Address = contractAddress(sessionStateInit);
