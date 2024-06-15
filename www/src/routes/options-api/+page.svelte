@@ -3,10 +3,16 @@
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { createBrokerage } from '$lib/wrappers';
+  import { createBrokerage, useBroker, useBrokerageAccount } from '$lib/wrappers';
   import { Address, fromNano } from '@ton/ton';
+  import { writable } from 'svelte/store';
 
   const brokerage = createBrokerage();
+
+  const streamAddress = writable('');
+  const broker = useBroker(streamAddress);
+
+  const brokerageAccount = useBrokerageAccount();
 
   const output = $state<
     Record<
@@ -17,7 +23,9 @@
       }[]
     >
   >({
-    brokerage: []
+    brokerage: [],
+    broker: [],
+    account: []
   });
 
   async function handleDeploySubmit(
@@ -99,6 +107,37 @@
       message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
     });
   };
+
+  async function handleDepositSubmit(
+    e: SubmitEvent & {
+      currentTarget: EventTarget & HTMLFormElement;
+    }
+  ) {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const args = {
+      deposit: BigInt(formData.get('deposit') as string),
+      queryId: BigInt(formData.get('queryId') as string)
+    };
+
+    await $broker.deposit(args);
+  }
+
+  async function handleWithdrawSubmit(
+    e: SubmitEvent & {
+      currentTarget: EventTarget & HTMLFormElement;
+    }
+  ) {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const args = {
+      queryId: BigInt(formData.get('queryId') as string)
+    };
+
+    await $broker.withdraw(args);
+  }
 </script>
 
 <div class="container py-8">
@@ -109,9 +148,12 @@
   <div class="pb-12 mt-12 border-b">
     <h3 class="text-ds-gray-1000 font-medium text-3xl mb-4">Brokerage</h3>
     <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
-      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eveniet similique necessitatibus
-      neque in mollitia, placeat porro voluptatibus illum deserunt nihil fugit obcaecati optio vero,
-      consectetur tempora autem temporibus fugiat rem.
+      Setup: Initializes with an owner and a storage reserve. Brokers and Accounts: Can deploy new
+      brokers and brokerage accounts, each associated with specific addresses. Deposits: Ensures
+      adequate deposits for various actions. Notifications: Sends confirmations and success messages
+      back to the owner or relevant parties. The contract includes functions to get storage reserve,
+      owner, and addresses for brokers and accounts, and manages deployment and communication
+      between entities.
     </p>
     <div class="flex gap-4 items-end overflow-x-auto">
       <form class="flex flex-col gap-4 min-w-max" onsubmit={handleDeploySubmit}>
@@ -227,6 +269,103 @@
       </ul>
 
       <Button class="mt-4" variant="destructive" onclick={() => (output.brokerage = [])}
+        >Clear Output</Button
+      >
+    </div>
+  </div>
+
+  <div class="pb-12 mt-12 border-b">
+    <h3 class="text-ds-gray-1000 font-medium text-3xl mb-4">Broker</h3>
+    <Label class="grid gap-2">
+      Stream Address
+      <Input
+        type="text"
+        placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
+        class="w-fit"
+        bind:value={$streamAddress}
+      />
+    </Label>
+    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
+      This contract ensures secure interactions with the brokerage account by enforcing strict
+      access controls and deposit/withdrawal requirements, along with notifying the relevant parties
+      upon successful transactions.
+    </p>
+    <div class="flex gap-4 items-end overflow-x-auto">
+      <form class="flex flex-col gap-4 w-max" onsubmit={handleDepositSubmit}>
+        <Label class="flex flex-col gap-2"
+          >Deposit
+          <Input type="number" name="deposit" placeholder="100" required min="0" />
+        </Label>
+        <Label class="flex flex-col gap-2"
+          >Query ID
+          <Input type="number" name="queryId" placeholder="777" required min="0" />
+        </Label>
+        <Button class="bg-ds-pink-800 text-white hover:bg-ds-pink-700" type="submit">Deposit</Button
+        >
+      </form>
+
+      <form class="flex flex-col gap-4 w-max" onsubmit={handleWithdrawSubmit}>
+        <Label class="flex flex-col gap-2"
+          >Query ID
+          <Input type="number" name="queryId" placeholder="777" required min="0" />
+        </Label>
+        <Button class="bg-ds-pink-800 text-white hover:bg-ds-pink-700" type="submit"
+          >Withdraw</Button
+        >
+      </form>
+
+      <Button
+        class="bg-ds-pink-800 text-white hover:bg-ds-pink-700"
+        onclick={async () => {
+          const result = await $broker.getBalance();
+          output.broker.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          });
+        }}>Get Balance</Button
+      >
+
+      <Button
+        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+        onclick={async () => {
+          const result = await $broker.getBrokerage();
+          output.broker.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          });
+        }}>Get Brokerage</Button
+      >
+
+      <Button
+        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+        onclick={async () => {
+          const result = await $broker.getStream();
+          output.broker.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          });
+        }}>Get Stream</Button
+      >
+    </div>
+    <div>
+      <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
+      <ul
+        class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
+      >
+        {#if output.broker.length === 0}
+          <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
+        {:else}
+          {#each output.broker as line (line.date)}
+            <li class="inline-flex h-8 gap-3 w-full items-center">
+              <span class="text-ds-green-900">{line.date}:</span>
+              <div class="h-5 w-[1px] bg-ds-green-400"></div>
+              <span class="text-ds-green-900">{line.message}</span>
+            </li>
+          {/each}
+        {/if}
+      </ul>
+
+      <Button class="mt-4" variant="destructive" onclick={() => (output.broker = [])}
         >Clear Output</Button
       >
     </div>

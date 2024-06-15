@@ -207,10 +207,20 @@
         bind:value={$streamAddress}
       />
     </Label>
-    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
-      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eveniet similique necessitatibus
-      neque in mollitia, placeat porro voluptatibus illum deserunt nihil fugit obcaecati optio vero,
-      consectetur tempora autem temporibus fugiat rem.
+    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[768px]">
+      The Data Stream smart contract makes it easy to securely stream data and manage subscriptions
+      on the blockchain. Publishers can deploy data batches, handle sessions, and manage
+      subscriptions effortlessly. It ensures safe handling of deposits and notifications, offering a
+      solid framework for real-time data interaction. Key features include verifying publishers,
+      creating batches, deploying sessions, and automating notifications.
+      <br />
+      <br />
+      For more details, check out the
+      <a
+        class="underline"
+        href="https://github.com/dreamqip/nenuma/blob/main/contracts/contracts/data_stream.tact"
+        target="_blank">contract code</a
+      > and its features here.
     </p>
     <div class="flex gap-4 items-end overflow-x-auto">
       <form class="flex flex-col gap-4 min-w-max" onsubmit={handleDeploySubmit}>
@@ -402,10 +412,18 @@
       Batch ID
       <Input type="number" placeholder="0" required min="0" class="w-fit" bind:value={$batchId} />
     </Label>
-    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
-      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eveniet similique necessitatibus
-      neque in mollitia, placeat porro voluptatibus illum deserunt nihil fugit obcaecati optio vero,
-      consectetur tempora autem temporibus fugiat rem.
+    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[768px]">
+      Subscription Batch is a smart contract that handles subscription management for data streams
+      on the blockchain. It lets publishers manage multiple subscriptions, track remaining
+      notifications, and handle deposits. Key features include adding new subscriptions, topping up
+      existing ones, and publishing data (like candlesticks). It also ensures that subscribers
+      receive timely notifications and that publishers cover costs efficiently. <br /> <br /> For
+      more details, you can explore the
+      <a
+        class="underline"
+        href="https://github.com/dreamqip/nenuma/blob/main/contracts/contracts/subscription_batch.tact"
+        target="_blank">contract code</a
+      > and its functionality.
     </p>
 
     <div class="flex mt-8 gap-4 items-end overflow-x-auto">
@@ -518,9 +536,17 @@
       />
     </Label>
     <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
-      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eveniet similique necessitatibus
-      neque in mollitia, placeat porro voluptatibus illum deserunt nihil fugit obcaecati optio vero,
-      consectetur tempora autem temporibus fugiat rem.
+      The Session contract handles individual subscriptions in a data stream system on the
+      blockchain. It manages subscriber info, deposits, and notifications. Key features include:
+      Deploying sessions Managing subscriptions (starting, topping up, unsubscribing) Forwarding
+      data notifications (like candlesticks) Handling deposits for various actions This contract
+      ensures subscribers get the data they signed up for and manages the lifecycle of a
+      subscription efficiently. <br /> <br /> For more details, you can explore the
+      <a
+        class="underline"
+        href="https://github.com/dreamqip/nenuma/blob/main/contracts/contracts/session.tact"
+        target="_blank">contract code</a
+      > and its functionality.
     </p>
 
     <div class="flex mt-8 gap-4 items-end overflow-x-auto">
