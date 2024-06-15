@@ -91,8 +91,6 @@ contract DataStream {
   receive(request: DSTDeploy) {
     let ctx: Context = context();
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.publisher);
-
     self.notify((DSTDeploySuccess { queryId: request.queryId }).toCell());
   }
 
@@ -269,8 +267,6 @@ contract DataStream {
 
     let premium: Int = NOTIFICATION_PREMIUM * subscriptionsCount;
 
-    self.storageReserve -= premium;
-
     nativeReserve(myBalance() - ctx.value - premium, ReserveExact);
 
     send(SendParameters {
@@ -299,8 +295,6 @@ contract DataStream {
       reimbursement = NOTIFICATION_PREMIUM * (notification.remainingNotificationsCount - 1);
     }
  
-    self.storageReserve -= reimbursement;
-
     send(SendParameters { 
       to: notification.session, 
       value: reimbursement, 

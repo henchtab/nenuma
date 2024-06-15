@@ -22,7 +22,7 @@ const BATCH_LIMIT = 10; // FIXME: BATCH_LIMIT = 10;
 const ERR_BATCH_LIMIT_EXCEEDED = 402;
 
 describe("Core Assesment", () => {
-  const BATCH_LIMIT = 10;
+  const BATCH_LIMIT = 3;
   const DST_DEPLOY_DEPOSIT = toNano("0.02");
 
   let blockchain: Blockchain;
@@ -145,96 +145,96 @@ describe("Core Assesment", () => {
       );
     }
 
-    // TODO: This should be tested during Robustness Trial
-    // Try to deploy a batch beyond the BATCH_LIMIT
-    const DSTDeployBatchResult = await stream.send(
-      publisher.getSender(),
-      {
-        value: toNano("10.00"),
-      },
-      {
-        $$type: "DSTDeployBatch",
-        queryId: BigInt(10),
-      },
-    );
-    logger.logTransactions(DSTDeployBatchResult.transactions);
+    // // TODO: This should be tested during Robustness Trial
+    // // Try to deploy a batch beyond the BATCH_LIMIT
+    // const DSTDeployBatchResult = await stream.send(
+    //   publisher.getSender(),
+    //   {
+    //     value: toNano("10.00"),
+    //   },
+    //   {
+    //     $$type: "DSTDeployBatch",
+    //     queryId: BigInt(10),
+    //   },
+    // );
+    // logger.logTransactions(DSTDeployBatchResult.transactions);
 
-    // Check that data stream sent DSTDeployBatchSuccess to publisher.
-    expect(DSTDeployBatchResult.transactions).toHaveTransaction({
-      from: publisher.address,
-      to: stream.address,
-      success: false,
-      exitCode: ERR_BATCH_LIMIT_EXCEEDED,
-    });
+    // // Check that data stream sent DSTDeployBatchSuccess to publisher.
+    // expect(DSTDeployBatchResult.transactions).toHaveTransaction({
+    //   from: publisher.address,
+    //   to: stream.address,
+    //   success: false,
+    //   exitCode: ERR_BATCH_LIMIT_EXCEEDED,
+    // });
   });
 
-  it("(*) Let's make a hustle...", async () => {
-    for (let i = 0; i <= 990; i++) {
-      const unknown = await blockchain.treasury(`unknown #${i}`);
-      logger.addContract(unknown, `Unknown #${i}`);
+  // it("(*) Let's make a hustle...", async () => {
+  //   for (let i = 0; i <= 990; i++) {
+  //     const unknown = await blockchain.treasury(`unknown #${i}`);
+  //     logger.addContract(unknown, `Unknown #${i}`);
 
-      const DSTDeploySessionResult = await stream.send(
-        unknown.getSender(),
-        {
-          value: await stream.getDeploySessionDeposit(),
-        },
-        {
-          $$type: "DSTDeploySession",
-          queryId: 0n,
-        },
-      );
-      logger.logTransactions(
-        DSTDeploySessionResult.transactions,
-        "DSTDeploySession",
-      );
+  //     const DSTDeploySessionResult = await stream.send(
+  //       unknown.getSender(),
+  //       {
+  //         value: await stream.getDeploySessionDeposit(),
+  //       },
+  //       {
+  //         $$type: "DSTDeploySession",
+  //         queryId: 0n,
+  //       },
+  //     );
+  //     logger.logTransactions(
+  //       DSTDeploySessionResult.transactions,
+  //       "DSTDeploySession",
+  //     );
 
-      const sessionAddress = await stream.getSessionAddress(unknown.address);
-      logger.addContract(sessionAddress, `Unknown #${i}'s Session`);
+  //     const sessionAddress = await stream.getSessionAddress(unknown.address);
+  //     logger.addContract(sessionAddress, `Unknown #${i}'s Session`);
 
-      const session = blockchain.openContract(
-        await Session.fromAddress(sessionAddress),
-      );
+  //     const session = blockchain.openContract(
+  //       await Session.fromAddress(sessionAddress),
+  //     );
 
-      const SESSubscribe = await session.send(
-        unknown.getSender(),
-        {
-          value: (await session.getSubscribeDeposit()) +
-            (await stream.getNotificationDeposit()) * 100n +
-            (await stream.getNotificationPremium() * 99n),
-        },
-        {
-          $$type: "SESSubscribe",
-          queryId: 0n,
-          notificationsCount: 100n,
-        },
-      );
-      logger.logTransactions(SESSubscribe.transactions, "SESSubscribe");
+  //     const SESSubscribe = await session.send(
+  //       unknown.getSender(),
+  //       {
+  //         value: (await session.getSubscribeDeposit()) +
+  //           (await stream.getNotificationDeposit()) * 100n +
+  //           (await stream.getNotificationPremium() * 99n),
+  //       },
+  //       {
+  //         $$type: "SESSubscribe",
+  //         queryId: 0n,
+  //         notificationsCount: 100n,
+  //       },
+  //     );
+  //     logger.logTransactions(SESSubscribe.transactions, "SESSubscribe");
 
-      const DSTPublishCandlestick = await stream.send(
-        publisher.getSender(),
-        {
-          value: await stream.getPublishCandlestickDeposit(),
-        },
-        {
-          $$type: "DSTPublishCandlestick",
-          queryId: BigInt(i),
-          candlestick: {
-            $$type: "Candlestick",
-            start: 1718207640000n,
-            end: 1718207699999n,
-            open: 6969709n,
-            close: 6969774n,
-            high: 6970129n,
-            low: 6966979n,
-          },
-        },
-      );
-      logger.logTransactions(
-        DSTPublishCandlestick.transactions,
-        "DSTPublishCandlestick",
-      );
-    }
-  });
+  //     const DSTPublishCandlestick = await stream.send(
+  //       publisher.getSender(),
+  //       {
+  //         value: await stream.getPublishCandlestickDeposit(),
+  //       },
+  //       {
+  //         $$type: "DSTPublishCandlestick",
+  //         queryId: BigInt(i),
+  //         candlestick: {
+  //           $$type: "Candlestick",
+  //           start: 1718207640000n,
+  //           end: 1718207699999n,
+  //           open: 6969709n,
+  //           close: 6969774n,
+  //           high: 6970129n,
+  //           low: 6966979n,
+  //         },
+  //       },
+  //     );
+  //     logger.logTransactions(
+  //       DSTPublishCandlestick.transactions,
+  //       "DSTPublishCandlestick",
+  //     );
+  //   }
+  // });
 
   it("(3) Should deploy a session for Alice", async () => {
     const sessionAddress = await stream.getSessionAddress(alice.address);

@@ -51,8 +51,6 @@ contract Session {
   receive(request: SESDeploy) {
     let ctx: Context = context();
 
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.stream);
-
     self.notify((SESDeploySuccess { queryId: request.queryId, subscriber: self.subscriber }).toCell());
   }
 
@@ -125,7 +123,7 @@ contract Session {
 
     send(SendParameters { 
       to: self.subscriber, 
-      value: NOTIFICATION_DEPOSIT, 
+      value: 0,
       mode: SendRemainingBalance + SendDestroyIfZero, 
       body: (SESDestroySuccess { queryId: request.queryId }).toCell(),
     });
