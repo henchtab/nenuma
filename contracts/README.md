@@ -101,4 +101,4 @@ Join our [Telegram channel](https://t.me/NenumaCommunity) for updates and suppor
 ## Additional Resources
 - [Nenuma Interface](https://github.com/dreamqip/nenuma-interface)
 - [Nenuma Documentation](https://nenuma.telegram-mini-apps.manuvantara.com/docs)
-```
+
