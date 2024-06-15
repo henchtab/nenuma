@@ -22,7 +22,7 @@ export class ShrekLogger {
       address = contract.toString();
     }
 
-    if (this.contractLabels.get(address)) {
+    if (this.contractLabels.get(address) === address) {
       throw new Error(
         `The '${address}' contract already has a '${label}' label!`,
       );
