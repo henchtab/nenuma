@@ -149,6 +149,14 @@
   }
 </script>
 
+<svelte:head>
+  <title>Options API</title>
+  <meta
+    name="description"
+    content="Setup: Initializes with an owner and a storage reserve. Brokers and Accounts: Can deploy new brokers and brokerage accounts, each associated with specific addresses. Deposits: Ensures adequate deposits for various actions. Notifications: Sends confirmations and success messages back to the owner or relevant parties. The contract includes functions to get storage reserve, owner, and addresses for brokers and accounts, and manages deployment and communication between entities."
+  />
+</svelte:head>
+
 <div class="container py-8">
   <h2 class="text-ds-gray-1000 font-semibold text-5xl text-left pb-16 border-b mb-16">
     Options API
@@ -369,9 +377,12 @@
       />
     </Label>
     <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
-      This contract ensures secure interactions with the brokerage account by enforcing strict
-      access controls and deposit/withdrawal requirements, along with notifying the relevant parties
-      upon successful transactions.
+      The Brokerage Account contract initializes with a brokerage address, a trader address, and a
+      storage reserve. It includes getter functions to retrieve the storage reserve, brokerage
+      address, and trader address. The contract can receive deployment requests (BRADeploy) and
+      ensures that these requests are only accepted from the designated brokerage address. Upon
+      successful validation of a deployment request, it sends a BRADeploySuccess notification back
+      to the requester with the trader address.
     </p>
     <div class="flex gap-4 items-end overflow-x-auto">
       <Button

@@ -191,6 +191,14 @@
   }
 </script>
 
+<svelte:head>
+  <title>Streams API</title>
+  <meta
+    name="description"
+    content="Explore the Streams API to deploy data streams, manage subscriptions, and handle notifications on the blockchain."
+  />
+</svelte:head>
+
 <div class="container py-8">
   <h2 class="text-ds-gray-1000 font-semibold text-5xl text-left pb-16 border-b mb-16">
     Streams API
