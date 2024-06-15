@@ -1,5 +1,6 @@
 // BEGIN Data Stream
 
+// Messages related to Data Stream operations
 message DSTDeploy {
   queryId: Int as uint64;
 }
@@ -38,6 +39,7 @@ message DSTSubscribeSuccess {
   remainingNotificationsCount: Int;
 }
 
+// Candlestick structure
 struct Candlestick {
   start: Int;
   end: Int;
@@ -63,9 +65,9 @@ message DSTUnsubscribedNotification {
 
 // END Data Stream
 
+// BEGIN Subscription Batch
 
-// BEGIN Subsription Batch
-
+// Messages related to Subscription Batch operations
 message SBDeploy {
   queryId: Int as uint64;
 }
@@ -111,9 +113,9 @@ message SBPublishCandlestickSuccess {
 
 // END Subscription Batch
 
-
 // BEGIN Session
 
+// Messages related to Session operations
 message SESDeploy {
   queryId: Int as uint64;
 }
@@ -157,9 +159,6 @@ message SESUnsubscribedNotification {
   remainingNotificationsCount: Int;
 }
 
-// END Session
-
-
 message SESUnsubscribe { 
   queryId: Int as uint64;
 }
@@ -176,26 +175,11 @@ message SESDestroySuccess {
   queryId: Int as uint64;
 }
 
-// message SBUnsubscribeSuccess {
-//   queryId: Int as uint64;
-//   session: Address;
-//   remainingNotificationsCount: Int;
-// }
-
-// message DSTUnsubscribeSuccess {
-//   queryId: Int as uint64;
-//   remainingNotificationsCount: Int;
-// }
-
-// message SESUnsubscribeSuccess { 
-//   queryId: Int as uint64;
-//   remainingNotificationsCount: Int;
-// }
+// END Session
 
 // BEGIN Brokerage
 
-// Step 1
-
+// Messages related to Brokerage operations
 message BRGDeploy {
   queryId: Int as uint64;
 }
@@ -203,8 +187,6 @@ message BRGDeploy {
 message BRGDeploySuccess {
   queryId: Int as uint64;
 }
-
-// // Step 2
 
 message BRGDeployBroker {
   queryId: Int as uint64;
@@ -225,8 +207,6 @@ message BRGDeployBrokerSuccess {
   broker: Address;
 }
 
-// // Step 4
-
 message BRGDeployAccount {
   queryId: Int as uint64;
 }
@@ -245,9 +225,6 @@ message BRGDeployAccountSuccess {
   account: Address;
 }
 
-// // Step 3
-
-// Deposits the value
 message BRKDeposit {
   queryId: Int as uint64;
 }
@@ -256,9 +233,6 @@ message BRKDepositSuccess {
   queryId: Int as uint64;
 }
 
-// // Step 7
-
-// Withdraws the value
 message BRKWithdraw {
   queryId: Int as uint64;
 }
@@ -267,4 +241,4 @@ message BRKWithdrawSuccess {
   queryId: Int as uint64;
 }
 
-// // END Brokerage
+// END Brokerage
