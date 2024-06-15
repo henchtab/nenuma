@@ -1,8 +1,10 @@
 import { browser } from '$app/environment';
-import { Address, Dictionary, TonClient, beginCell } from '@ton/ton';
+import { Address, Dictionary, TonClient, beginCell, toNano } from '@ton/ton';
 import { toast } from 'svelte-sonner';
 import { derived, readable, type Readable, type Writable } from 'svelte/store';
 import {
+  BRG_DEPLOY_ACCOUNT_DEPOSIT,
+  BRG_DEPLOY_BROKER_DEPOSIT,
   DST_DEPLOY_BATCH_DEPOSIT,
   DST_DEPLOY_DEPOSIT,
   DST_DEPLOY_SESSION_DEPOSIT,
@@ -14,6 +16,8 @@ import {
   SES_UNSUBSCRIBE_DEPOSIT
 } from '../constants';
 import { sender, tonConnectUI } from '../ton-connect';
+import { storeBRGDeploy } from './tact_Broker';
+import { Brokerage, storeStateInit as bStoreStateInit } from './tact_Brokerage';
 import { DataStream, storeDSTDeploy, storeStateInit, type Candlestick } from './tact_DataStream';
 import { Session } from './tact_Session';
 import { SubscriptionBatch, type SBInfo, type SubscriptionInfo } from './tact_SubscriptionBatch';
@@ -523,6 +527,161 @@ export const useSession = (subscriberAddress: Writable<string>): Readable<Sessio
       subscribe,
       unsubscribe,
       destroy
+    });
+  });
+};
+
+type BrokerageMethods = {
+  getOwner: () => Promise<Address>;
+  getStorageReserve: () => Promise<bigint>;
+  getBroker: (stream: Address) => Promise<Address>;
+  getAccount: (trader: Address) => Promise<Address>;
+  deploy: (args: { queryId: bigint }) => Promise<void>;
+  deployBroker: (args: { stream: Address; queryId: bigint }) => Promise<void>;
+  deployAccount: (args: { queryId: bigint }) => Promise<void>;
+};
+
+export const createBrokerage = (): Readable<BrokerageMethods> => {
+  const provider = new TonClient({
+    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+    apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
+  });
+
+  return derived([sender, tonConnectUI], ([$sender, $tonConnectUI], set) => {
+    const getOwner = async () => {
+      const brokerageAddress = localStorage.getItem('brokerage');
+
+      if (!brokerageAddress) {
+        throw new Error('No brokerage found. Did you deploy a brokerage?');
+      }
+
+      const brokerage = provider.open(Brokerage.fromAddress(Address.parse(brokerageAddress)));
+
+      return await brokerage.getOwner();
+    };
+
+    const getStorageReserve = async () => {
+      const brokerageAddress = localStorage.getItem('brokerage');
+
+      if (!brokerageAddress) {
+        throw new Error('No brokerage found. Did you deploy a brokerage?');
+      }
+
+      const brokerage = provider.open(Brokerage.fromAddress(Address.parse(brokerageAddress)));
+
+      return await brokerage.getStorageReserve();
+    };
+
+    const getBroker = async (stream: Address) => {
+      const brokerageAddress = localStorage.getItem('brokerage');
+
+      if (!brokerageAddress) {
+        throw new Error('No brokerage found. Did you deploy a brokerage?');
+      }
+
+      const brokerage = provider.open(Brokerage.fromAddress(Address.parse(brokerageAddress)));
+
+      return await brokerage.getBroker(stream);
+    };
+
+    const getAccount = async (trader: Address) => {
+      const brokerageAddress = localStorage.getItem('brokerage');
+
+      if (!brokerageAddress) {
+        throw new Error('No brokerage found. Did you deploy a brokerage?');
+      }
+
+      const brokerage = provider.open(Brokerage.fromAddress(Address.parse(brokerageAddress)));
+
+      return await brokerage.getAccount(trader);
+    };
+
+    const deploy = async (args: { queryId: bigint }) => {
+      const owner = $tonConnectUI.account?.address;
+
+      if (!owner) {
+        throw new Error('No account connected. Did you connect to the wallet?');
+      }
+
+      const brokerage = provider.open(await Brokerage.fromInit(Address.parse(owner)));
+
+      localStorage.setItem('brokerage', brokerage.address.toString({ testOnly: true }));
+
+      await $tonConnectUI?.sendTransaction({
+        validUntil: Math.floor(Date.now() / 1000) + 360,
+        messages: [
+          {
+            address: brokerage.address.toString(),
+            amount: toNano('0.05').toString(),
+            stateInit: beginCell()
+              .store(
+                bStoreStateInit({
+                  $$type: 'StateInit',
+                  ...brokerage.init!
+                })
+              )
+              .endCell()
+              .toBoc()
+              .toString('base64'),
+            payload: beginCell()
+              .store(
+                storeBRGDeploy({
+                  $$type: 'BRGDeploy',
+                  queryId: args.queryId
+                })
+              )
+              .endCell()
+              .toBoc()
+              .toString('base64')
+          }
+        ]
+      });
+    };
+
+    const deployBroker = async (args: { stream: Address; queryId: bigint }) => {
+      const brokerageAddress = localStorage.getItem('brokerage');
+
+      if (!brokerageAddress) {
+        throw new Error('No brokerage found. Did you deploy a brokerage?');
+      }
+
+      const brokerage = provider.open(Brokerage.fromAddress(Address.parse(brokerageAddress)));
+
+      await brokerage.send(
+        $sender,
+        {
+          value: BRG_DEPLOY_BROKER_DEPOSIT
+        },
+        { $$type: 'BRGDeployBroker', queryId: args.queryId, stream: args.stream }
+      );
+    };
+
+    const deployAccount = async (args: { queryId: bigint }) => {
+      const brokerageAddress = localStorage.getItem('brokerage');
+
+      if (!brokerageAddress) {
+        throw new Error('No brokerage found. Did you deploy a brokerage?');
+      }
+
+      const brokerage = provider.open(Brokerage.fromAddress(Address.parse(brokerageAddress)));
+
+      await brokerage.send(
+        $sender,
+        {
+          value: BRG_DEPLOY_ACCOUNT_DEPOSIT
+        },
+        { $$type: 'BRGDeployAccount', queryId: args.queryId }
+      );
+    };
+
+    set({
+      getOwner,
+      getStorageReserve,
+      getBroker,
+      getAccount,
+      deploy,
+      deployBroker,
+      deployAccount
     });
   });
 };

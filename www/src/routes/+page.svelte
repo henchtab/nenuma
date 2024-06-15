@@ -3,17 +3,9 @@
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { Skeleton } from '$lib/components/ui/skeleton';
-  import { tonConnectUI } from '$lib/ton-connect';
   import { createDataStream, useSession, useSubscriptioBatch } from '$lib/wrappers';
   import { Address, fromNano } from '@ton/ton';
-  import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-
-  let connectionState = $state({
-    isConnnected: false,
-    isReconnecting: true
-  });
 
   const streamAddress = writable('');
   const stream = createDataStream(streamAddress);
@@ -37,54 +29,6 @@
     batch: [],
     session: []
   });
-
-  onMount(() => {
-    tonConnectUI.subscribe(async (tonConnectUI) => {
-      if (!tonConnectUI) {
-        connectionState.isConnnected = false;
-        connectionState.isReconnecting = false;
-        return;
-      }
-
-      const status = await tonConnectUI.connectionRestored;
-      connectionState.isConnnected = status;
-      connectionState.isReconnecting = false;
-
-      tonConnectUI.onStatusChange((status) => {
-        connectionState.isConnnected = status ? true : false;
-      });
-    });
-  });
-
-  async function connectWallet() {
-    if (!$tonConnectUI) {
-      console.warn('TonConnectUI is not initialized');
-      return;
-    }
-
-    try {
-      if ($tonConnectUI.connected || $tonConnectUI.wallet) {
-        await $tonConnectUI.disconnect();
-      }
-
-      await $tonConnectUI.openModal();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function disconnectWallet() {
-    if (!$tonConnectUI) {
-      console.warn('TonConnectUI is not initialized');
-      return;
-    }
-
-    try {
-      await $tonConnectUI.disconnect();
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   async function handleDeploySubmit(
     e: SubmitEvent & {
@@ -246,28 +190,6 @@
     await $session.destroy(args);
   }
 </script>
-
-<header class="container py-4 flex items-center justify-between">
-  <h1 class="text-xl font-medium text-center">Nenuma</h1>
-  <Skeleton show={connectionState.isReconnecting}>
-    <Button
-      type="button"
-      onclickcapture={() => {
-        if (connectionState.isConnnected) {
-          disconnectWallet();
-        } else {
-          connectWallet();
-        }
-      }}
-    >
-      {#if connectionState.isConnnected}
-        Connected
-      {:else}
-        Connect
-      {/if}
-    </Button>
-  </Skeleton>
-</header>
 
 <div class="container py-8">
   <h2 class="text-ds-gray-1000 font-semibold text-5xl text-left pb-16 border-b mb-16">

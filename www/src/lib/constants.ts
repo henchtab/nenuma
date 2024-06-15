@@ -19,4 +19,10 @@ export const SES_SUBSCRIBE_DEPOSIT = toNano('0.05');
 export const SES_UNSUBSCRIBE_DEPOSIT = toNano('0.05');
 export const SES_DESTROY_DEPOSIT = toNano('0.01');
 
+export const BRG_DEPLOY_BROKER_DEPOSIT = toNano('0.05');
+export const BRG_DEPLOY_ACCOUNT_DEPOSIT = toNano('0.05');
+
+export const BRK_DEPOSIT_DEPOSIT = toNano('0.05');
+export const BRK_WITHDRAW_DEPOSIT = toNano('0.05');
+
 export const TON_CONNECT_UI_KEY = 'tonConnectUI';
