@@ -24,7 +24,7 @@
       timeScale: {
         timeVisible: true,
         fixRightEdge: true,
-        rightBarStaysOnScroll: true
+        rightBarStaysOnScroll: true,
       },
       layout: {
         textColor: '#fff',
@@ -43,12 +43,6 @@
     if (initialData) {
       candlestickSeries.setData(initialData);
     }
-
-    const timeScale = chart.timeScale();
-    timeScale.setVisibleRange({
-      to: new Date(),
-      from: Date.now()
-    });
 
     candlestickSeries.priceScale().applyOptions({
       borderVisible: false,
