@@ -7,6 +7,9 @@
   import { type ConnectedWallet } from '@tonconnect/ui';
   import LogIn from 'lucide-svelte/icons/log-in';
   import { onDestroy, onMount } from 'svelte';
+  import ArrowLeft from 'lucide-svelte/icons/arrow-left';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
 
   let intervalId: ReturnType<typeof setInterval> | undefined = $state();
   let isFirstProofLoading = $state(true);
@@ -66,6 +69,12 @@
     }
   }
 </script>
+
+<header class="fixed top-0 container py-8">
+  <button class="size-12 flex items-center justify-center" onclickcapture={() => browser && goto('/')}>
+    <ArrowLeft size="24" />
+  </button>
+</header>
 
 <div class="flex flex-col items-center justify-center min-h-screen">
   <div class="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8">
