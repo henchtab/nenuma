@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES, REDIRECT_TO_COOKIE } from '$lib';
+import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES, REDIRECT_TO_COOKIE } from './constants';
 import type { Account, ConnectAdditionalRequest, TonProofItemReplySuccess } from '@tonconnect/ui';
 import cookie from 'js-cookie';
 

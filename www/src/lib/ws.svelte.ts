@@ -1,9 +1,9 @@
+import { browser } from '$app/environment';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { ACCESS_TOKEN_COOKIE } from '$lib';
 import cookie from 'js-cookie';
 import type { UTCTimestamp } from 'lightweight-charts';
 import { writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { ACCESS_TOKEN_COOKIE } from './constants';
 
 const WS_DISCONNECT_RETRY_INTERVAL = 1000;
 

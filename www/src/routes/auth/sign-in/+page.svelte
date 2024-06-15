@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { TON_PROOF_REFRESH_INTERVAL_MS, recreateTonProofPayload } from '$lib';
+  import { recreateTonProofPayload } from '$lib';
   import { Button } from '$lib/components/ui/button';
+  import { TON_PROOF_REFRESH_INTERVAL_MS } from '$lib/constants';
   import { checkProofAndRedirect, reset } from '$lib/data';
   import { tonConnectUI } from '$lib/ton-connect';
   import { type ConnectedWallet } from '@tonconnect/ui';

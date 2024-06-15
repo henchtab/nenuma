@@ -1,13 +1,6 @@
 import type { TonConnectUI } from '@tonconnect/ui';
 import { generatePayload } from './data';
 
-export const TON_PROOF_REFRESH_INTERVAL_MS = 1000 * 60 * 9; // 9 minutes
-export const ACCESS_TOKEN_COOKIE = 'access_token';
-export const REDIRECT_TO_COOKIE = 'redirect_to';
-export const COOKIE_EXPIRES = new Date(Date.now() + 1000 * 60 * 60 * 24 * 180);
-
-export const TON_CONNECT_UI_KEY = 'tonConnectUI';
-
 export async function recreateTonProofPayload(
   isFirstProofLoading: boolean,
   tonConnectUI: TonConnectUI
@@ -35,4 +28,30 @@ export async function recreateTonProofPayload(
   } else {
     tonConnectUI.setConnectRequestParameters(null);
   }
+}
+
+export function formatDate(date: Date) {
+  const months = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC'
+  ];
+
+  const month = months[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const milliseconds = String(date.getMilliseconds()).padStart(3, '0').slice(0, 2);
+
+  return `${month} ${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
 }

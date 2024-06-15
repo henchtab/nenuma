@@ -1,10 +1,11 @@
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig(({ command, mode }) => {
   return {
-    plugins: [enhancedImages(), sveltekit()],
+    plugins: [enhancedImages(), sveltekit(), nodePolyfills()],
     server: {
       https: {
         key: './certs/SSLforMyHosts-key.pem',

@@ -1,0 +1,22 @@
+import { toNano } from '@ton/ton';
+
+export const TON_PROOF_REFRESH_INTERVAL_MS = 1000 * 60 * 9; // 9 minutes
+export const ACCESS_TOKEN_COOKIE = 'access_token';
+export const REDIRECT_TO_COOKIE = 'redirect_to';
+export const COOKIE_EXPIRES = new Date(Date.now() + 1000 * 60 * 60 * 24 * 180);
+
+export const DST_DEPLOY_DEPOSIT = toNano('0.02');
+
+export const NOTIFICATION_PREMIUM = toNano('0.01');
+export const NOTIFICATION_DEPOSIT = toNano('0.02');
+
+export const DST_DEPLOY_BATCH_DEPOSIT = toNano('0.05');
+export const DST_DEPLOY_SESSION_DEPOSIT = toNano('0.05');
+export const DST_PUBLISH_CANDLESTICK_DEPOSIT = toNano('50');
+
+export const SES_STORAGE_RESERVE = toNano('0.01');
+export const SES_SUBSCRIBE_DEPOSIT = toNano('0.05');
+export const SES_UNSUBSCRIBE_DEPOSIT = toNano('0.05');
+export const SES_DESTROY_DEPOSIT = toNano('0.01');
+
+export const TON_CONNECT_UI_KEY = 'tonConnectUI';

@@ -17,6 +17,8 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (routeId.startsWith(PROTECTED_ROUTES_PREFIX)) {
     const accessToken = event.cookies.get(ACCESS_TOKEN_COOKIE);
 
+    // TODO: Validate access token
+
     canAccess = !!accessToken;
   } else {
     canAccess = true;

@@ -50,16 +50,16 @@ const config: Config = {
         },
         ds: {
           gray: {
-            100: 'hsl(var(--ds-gray-100) / <alpha-value>)',
-            200: 'hsl(var(--ds-gray-200) / <alpha-value>)',
-            300: 'hsl(var(--ds-gray-300) / <alpha-value>)',
-            400: 'hsl(var(--ds-gray-400) / <alpha-value>)',
-            500: 'hsl(var(--ds-gray-500) / <alpha-value>)',
-            600: 'hsl(var(--ds-gray-600) / <alpha-value>)',
-            700: 'hsl(var(--ds-gray-700) / <alpha-value>)',
-            800: 'hsl(var(--ds-gray-800) / <alpha-value>)',
-            900: 'hsl(var(--ds-gray-900) / <alpha-value>)',
-            1000: 'hsl(var(--ds-gray-1000) / <alpha-value>)'
+            100: 'var(--ds-gray-100)',
+            200: 'var(--ds-gray-200)',
+            300: 'var(--ds-gray-300)',
+            400: 'var(--ds-gray-400)',
+            500: 'var(--ds-gray-500)',
+            600: 'var(--ds-gray-600)',
+            700: 'var(--ds-gray-700)',
+            800: 'var(--ds-gray-800)',
+            900: 'var(--ds-gray-900)',
+            1000: 'var(--ds-gray-1000)'
           },
           blue: {
             100: 'var(--ds-blue-100)',
@@ -144,6 +144,10 @@ const config: Config = {
             800: 'var(--ds-pink-800)',
             900: 'var(--ds-pink-900)',
             1000: 'var(--ds-pink-1000)'
+          },
+          background: {
+            100: 'var(--ds-background-100)',
+            200: 'var(--ds-background-200)'
           }
         }
       },
@@ -156,7 +160,7 @@ const config: Config = {
         sans: [...fontFamily.sans]
       },
       backgroundImage: {
-        skeleton: 'linear-gradient(270deg, #fafafa, #eaeaea, #eaeaea, #fafafa)',
+        skeleton: 'linear-gradient(270deg, #111, #333, #333, #111)',
         spinner: `conic-gradient(
           from 90deg at 50% 50%,
           rgba(39, 174, 96, 0) 0deg,
