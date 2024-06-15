@@ -22,6 +22,11 @@ import { DataStream, storeDSTDeploy, storeStateInit, type Candlestick } from './
 import { Session } from './tact_Session';
 import { SubscriptionBatch, type SBInfo, type SubscriptionInfo } from './tact_SubscriptionBatch';
 import { BrokerageAccount } from './tact_BrokerageAccount';
+import {
+  SimpleSubscriber,
+  storeSUSDeploy,
+  storeStateInit as ssStoreStateInit
+} from './tact_SimpleSubscriber';
 
 type DataStreamMethods = {
   deploy: (args: { topic: string; queryId: bigint }) => Promise<void>;
@@ -804,7 +809,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         );
       };
 
-      const withdraw = async (args: { queryId: bigint; }) => {
+      const withdraw = async (args: { queryId: bigint }) => {
         const owner = $tonConnectUI.account?.address;
 
         if (!owner) {
@@ -913,4 +918,236 @@ export const useBrokerageAccount = (
       getBrokerage
     });
   });
+};
+
+type SimpleSubscriberMethods = {
+  deploy: (args: {
+    subscriberId: bigint;
+    notificationsCount: bigint;
+    stream: string;
+    expiresAt: bigint;
+  }) => Promise<void>;
+  checkTimeout: (args: { queryId: bigint }) => Promise<void>;
+  getBalance: () => Promise<bigint>;
+  getOwnerAddress: () => Promise<Address>;
+  getNotificationsCount: () => Promise<bigint | null>;
+  getExpiresAt: () => Promise<bigint | null>;
+  getStreamAddress: () => Promise<Address | null>;
+  getSessionAddress: () => Promise<Address | null>;
+  getLatestCandlestick: () => Promise<Candlestick | null>;
+};
+
+export const createSimpleSubscriber = (
+  subscriberAddress?: Writable<string>
+): Readable<SimpleSubscriberMethods> => {
+  const provider = new TonClient({
+    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+    apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
+  });
+
+  return derived(
+    [tonConnectUI, sender, subscriberAddress ? subscriberAddress : readable('')],
+    ([$tonConnectUI, $sender, subscriberAddress], set) => {
+      if (subscriberAddress && browser) {
+        localStorage.setItem(
+          'subscriber',
+          Address.parse(subscriberAddress).toString({ testOnly: true })
+        );
+      }
+
+      const deploy = async (args: {
+        subscriberId: bigint;
+        notificationsCount: bigint;
+        stream: string;
+        expiresAt: bigint;
+      }) => {
+        const owner = $tonConnectUI.account?.address;
+
+        if (!owner) {
+          throw new Error('No account connected. Did you connect to the wallet?');
+        }
+
+        const subscriber = provider.open(
+          await SimpleSubscriber.fromInit(Address.parse(owner), args.subscriberId)
+        );
+        localStorage.setItem('subscriber', subscriber.address.toString({ testOnly: true }));
+
+        await $tonConnectUI?.sendTransaction({
+          validUntil: Math.floor(Date.now() / 1000) + 360,
+          messages: [
+            {
+              address: subscriber.address.toString(),
+              amount: (
+                toNano('2.05') +
+                NOTIFICATION_DEPOSIT * args.notificationsCount +
+                NOTIFICATION_PREMIUM * args.notificationsCount
+              ).toString(),
+              payload: beginCell()
+                .store(
+                  storeSUSDeploy({
+                    $$type: 'SUSDeploy',
+                    queryId: args.subscriberId,
+                    stream: Address.parse(args.stream),
+                    notificationsCount: args.notificationsCount,
+                    expiresAt: args.expiresAt
+                  })
+                )
+                .endCell()
+                .toBoc()
+                .toString('base64'),
+              stateInit: beginCell()
+                .store(
+                  ssStoreStateInit({
+                    $$type: 'StateInit',
+                    ...subscriber.init!
+                  })
+                )
+                .endCell()
+                .toBoc()
+                .toString('base64')
+            }
+          ]
+        });
+      };
+
+      const checkTimeout = async (args: { queryId: bigint }) => {
+        const owner = $tonConnectUI.account?.address;
+
+        if (!owner) {
+          throw new Error('No account connected. Did you connect to the wallet?');
+        }
+
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        await subscriber.send(
+          $sender,
+          {
+            value: toNano('0.05')
+          },
+          {
+            $$type: 'SUSCheckTimeout',
+            queryId: args.queryId
+          }
+        );
+      };
+
+      const getBalance = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getBalance();
+      };
+
+      const getOwnerAddress = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getOwnerAddress();
+      };
+
+      const getNotificationsCount = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getNotificationsCount();
+      };
+
+      const getExpiresAt = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getExpiresAt();
+      };
+
+      const getStreamAddress = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getStreamAddress();
+      };
+
+      const getSessionAddress = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getSessionAddress();
+      };
+
+      const getLatestCandlestick = async () => {
+        const subscriberAddress = localStorage.getItem('subscriber');
+
+        if (!subscriberAddress) {
+          throw new Error('No subscriber found. Did you deploy a subscriber?');
+        }
+
+        const subscriber = provider.open(
+          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
+        );
+
+        return await subscriber.getLatestCandlestick();
+      };
+
+      set({
+        deploy,
+        getBalance,
+        getOwnerAddress,
+        checkTimeout,
+        getNotificationsCount,
+        getExpiresAt,
+        getStreamAddress,
+        getSessionAddress,
+        getLatestCandlestick
+      });
+    }
+  );
 };

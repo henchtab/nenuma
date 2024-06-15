@@ -3,7 +3,12 @@
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { createDataStream, useSession, useSubscriptioBatch } from '$lib/wrappers';
+  import {
+    createDataStream,
+    createSimpleSubscriber,
+    useSession,
+    useSubscriptioBatch
+  } from '$lib/wrappers';
   import { Address, fromNano } from '@ton/ton';
   import { writable } from 'svelte/store';
 
@@ -16,6 +21,9 @@
   const subscriberAddress = writable('');
   const session = useSession(subscriberAddress);
 
+  const simpleSubscriberAddress = writable('');
+  const simpleSubscriber = createSimpleSubscriber(simpleSubscriberAddress);
+
   const output = $state<
     Record<
       string,
@@ -27,7 +35,8 @@
   >({
     stream: [],
     batch: [],
-    session: []
+    session: [],
+    simpleSubscriber: []
   });
 
   async function handleDeploySubmit(
@@ -188,6 +197,39 @@
     };
 
     await $session.destroy(args);
+  }
+
+  async function handleDeploySSSubmit(
+    e: SubmitEvent & {
+      currentTarget: EventTarget & HTMLFormElement;
+    }
+  ) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    const args = {
+      stream: formData.get('stream') as string,
+      notificationsCount: BigInt(formData.get('notificationsCount') as string),
+      expiresAt: BigInt(new Date(formData.get('exp') as string).getTime()),
+      subscriberId: BigInt(formData.get('subscriberId') as string)
+    };
+
+    await $simpleSubscriber.deploy(args);
+  }
+
+  async function handleCheckTimeoutSubmit(
+    e: SubmitEvent & {
+      currentTarget: EventTarget & HTMLFormElement;
+    }
+  ) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    const args = {
+      queryId: BigInt(formData.get('queryId') as string)
+    };
+
+    await $simpleSubscriber.checkTimeout(args);
   }
 </script>
 
@@ -672,6 +714,17 @@
 
   <div class="pb-12 mt-12 border-b">
     <h3 class="text-ds-gray-1000 font-medium text-3xl mb-4">Simple Subscriber</h3>
+    <Label class="grid gap-2">
+      Subscriber Address
+      <Input
+        type="text"
+        name="simpleSubscriberAddress"
+        placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
+        required
+        class="w-fit"
+        bind:value={$simpleSubscriberAddress}
+      />
+    </Label>
     <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[768px]">
       This contract sets up with an owner address and a subscriber ID. It handles subscriptions to a
       data stream, making sure there are enough funds for operations. When deployment requests come
@@ -682,90 +735,48 @@
       notifies when time is up. Overall, it keeps the subscription process smooth and organized.
     </p>
     <div class="flex gap-4 items-end overflow-x-auto">
-      <form class="flex flex-col gap-4 min-w-max" onsubmit={handleDeploySubmit}>
+      <form class="flex flex-col gap-4 min-w-max" onsubmit={handleDeploySSSubmit}>
         <Label class="flex flex-col gap-2"
-          >Topic
-          <Input type="text" name="topic" placeholder="1.candlestick.TONUSDT" required />
+          >Stream Address
+          <Input
+            type="text"
+            name="stream"
+            placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
+            required
+          />
         </Label>
+        <Label class="flex flex-col gap-2"
+          >Notifications Count
+          <Input type="number" name="notificationsCount" placeholder="777" required min="0" />
+        </Label>
+        <Label class="flex flex-col gap-2"
+          >Expiration Time
+          <Input type="date" name="exp" required />
+        </Label>
+        <Label class="flex flex-col gap-2"
+          >Subscriber ID
+          <Input type="number" name="subscriberId" placeholder="777" required min="0" />
+        </Label>
+        <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
+          >Deploy Simple Subscriber</Button
+        >
+      </form>
+
+      <form class="flex flex-col gap-4 min-w-max" onsubmit={handleCheckTimeoutSubmit}>
         <Label class="flex flex-col gap-2"
           >Query ID
           <Input type="number" name="queryId" placeholder="777" required min="0" />
         </Label>
         <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
-          >Deploy Stream</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4 w-max" onsubmit={handleDeployBatchSubmit}>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
-          >Deploy Batch</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4 w-max" onsubmit={handleDeploySessionSubmit}>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
-          >Deploy Session</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4 w-max" onsubmit={handlePublishCandlestickSubmit}>
-        <Label class="grid gap-2">
-          Start
-          <Input type="number" name="start" placeholder="1718207640000" required />
-        </Label>
-        <Label class="grid gap-2">
-          End
-          <Input type="number" name="end" placeholder="1718207699999" required />
-        </Label>
-        <Label class="grid gap-2">
-          Open
-          <Input type="number" name="open" placeholder="6969709" required />
-        </Label>
-        <Label class="grid gap-2">
-          High
-          <Input type="number" name="high" placeholder="6969774" required />
-        </Label>
-        <Label class="grid gap-2">
-          Low
-          <Input type="number" name="low" placeholder="6970129" required />
-        </Label>
-        <Label class="grid gap-2">
-          Close
-          <Input type="number" name="close" placeholder="6966979" required />
-        </Label>
-        <Label class="grid gap-2">
-          Query ID
-          <Input type="number" name="queryId" placeholder="777" required />
-        </Label>
-        <Button type="submit" class="bg-ds-green-800 text-white hover:bg-ds-green-700"
-          >Publish Candlestick</Button
+          >Check timeout</Button
         >
       </form>
 
       <Button
         class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
         onclick={async () => {
-          const result = await $stream.getTopic();
-          output.stream.unshift({
-            date: formatDate(new Date()),
-            message: JSON.stringify(result, null, 2)
-          });
-        }}>Get Topic</Button
-      >
-
-      <Button
-        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-        onclick={async () => {
-          const result = await $stream.getBalance();
-          output.stream.unshift({
+          const result = await $simpleSubscriber.getBalance();
+          output.simpleSubscriber.unshift({
             date: formatDate(new Date()),
             message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
           });
@@ -775,70 +786,93 @@
       <Button
         class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
         onclick={async () => {
-          const result = await $stream.getPublisherAddress();
-          output.stream.unshift({
+          const result = await $simpleSubscriber.getOwnerAddress();
+          output.simpleSubscriber.unshift({
             date: formatDate(new Date()),
             message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
           });
-        }}>Get Publisher Address</Button
+        }}>Get Owner Address</Button
       >
 
       <Button
         class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
         onclick={async () => {
-          const result = await $stream.getNextBatchId();
-          output.stream.unshift({
+          const result = await $simpleSubscriber.getNotificationsCount();
+          output.simpleSubscriber.unshift({
             date: formatDate(new Date()),
-            message: JSON.stringify(result.toString(), null, 2)
+            message: JSON.stringify(result?.toString(), null, 2)
           });
-        }}>Get Next Batch Id</Button
+        }}>Get Notifications Count</Button
       >
-
-      <form class="flex flex-col gap-4" onsubmit={handleSessionAddressSubmit}>
-        <Label class="grid gap-2">
-          Subscriber Address
-          <Input
-            type="text"
-            name="subscriberAddress"
-            placeholder="Enter a subscriber address"
-            required
-          />
-        </Label>
-        <Button type="submit" class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-          >Get Session Address</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4" onsubmit={handleBatchAddressSubmit}>
-        <Label class="grid gap-2">
-          Batch ID
-          <Input type="number" name="batchId" placeholder="Enter a batch ID" required />
-        </Label>
-        <Button type="submit" class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-          >Get Batch Address</Button
-        >
-      </form>
 
       <Button
         class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
         onclick={async () => {
-          const result = await $stream.getBatches();
+          const result = await $simpleSubscriber.getExpiresAt();
+          output.simpleSubscriber.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(result?.toString(), null, 2)
+          });
+        }}>Get Expires At</Button
+      >
 
-          const batches: {
-            [key: string]: string;
-          }[] = [];
-          for (const [address, info] of result) {
-            batches.push({
-              [address.toString({ testOnly: true, bounceable: false })]: info.subscriptionsCount.toString()
+      <Button
+        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+        onclick={async () => {
+          const result = await $simpleSubscriber.getStreamAddress();
+          output.simpleSubscriber.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(
+              result?.toString({ testOnly: true, bounceable: false }),
+              null,
+              2
+            )
+          });
+        }}>Get Stream Address</Button
+      >
+
+      <Button
+        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+        onclick={async () => {
+          const result = await $simpleSubscriber.getSessionAddress();
+          output.simpleSubscriber.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(
+              result?.toString({ testOnly: true, bounceable: false }),
+              null,
+              2
+            )
+          });
+        }}>Get Session Address</Button
+      >
+
+      <Button
+        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+        onclick={async () => {
+          const result = await $simpleSubscriber.getLatestCandlestick();
+
+          if (!result) {
+            output.simpleSubscriber.unshift({
+              date: formatDate(new Date()),
+              message: 'No candlestick found'
             });
+            return;
           }
 
-          output.stream.unshift({
+          const serialized = {
+            start: result.start.toString(),
+            end: result.end.toString(),
+            open: result.open.toString(),
+            high: result.high.toString(),
+            low: result.low.toString(),
+            close: result.close.toString()
+          };
+
+          output.simpleSubscriber.unshift({
             date: formatDate(new Date()),
-            message: JSON.stringify(batches, null, 2)
+            message: JSON.stringify(serialized, null, 2)
           });
-        }}
-        >Get Batches</Button
+        }}>Get Latest Candlestick</Button
       >
     </div>
     <div>
@@ -846,10 +880,10 @@
       <ul
         class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
       >
-        {#if output.stream.length === 0}
+        {#if output.simpleSubscriber.length === 0}
           <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
         {:else}
-          {#each output.stream as line (line.date)}
+          {#each output.simpleSubscriber as line (line.date)}
             <li class="inline-flex h-8 gap-3 w-full items-center">
               <span class="text-ds-green-900">{line.date}:</span>
               <div class="h-5 w-[1px] bg-ds-green-400"></div>
@@ -859,7 +893,7 @@
         {/if}
       </ul>
 
-      <Button class="mt-4" variant="destructive" onclick={() => (output.stream = [])}
+      <Button class="mt-4" variant="destructive" onclick={() => (output.simpleSubscriber = [])}
         >Clear Output</Button
       >
     </div>
