@@ -80,6 +80,9 @@
         <li>
           <a class="text-semibold text-lg" href="/options-api">Options API</a>
         </li>
+        <li>
+          <a class="text-semibold text-lg" href="/dashboard">Dashboard</a>
+        </li>
       </ul>
     </nav>
     <Skeleton show={connectionState.isReconnecting}>
