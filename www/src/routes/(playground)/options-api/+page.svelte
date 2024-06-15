@@ -4,15 +4,17 @@
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { createBrokerage, useBroker, useBrokerageAccount } from '$lib/wrappers';
-  import { Address, fromNano } from '@ton/ton';
+  import { Address, fromNano, toNano } from '@ton/ton';
+  import { toast } from 'svelte-sonner';
   import { writable } from 'svelte/store';
 
   const brokerage = createBrokerage();
 
-  const streamAddress = writable('');
-  const broker = useBroker(streamAddress);
+  const brokerAddress = writable('');
+  const broker = useBroker(brokerAddress);
 
-  const brokerageAccount = useBrokerageAccount();
+  const brokerageAddress = writable('');
+  const brokerageAccount = useBrokerageAccount(brokerageAddress);
 
   const output = $state<
     Record<
@@ -25,7 +27,7 @@
   >({
     brokerage: [],
     broker: [],
-    account: []
+    brokerageAccount: []
   });
 
   async function handleDeploySubmit(
@@ -116,12 +118,19 @@
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const args = {
-      deposit: BigInt(formData.get('deposit') as string),
-      queryId: BigInt(formData.get('queryId') as string)
-    };
+    try {
+      const deposit = formData.get('deposit') as string;
+      // If there's a decimal point, convert to nano
+      const args = {
+        deposit: toNano(deposit),
+        queryId: BigInt(formData.get('queryId') as string)
+      };
 
-    await $broker.deposit(args);
+      await $broker.deposit(args);
+    } catch (error) {
+      toast.error('Deposit failed. Try again');
+      console.log(error);
+    }
   }
 
   async function handleWithdrawSubmit(
@@ -277,12 +286,12 @@
   <div class="pb-12 mt-12 border-b">
     <h3 class="text-ds-gray-1000 font-medium text-3xl mb-4">Broker</h3>
     <Label class="grid gap-2">
-      Stream Address
+      Broker Address
       <Input
         type="text"
         placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
         class="w-fit"
-        bind:value={$streamAddress}
+        bind:value={$brokerAddress}
       />
     </Label>
     <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
@@ -291,29 +300,6 @@
       upon successful transactions.
     </p>
     <div class="flex gap-4 items-end overflow-x-auto">
-      <form class="flex flex-col gap-4 w-max" onsubmit={handleDepositSubmit}>
-        <Label class="flex flex-col gap-2"
-          >Deposit
-          <Input type="number" name="deposit" placeholder="100" required min="0" />
-        </Label>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-pink-800 text-white hover:bg-ds-pink-700" type="submit">Deposit</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4 w-max" onsubmit={handleWithdrawSubmit}>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-pink-800 text-white hover:bg-ds-pink-700" type="submit"
-          >Withdraw</Button
-        >
-      </form>
-
       <Button
         class="bg-ds-pink-800 text-white hover:bg-ds-pink-700"
         onclick={async () => {
@@ -331,7 +317,7 @@
           const result = await $broker.getBrokerage();
           output.broker.unshift({
             date: formatDate(new Date()),
-            message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+            message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
           });
         }}>Get Brokerage</Button
       >
@@ -342,7 +328,7 @@
           const result = await $broker.getStream();
           output.broker.unshift({
             date: formatDate(new Date()),
-            message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+            message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
           });
         }}>Get Stream</Button
       >
@@ -366,6 +352,82 @@
       </ul>
 
       <Button class="mt-4" variant="destructive" onclick={() => (output.broker = [])}
+        >Clear Output</Button
+      >
+    </div>
+  </div>
+
+  <div class="pb-12 mt-12 border-b">
+    <h3 class="text-ds-gray-1000 font-medium text-3xl mb-4">Brokerage Account</h3>
+    <Label class="grid gap-2">
+      Brokerage Address
+      <Input
+        type="text"
+        placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
+        class="w-fit"
+        bind:value={$brokerageAddress}
+      />
+    </Label>
+    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
+      This contract ensures secure interactions with the brokerage account by enforcing strict
+      access controls and deposit/withdrawal requirements, along with notifying the relevant parties
+      upon successful transactions.
+    </p>
+    <div class="flex gap-4 items-end overflow-x-auto">
+      <Button
+        class="bg-ds-purple-800 text-white hover:bg-ds-purple-700"
+        onclick={async () => {
+          const result = await $brokerageAccount.getBrokerage();
+          output.brokerageAccount.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
+          });
+        }}>Get Brokerage</Button
+      >
+
+      <Button
+        class="bg-ds-purple-800 text-white hover:bg-ds-purple-700"
+        onclick={async () => {
+          const result = await $brokerageAccount.getTrader();
+
+          output.brokerageAccount.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
+          });
+        }}>Get Trader</Button
+      >
+
+      <Button
+        class="bg-ds-purple-800 text-white hover:bg-ds-purple-700"
+        onclick={async () => {
+          const result = await $brokerageAccount.getStorageReserve();
+
+          output.brokerageAccount.unshift({
+            date: formatDate(new Date()),
+            message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          });
+        }}>Get Storage Reserve</Button
+      >
+    </div>
+    <div>
+      <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
+      <ul
+        class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
+      >
+        {#if output.brokerageAccount.length === 0}
+          <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
+        {:else}
+          {#each output.brokerageAccount as line (line.date)}
+            <li class="inline-flex h-8 gap-3 w-full items-center">
+              <span class="text-ds-green-900">{line.date}:</span>
+              <div class="h-5 w-[1px] bg-ds-green-400"></div>
+              <span class="text-ds-green-900">{line.message}</span>
+            </li>
+          {/each}
+        {/if}
+      </ul>
+
+      <Button class="mt-4" variant="destructive" onclick={() => (output.brokerageAccount = [])}
         >Clear Output</Button
       >
     </div>

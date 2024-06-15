@@ -697,15 +697,15 @@ type BrokerMethods = {
   withdraw: (args: { queryId: bigint }) => Promise<void>;
 };
 
-export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMethods> => {
+export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMethods> => {
   const provider = new TonClient({
     endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
     apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
   });
 
   return derived(
-    [sender, tonConnectUI, streamAddress],
-    ([$sender, $tonConnectUI, $streamAddress], set) => {
+    [sender, tonConnectUI, brokerAddress],
+    ([$sender, $tonConnectUI, $brokerAddress], set) => {
       const getBalance = async () => {
         const brokerageAddress = localStorage.getItem('brokerage');
 
@@ -713,9 +713,7 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getBalance();
       };
@@ -727,9 +725,7 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getStorageReserve();
       };
@@ -741,9 +737,7 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getBrokerage();
       };
@@ -755,9 +749,7 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getStream();
       };
@@ -775,9 +767,7 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         await broker.send(
           $sender,
@@ -801,14 +791,14 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
+
+        console.log("toNano('0.05') + toNano(args.deposit)", toNano('0.05') + args.deposit);
 
         await broker.send(
           $sender,
           {
-            value: toNano('0.05') + toNano(args.deposit)
+            value: toNano('0.05') + args.deposit
           },
           { $$type: 'BRKDeposit', queryId: args.queryId }
         );
@@ -827,9 +817,7 @@ export const useBroker = (streamAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
-        const broker = provider.open(
-          await Broker.fromInit(Address.parse(brokerageAddress), Address.parse($streamAddress))
-        );
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         await broker.send(
           $sender,
@@ -859,13 +847,15 @@ type BrokerageAccountMethods = {
   getBrokerage: () => Promise<Address>;
 };
 
-export const useBrokerageAccount = (): Readable<BrokerageAccountMethods> => {
+export const useBrokerageAccount = (
+  brokerageAddress: Writable<string>
+): Readable<BrokerageAccountMethods> => {
   const provider = new TonClient({
     endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
     apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
   });
 
-  return derived([tonConnectUI], ([$tonConnectUI], set) => {
+  return derived([tonConnectUI, brokerageAddress], ([$tonConnectUI, $brokerageAddress], set) => {
     const getStorageReserve = async () => {
       const brokerageAddress = localStorage.getItem('brokerage');
 
@@ -875,7 +865,7 @@ export const useBrokerageAccount = (): Readable<BrokerageAccountMethods> => {
 
       const brokerageAccount = provider.open(
         await BrokerageAccount.fromInit(
-          Address.parse(brokerageAddress),
+          $brokerageAddress ? Address.parse($brokerageAddress) : Address.parse(brokerageAddress),
           Address.parse($tonConnectUI.account?.address!)
         )
       );
@@ -892,7 +882,7 @@ export const useBrokerageAccount = (): Readable<BrokerageAccountMethods> => {
 
       const brokerageAccount = provider.open(
         await BrokerageAccount.fromInit(
-          Address.parse(brokerageAddress),
+          $brokerageAddress ? Address.parse($brokerageAddress) : Address.parse(brokerageAddress),
           Address.parse($tonConnectUI.account?.address!)
         )
       );
@@ -909,7 +899,7 @@ export const useBrokerageAccount = (): Readable<BrokerageAccountMethods> => {
 
       const brokerageAccount = provider.open(
         await BrokerageAccount.fromInit(
-          Address.parse(brokerageAddress),
+          $brokerageAddress ? Address.parse($brokerageAddress) : Address.parse(brokerageAddress),
           Address.parse($tonConnectUI.account?.address!)
         )
       );
