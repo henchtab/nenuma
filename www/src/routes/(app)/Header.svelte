@@ -13,6 +13,7 @@
   import CreditCard from 'lucide-svelte/icons/credit-card';
   import LogOut from 'lucide-svelte/icons/log-out';
   import Menu from 'lucide-svelte/icons/menu';
+  import TestTubes from 'lucide-svelte/icons/test-tubes';
 
   const accountInfo = createQuery({
     queryKey: ['accountInfo'],
@@ -115,6 +116,12 @@
                 <a class="flex h-12 justify-between items-center" href="/dashboard/transactions">
                   <div class="font-medium text-ds-gray-900">Transactions</div>
                   <CreditCard size="20" strokeWidth={1.5} />
+                </a>
+              </Drawer.Close>
+              <Drawer.Close>
+                <a class="flex h-12 justify-between items-center" href="/">
+                  <div class="font-medium text-ds-gray-900">Playground</div>
+                  <TestTubes size="20" strokeWidth={1.5} />
                 </a>
               </Drawer.Close>
             </div>
