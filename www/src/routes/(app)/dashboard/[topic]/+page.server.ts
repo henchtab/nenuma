@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_COOKIE } from '$lib';
+import { ACCESS_TOKEN_COOKIE } from '$lib/constants';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies }) => {
