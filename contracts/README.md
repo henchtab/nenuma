@@ -1,60 +1,61 @@
 # Nenuma Contracts
 
 ## Overview
-Nenuma Contracts are designed to facilitate the creation and trading of derivatives such as options and perpetual futures on the TON blockchain. These contracts utilize data streams and provide a framework for developers to launch their own financial products.
+Welcome to Nenuma Contracts! We've built these contracts to help you create and trade derivatives like options and perpetual futures right on the TON blockchain. With real-time data streams, you'll have everything you need to launch your own financial products.
 
 ## Contracts
 
 ### 1. Data Stream Contract
-The Data Stream Contract provides real-time financial data to other contracts. It is managed by our publisher and ensures that data is available on-chain when there are active subscribers.
+Our Data Stream Contract gives you real-time financial data. It's managed by us and makes sure you always have the data you need on-chain when there are active subscribers.
 
-- **Purpose:** Supply real-time data to other contracts.
-- **Usage:** Integrate with other contracts needing real-time financial data.
+- **Why?** To provide real-time data to other contracts.
+- **How to use?** Integrate it with contracts that need real-time financial data.
 
 ### 2. Subscription Batch Contract
-The Subscription Batch Contract allows for scalable subscription management, enabling multiple users to subscribe to data streams efficiently.
+The Subscription Batch Contract helps you manage subscriptions efficiently, so multiple users can subscribe to data streams without any hassle.
 
-- **Purpose:** Manage and scale data stream subscriptions.
-- **Usage:** Handle subscriptions for multiple users.
+- **Why?** To manage and scale data stream subscriptions.
+- **How to use?** Handle multiple user subscriptions easily.
 
 ### 3. Session Contract
-The Session Contract manages individual user sessions for trading activities, ensuring that each user's actions are recorded and managed independently.
+The Session Contract keeps track of individual user sessions for trading, making sure each user's actions are recorded and managed separately.
 
-- **Purpose:** Track and manage user sessions.
-- **Usage:** Ensure accurate session management for trading activities.
+- **Why?** To track and manage user sessions.
+- **How to use?** Ensure accurate session management for trading.
 
 ### 4. Brokerage Contract
-The Brokerage Contract acts as an intermediary between users and the market, facilitating trades and ensuring secure transactions.
+The Brokerage Contract is your middleman, helping to facilitate trades and ensure secure transactions.
 
-- **Purpose:** Facilitate trading activities.
-- **Usage:** Securely manage trades and transactions.
+- **Why?** To facilitate trading activities.
+- **How to use?** Securely manage trades and transactions.
 
 ### 5. Broker Contract
-The Broker Contract works with the Brokerage Contract to execute trades on behalf of users, providing a seamless trading experience.
+The Broker Contract works with the Brokerage Contract to execute trades for users, providing a seamless experience.
 
-- **Purpose:** Execute trades.
-- **Usage:** Work with the Brokerage Contract for trade execution.
+- **Why?** To execute trades.
+- **How to use?** Work with the Brokerage Contract for trade execution.
 
 ### 6. Brokerage Account Contract
-The Brokerage Account Contract manages individual user accounts, tracking balances, and ensuring accurate record-keeping.
+The Brokerage Account Contract handles individual user accounts, tracking balances and ensuring everything is accurate.
 
-- **Purpose:** Manage user accounts.
-- **Usage:** Track balances and transaction histories.
+- **Why?** To manage user accounts.
+- **How to use?** Track balances and transaction histories.
 
 ### 7. Cash-or-Nothing Option Contract
-The Cash-or-Nothing Option Contract allows users to trade binary options, providing a straightforward and accessible way to engage in options trading.
+The Cash-or-Nothing Option Contract lets you trade binary options easily.
 
-- **Purpose:** Enable binary options trading.
-- **Usage:** Provide a platform for trading cash-or-nothing options.
+- **Why?** To enable binary options trading.
+- **How to use?** Trade cash-or-nothing options on our platform.
 
 ### 8. Simple Subscriber Contract
-The Simple Subscriber Contract manages subscriptions to data streams and handles various operational tasks such as session management and notification handling.
+The Simple Subscriber Contract is for managing subscriptions to data streams and handling notifications.
 
-- **Purpose:** Manage subscriptions and notifications.
-- **Usage:** Provide a structure for subscribing to data streams and handling notifications.
+- **Why?** To manage subscriptions and notifications.
+- **How to use?** Subscribe to data streams and handle notifications with ease.
+
 
 ## Deployment
-The contracts are deployed on the TON Testnet and can be accessed via the following link:
+We've published the Data Stream contact so that you can test it yourself. We will automatically publish BTC/USDT candlesticks when we have at least 1 subscriber  
 
 [Testnet Deployment](https://testnet.tonviewer.com/kQDZnFY0yew3AcB0pk0H0CL5L2kclQXH0VHO_cWyfdOQ0SEp)
 
