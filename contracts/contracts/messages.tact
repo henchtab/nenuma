@@ -1,39 +1,39 @@
 // BEGIN Data Stream
 
 message DSTDeploy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message DSTDeploySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message DSTDeployBatch {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message DSTDeployBatchSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   batch: Address; 
 }
 
 message DSTDeploySession {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message DSTDeploySessionSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   session: Address; 
 }
 
 message DSTSubscribe {
-  queryId: Int;
+  queryId: Int as uint64;
   subscriber: Address;
   notificationsCount: Int;
 }
 
 message DSTSubscribeSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   batch: Address;
   remainingNotificationsCount: Int;
 }
@@ -48,16 +48,16 @@ struct Candlestick {
 }
 
 message DSTPublishCandlestick { 
-  queryId: Int; 
+  queryId: Int as uint64; 
   candlestick: Candlestick;
 }
 
 message DSTPublishCandlestickSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message DSTUnsubscribedNotification {
-  queryId: Int;
+  queryId: Int as uint64;
   remainingNotificationsCount: Int;
 }
 
@@ -67,46 +67,46 @@ message DSTUnsubscribedNotification {
 // BEGIN Subsription Batch
 
 message SBDeploy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message SBDeploySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   batchId: Int;
 }
 
 message SBSubscribe {
-  queryId: Int;
+  queryId: Int as uint64;
   session: Address;
   notificationsCount: Int;
 }
 
 message SBSubscribeSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   session: Address;
   remainingNotificationsCount: Int;
 }
 
 message SBPublishCandlestick {
-  queryId: Int;
+  queryId: Int as uint64;
   candlestick: Candlestick;
   publisher: Address;
 }
 
 message SBCandlestickPublishedNotification {
-  queryId: Int;
+  queryId: Int as uint64;
   candlestick: Candlestick;
   remainingNotificationsCount: Int;
 }
 
 message SBUnsubscribedNotification {
-  queryId: Int;
+  queryId: Int as uint64;
   session: Address;
   remainingNotificationsCount: Int;
 }
 
 message SBPublishCandlestickSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 // END Subscription Batch
@@ -115,45 +115,45 @@ message SBPublishCandlestickSuccess {
 // BEGIN Session
 
 message SESDeploy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message SESDeploySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   subscriber: Address;
 }
 
 message SESSubscribe {
-  queryId: Int;
+  queryId: Int as uint64;
   notificationsCount: Int;
 }
 
 message DSTTopUpSubscription {
-  queryId: Int;
+  queryId: Int as uint64;
   subscriber: Address;
   batch: Address;
   notificationsCount: Int;
 }
 
 message SBTopUpSubscription {
-  queryId: Int;
+  queryId: Int as uint64;
   session: Address;
   notificationsCount: Int;
 }
 
 message SESSubscribeSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   remainingNotificationsCount: Int;
 }
 
 message SESCandlestickPublishedNotification {
-  queryId: Int;
+  queryId: Int as uint64;
   candlestick: Candlestick;
   remainingNotificationsCount: Int;
 }
 
 message SESUnsubscribedNotification {
-  queryId: Int;
+  queryId: Int as uint64;
   remainingNotificationsCount: Int;
 }
 
@@ -161,34 +161,34 @@ message SESUnsubscribedNotification {
 
 
 message SESUnsubscribe { 
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message SBUnsubscribe {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message SESDestroy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message SESDestroySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 // message SBUnsubscribeSuccess {
-//   queryId: Int;
+//   queryId: Int as uint64;
 //   session: Address;
 //   remainingNotificationsCount: Int;
 // }
 
 // message DSTUnsubscribeSuccess {
-//   queryId: Int;
+//   queryId: Int as uint64;
 //   remainingNotificationsCount: Int;
 // }
 
 // message SESUnsubscribeSuccess { 
-//   queryId: Int;
+//   queryId: Int as uint64;
 //   remainingNotificationsCount: Int;
 // }
 
@@ -197,51 +197,51 @@ message SESDestroySuccess {
 // Step 1
 
 message BRGDeploy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message BRGDeploySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 // // Step 2
 
 message BRGDeployBroker {
-  queryId: Int;
+  queryId: Int as uint64;
   stream: Address;
 }
 
 message BRKDeploy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message BRKDeploySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   stream: Address;
 }
 
 message BRGDeployBrokerSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   broker: Address;
 }
 
 // // Step 4
 
 message BRGDeployAccount {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message BRADeploy {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message BRADeploySuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   trader: Address;
 }
 
 message BRGDeployAccountSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
   account: Address;
 }
 
@@ -249,22 +249,22 @@ message BRGDeployAccountSuccess {
 
 // Deposits the value
 message BRKDeposit {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message BRKDepositSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 // // Step 7
 
 // Withdraws the value
 message BRKWithdraw {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 message BRKWithdrawSuccess {
-  queryId: Int;
+  queryId: Int as uint64;
 }
 
 // // END Brokerage
