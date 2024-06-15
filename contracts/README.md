@@ -89,16 +89,12 @@ Run the test suite to ensure that everything is working correctly.
 pnpm test
 ```
 
-## Contributing
-We welcome contributions from the community. Please read our [contributing guidelines](CONTRIBUTING.md) for more information.
-
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/dreamqip/nenuma/blob/main/LICENSE) file for details.
 
 ## Community and Support
 Join our [Telegram channel](https://t.me/NenumaCommunity) for updates and support. For detailed questions and discussions, open an issue on GitHub.
 
 ## Additional Resources
-- [Nenuma Interface](https://github.com/dreamqip/nenuma-interface)
-- [Nenuma Documentation](https://nenuma.telegram-mini-apps.manuvantara.com/docs)
+- [Nenuma Interface](https://github.com/dreamqip/nenuma/tree/main/www)
 
