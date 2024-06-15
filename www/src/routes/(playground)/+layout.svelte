@@ -91,7 +91,7 @@
           <li>
             <a
               class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
-              href="/dashboard">Dashboard</a
+              href="/dashboard">Derivatives Exchange</a
             >
           </li>
         </ul>
@@ -128,16 +128,19 @@
                 </a>
               </Drawer.Close>
               <Drawer.Close>
-                <a class="flex justify-between items-center h-12 text-lg font-medium" href="/dashboard">
-                  Dashboard
-                </a>
-              </Drawer.Close>
-              <Drawer.Close>
                 <a
                   class="flex justify-between items-center h-12 text-lg font-medium"
                   href="/options-api"
                 >
                   Options API
+                </a>
+              </Drawer.Close>
+              <Drawer.Close>
+                <a
+                  class="flex justify-between items-center h-12 text-lg font-medium"
+                  href="/dashboard"
+                >
+                  Derivatives Exchange
                 </a>
               </Drawer.Close>
             </nav>
