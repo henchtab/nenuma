@@ -13,7 +13,7 @@ import {
   THE_GREAT_CONJUCTION_2077,
 } from "../wrappers/constants";
 
-describe("Core Assesment", () => {
+describe("Core Assessment", () => {
   const BATCH_LIMIT = 3;
   const DST_DEPLOY_DEPOSIT = toNano("0.02");
 
@@ -43,17 +43,13 @@ describe("Core Assesment", () => {
     carol = await blockchain.treasury("carol");
     logger.addContract(carol, "Carol");
 
+    // Initialize the DataStream contract and log it
     stream = blockchain.openContract(
       await DataStream.fromInit(publisher.address, "candlestick.1.BTCUSDT"),
     );
     logger.addContract(stream, "Data Stream");
 
-    // Deploy a data stream
-    stream = blockchain.openContract(
-      await DataStream.fromInit(publisher.address, "candlestick.1.BTCUSDT"),
-    );
-    logger.addContract(stream, "Data Stream");
-
+    // Deploy the DataStream contract and log the transactions
     const DSTDeployResult = await stream.send(
       publisher.getSender(),
       {
@@ -88,7 +84,7 @@ describe("Core Assesment", () => {
   });
 
   it("(1) Should deploy Alice's Simple Subscriber #1 (notificationsCount = 3) that gracefully destroys after receiving the 3rd candlestick", async () => {
-    // Deploy a simple subscriber
+    // Deploy a simple subscriber for Alice
     const subscriber = blockchain.openContract(
       await SimpleSubscriber.fromInit(
         alice.address,
@@ -105,6 +101,7 @@ describe("Core Assesment", () => {
       `Alice's Simple Subscriber #1's Session`,
     );
 
+    // Deploy the Simple Subscriber contract and log the transactions
     const DSTDeployResult = await subscriber.send(
       alice.getSender(),
       {
@@ -121,15 +118,10 @@ describe("Core Assesment", () => {
     );
     logger.logTransactions(DSTDeployResult.transactions);
 
-    expect(await subscriber.getExpiresAt()).toBe(
-      100n,
-    );
+    expect(await subscriber.getExpiresAt()).toBe(100n);
+    expect(await subscriber.getNotificationsCount()).toBe(4n);
 
-    expect(await subscriber.getNotificationsCount()).toBe(
-      4n,
-    );
-
-    // Publish the 1st candlestick
+    // Publish and verify the 1st candlestick
     const expectedCandlestick1: Candlestick = {
       $$type: "Candlestick",
       start: 7n,
@@ -157,8 +149,7 @@ describe("Core Assesment", () => {
       expectedCandlestick1,
     );
 
-    // Publish the 2nd candlestick
-
+    // Publish and verify the 2nd candlestick
     const expectedCandlestick2: Candlestick = {
       $$type: "Candlestick",
       start: 8n,
@@ -186,8 +177,7 @@ describe("Core Assesment", () => {
       expectedCandlestick2,
     );
 
-    // Publish the 3rd candlestick and destroy subscriber
-
+    // Publish and verify the 3rd candlestick, and check for the destruction of the subscriber
     const expectedCandlestick3: Candlestick = {
       $$type: "Candlestick",
       start: 9n,
@@ -226,9 +216,7 @@ describe("Core Assesment", () => {
   });
 
   it("(2) Should deploy Bob's Simple Subscriber #2 (notificationsCount = 10) that does not receive SESCandlestickPublishedNotification notifications and destroys gracefully after SUSCheckTimeout is successful", async () => {
-    // blockchain.now = THE_GREAT_CONJUCTION_2077;
-
-    // Deploy a simple subscriber
+    // Deploy a simple subscriber for Bob
     const subscriber = blockchain.openContract(
       await SimpleSubscriber.fromInit(
         bob.address,
@@ -240,13 +228,12 @@ describe("Core Assesment", () => {
     const expectedSessionAddress = await stream.getSessionAddress(
       subscriber.address,
     );
-    console.warn(expectedSessionAddress);
-
     logger.addContract(
       expectedSessionAddress,
       `Bob's Simple Subscriber #2's Session`,
     );
 
+    // Deploy the Simple Subscriber contract and log the transactions
     const DSTDeployResult = await subscriber.send(
       publisher.getSender(),
       {
@@ -263,11 +250,7 @@ describe("Core Assesment", () => {
     );
     logger.logTransactions(DSTDeployResult.transactions, "(2) DSTDeployResult");
 
-    // expect(await subscriber.getSessionAddress()).toEqualAddress(
-    //   expectedSessionAddress,
-    // );
-
-    // Make the 1st (unsuccessful) check whether the timeout exceeded
+    // Check timeout before expiration
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 60;
 
     const SUSCheckTimeout1 = await subscriber.send(
@@ -292,7 +275,7 @@ describe("Core Assesment", () => {
       exitCode: ERR_TIMEOUT_NOT_EXCEEDED,
     });
 
-    // Make the 2st (successful) check whether the timeout exceeded
+    // Check timeout after expiration
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 7200;
 
     const SUSCheckTimeout2 = await subscriber.send(

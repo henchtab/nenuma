@@ -8,12 +8,18 @@ export class ShrekLogger {
     this.contractLabels = new Map<string, string>();
   }
 
+  /**
+   * Adds a contract label for easy identification.
+   * @param contract The contract or address to label.
+   * @param label The label to associate with the contract.
+   */
   addContract<F extends Contract>(
     contract: SandboxContract<F> | Address | string,
     label: string,
   ) {
-    let address;
+    let address: string;
 
+    // Determine the address string based on the type of the contract parameter.
     if (typeof contract === "object" && "address" in contract) {
       address = (contract as SandboxContract<F>).address.toString();
     } else if (typeof contract === "string") {
@@ -22,16 +28,23 @@ export class ShrekLogger {
       address = contract.toString();
     }
 
+    // Check for duplicate labels and throw an error if a label already exists.
     if (this.contractLabels.get(address) === address) {
       throw new Error(
         `The '${address}' contract already has a '${label}' label!`,
       );
     }
 
+    // Set the label for the given address.
     this.contractLabels.set(address, label);
   }
 
-  getContractLabel(address?: string) {
+  /**
+   * Retrieves the label for a given contract address.
+   * @param address The address of the contract.
+   * @returns The label associated with the address or a shortened version of the address.
+   */
+  getContractLabel(address?: string): string {
     if (!address) {
       return "Shrek";
     }
@@ -45,6 +58,11 @@ export class ShrekLogger {
     return label;
   }
 
+  /**
+   * Logs transactions to the console in a table format.
+   * @param transactions The list of transactions to log.
+   * @param info Optional info to log before the transactions.
+   */
   logTransactions(transactions: Transaction[], info?: string) {
     if (info) {
       console.info(info);
@@ -57,20 +75,29 @@ export class ShrekLogger {
     console.table(formattedTransactions);
   }
 
+  /**
+   * Formats a transaction into a readable object.
+   * @param tx The transaction to format.
+   * @returns A formatted transaction object or undefined if not applicable.
+   */
   private formatTransaction(tx: Transaction) {
     if (tx.description.type !== "generic") {
       return undefined;
     }
 
+    // Parse the transaction body if it is an internal message.
     const body = tx.inMessage?.info.type === "internal"
       ? tx.inMessage.body?.beginParse()
       : undefined;
+
+    // Preload the operation code if available.
     const op = body && body.remainingBits >= 32
       ? body.preloadUint(32)
       : body
       ? "0xN0B0DY"
       : "0gR33n0gr";
 
+    // Format the transaction fees and values.
     const totalFees = formatCoins(tx.totalFees.coins);
     const computeFees = tx.description.computePhase.type === "vm"
       ? formatCoins(tx.description.computePhase.gasFees)
@@ -93,6 +120,7 @@ export class ShrekLogger {
       ? formatCoins(tx.inMessage.info.forwardFee)
       : undefined;
 
+    // Get source and destination labels.
     let source = this.getContractLabel(
       tx.inMessage?.info.src?.toString(),
     );
@@ -101,6 +129,7 @@ export class ShrekLogger {
       tx.inMessage?.info.dest?.toString(),
     );
 
+    // Return the formatted transaction object.
     return {
       "Source": source,
       "Destination": destination,
@@ -121,6 +150,11 @@ export class ShrekLogger {
 
 // BEGIN HELPERS
 
+/**
+ * Shortens a string to the first and last 4 characters, separated by ellipses.
+ * @param str The string to shorten.
+ * @returns The shortened string.
+ */
 function shortenString(str: string): string {
   if (str.length <= 8) {
     return str; // If the string is 8 characters or less, return it as is.
@@ -135,6 +169,11 @@ function shortenString(str: string): string {
 const decimalCount = 9;
 const decimal = pow10(decimalCount);
 
+/**
+ * Calculates 10 raised to the power of n.
+ * @param n The exponent.
+ * @returns The value of 10^n as a bigint.
+ */
 function pow10(n: number): bigint {
   let v = 1n;
   for (let i = 0; i < n; i++) {
@@ -143,13 +182,19 @@ function pow10(n: number): bigint {
   return v;
 }
 
+/**
+ * Formats a coin value to a readable string with a given precision.
+ * @param value The coin value to format.
+ * @param precision The number of decimal places to display.
+ * @returns The formatted coin value as a string.
+ */
 function formatCoinsPure(value: bigint, precision = 6): string {
   let whole = value / decimal;
 
   let frac = value % decimal;
   const precisionDecimal = pow10(decimalCount - precision);
   if (frac % precisionDecimal > 0n) {
-    // round up
+    // Round up the fractional part.
     frac += precisionDecimal;
     if (frac >= decimal) {
       frac -= decimal;
@@ -165,6 +210,12 @@ function formatCoinsPure(value: bigint, precision = 6): string {
   }`;
 }
 
+/**
+ * Formats a coin value to a readable string, handling undefined or null values.
+ * @param value The coin value to format.
+ * @param precision The number of decimal places to display.
+ * @returns The formatted coin value as a string or "N/A" if value is undefined or null.
+ */
 export function formatCoins(
   value: bigint | undefined | null,
   precision = 6,
