@@ -67,16 +67,11 @@
   }
 </script>
 
-<div class="flex flex-col items-center justify-center min-h-screen bg-white">
+<div class="flex flex-col items-center justify-center min-h-screen">
   <div class="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <!-- svelte-ignore element_invalid_self_closing_tag -->
-      <enhanced:img
-        src="/src/assets/tailwindcss-logo.svg"
-        alt="Tailwind CSS"
-        class="mx-auto h-10 w-auto"
-      />
-      <h1 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-foreground">
+    <div class="grid justify-center items-center">
+      <span class="text-xl text-center text-medium">Nenuma</span>
+      <h1 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight">
         Sign in with your wallet
       </h1>
     </div>

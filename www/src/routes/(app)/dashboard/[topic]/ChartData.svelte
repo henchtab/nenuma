@@ -21,14 +21,14 @@
 
   onMount(() => {
     const chart = createChart(chartContainer, {
-      width: chartContainer.clientWidth,
-      height: chartContainer.clientHeight,
-      autoSize: true,
       timeScale: {
-        timeVisible: true
+        timeVisible: true,
+        fixRightEdge: true,
+        rightBarStaysOnScroll: true
       },
       layout: {
-        background: { color: 'rgba(255, 255, 255, 0)' }
+        textColor: '#fff',
+        background: { color: '#000' }
       }
     });
     candlestickSeries = chart.addCandlestickSeries({
@@ -45,7 +45,10 @@
     }
 
     const timeScale = chart.timeScale();
-    timeScale.scrollToRealTime();
+    timeScale.setVisibleRange({
+      to: new Date(),
+      from: Date.now()
+    });
 
     candlestickSeries.priceScale().applyOptions({
       borderVisible: false,

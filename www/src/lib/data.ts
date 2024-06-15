@@ -64,6 +64,8 @@ export async function checkProofAndRedirect(
       const redirectTo = cookie.get(REDIRECT_TO_COOKIE);
 
       if (redirectTo) {
+        console.log('Redirecting to:', redirectTo);
+
         await goto(redirectTo, {
           replaceState: true
         });

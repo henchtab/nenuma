@@ -6,7 +6,6 @@
   import { onMount } from 'svelte';
   import { Toaster, toast } from 'svelte-sonner';
   import * as Drawer from '$lib/components/ui/drawer';
-  import '../app.css';
   import { Menu } from 'lucide-svelte';
 
   let { children } = $props();
@@ -72,7 +71,7 @@
 </script>
 
 <div class="relative isolate flex-1 flex flex-col">
-  <!-- <header class="container py-4 flex items-center justify-between">
+  <header class="container py-4 flex items-center justify-between">
     <h1 class="text-xl font-medium text-center">Nenuma</h1>
     {#if $isDesktop}
       <nav>
@@ -124,25 +123,25 @@
           <Drawer.Footer class="gap-0 m-0 overflow-auto">
             <nav class="grid gap-3 pb-3 border-b">
               <Drawer.Close>
-                <a class="flex justify-between items-center text-lg font-medium" href="/">
+                <a class="flex justify-between items-center h-12 text-lg font-medium" href="/">
                   Streams API
                 </a>
               </Drawer.Close>
               <Drawer.Close>
-                <a class="flex justify-between items-center text-lg font-medium" href="/dashboard">
+                <a class="flex justify-between items-center h-12 text-lg font-medium" href="/dashboard">
                   Dashboard
                 </a>
               </Drawer.Close>
               <Drawer.Close>
                 <a
-                  class="flex justify-between items-center text-lg font-medium"
+                  class="flex justify-between items-center h-12 text-lg font-medium"
                   href="/options-api"
                 >
                   Options API
                 </a>
               </Drawer.Close>
             </nav>
-            <div class="py-3">
+            <div class="pt-8">
               <Skeleton class="w-full" show={connectionState.isReconnecting}>
                 <Button
                   class="w-full"
@@ -167,7 +166,7 @@
         </Drawer.Content>
       </Drawer.Root>
     {/if}
-  </header> -->
+  </header>
 
   {@render children()}
 </div>

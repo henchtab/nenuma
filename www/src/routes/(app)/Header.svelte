@@ -63,8 +63,7 @@
 
 <header class="border-b border-ds-gray-400">
   <div class="container pr-0 flex justify-between items-center">
-    <!-- svelte-ignore element_invalid_self_closing_tag -->
-    <enhanced:img src="/src/assets/tailwindcss-logo.svg" alt="Tailwind CSS" class="h-8 w-auto" />
+    <span class="text-xl text-center text-medium">Nenuma</span>
     <div class="flex items-center gap-2 border-l border-ds-gray-400 p-4">
       <div class="inline-flex gap-2">
         <Coins size="24" strokeWidth={1.5} />
@@ -79,7 +78,10 @@
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
         <Drawer.Content
-          class={cn('max-h-[96%]', $isDesktop && 'h-full left-auto min-w-[25%] right-0')}
+          class={cn(
+            'max-h-[96%] bg-ds-background-200',
+            $isDesktop && 'h-full left-auto min-w-[25%] right-0'
+          )}
         >
           <Drawer.Footer class="gap-0 m-0 overflow-auto">
             <div class="grid gap-3 pb-3 border-b">
