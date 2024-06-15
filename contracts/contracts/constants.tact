@@ -8,6 +8,8 @@ const ERR_INVALID_ARGUMENT: Int = 404;
 const ERR_STREAM_NOT_SUBSCRIBED: Int = 405;
 const ERR_STREAM_SUBSCRIBED: Int = 406;
 const ERR_BATCH_NOT_FOUND: Int = 407;
+const ERR_OPTION_NOT_EXPIRED: Int = 408;
+const ERR_INVALID_STATE: Int = 409;
 
 // END Errors
 
@@ -16,16 +18,16 @@ const ERR_BATCH_NOT_FOUND: Int = 407;
 
 const DST_STORAGE_RESERVE: Int = ton("0.01");
 
-const BATCH_LIMIT: Int = 20;
-const SUBSCRIPTION_LIMIT: Int = 10;
+const BATCH_LIMIT: Int = 10;
+const SUBSCRIPTION_LIMIT: Int = 20;
 const DECIMALS: Int = 2;
 
 const NOTIFICATION_PREMIUM: Int = ton("0.01");
-const NOTIFICATION_DEPOSIT: Int = ton("0.02");
+const NOTIFICATION_DEPOSIT: Int = ton("0.03");
 
 const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("0.05"); // <--
 const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("0.05"); // <--
-const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("1000"); // <--
+const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("5"); // <--
 
 // END Data Stream
 
@@ -33,7 +35,7 @@ const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("1000"); // <--
 // BEGIN Subsription Batch
 
 const SB_STORAGE_RESERVE: Int = ton("0.01");
-const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("100");
+const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("0.5");
 
 // END Subscription Batch
 
