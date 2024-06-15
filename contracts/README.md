@@ -90,7 +90,7 @@ pnpm test
 ```
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/dreamqip/nenuma/blob/main/LICENSE) file for details.
 
 ## Community and Support
 Join our [Telegram channel](https://t.me/NenumaCommunity) for updates and support. For detailed questions and discussions, open an issue on GitHub.
