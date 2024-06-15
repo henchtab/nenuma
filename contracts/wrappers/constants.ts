@@ -10,8 +10,16 @@ export const ERR_STREAM_SUBSCRIBED: bigint = 406n;
 export const ERR_BATCH_NOT_FOUND: bigint = 407n;
 export const ERR_OPTION_NOT_EXPIRED: bigint = 408n;
 export const ERR_INVALID_STATE: bigint = 409n;
+export const ERR_NOT_DEPLOYED = 410;
+export const ERR_TIMEOUT_NOT_EXCEEDED = 411;
 
-export const NOTIFICATION_DEPOSIT = toNano("1");
+export const NOTIFICATION_DEPOSIT = toNano("0.03");
+export const NOTIFICATION_PREMIUM = toNano("0.01");
+
+export const SUS_STORAGE_RESERVE = toNano("1");
+export const SUS_OPERATIONAL_RESERVE = toNano("2");
+
+export const THE_GREAT_CONJUCTION_2077 = 3407270400;
 
 export const CNO_STATE_DEPLOYED: bigint = 0n;
 export const CNO_STATE_PENDING_DEPLOY_SESSION: bigint = 1n;
