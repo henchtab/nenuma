@@ -52,24 +52,24 @@ const SES_DESTROY_DEPOSIT: Int = ton("0.01"); // <--
 
 // BEGIN Brokerage
 
-const BRG_STORAGE_RESERVE: Int = ton("13.00");
-const BRG_DEPLOY_BROKER_DEPOSIT: Int = ton("20");
-const BRG_DEPLOY_ACCOUNT_DEPOSIT: Int = ton("30");
+const BRG_STORAGE_RESERVE: Int = ton("0.01");
+const BRG_DEPLOY_BROKER_DEPOSIT: Int = ton("0.05");
+const BRG_DEPLOY_ACCOUNT_DEPOSIT: Int = ton("0.05");
 
 // END Brokerage
 
 
 // BEGIN Broker
 
-const BRK_STORAGE_RESERVE: Int = ton("14.00");
-const BRK_DEPOSIT_DEPOSIT: Int = ton("6.00");
-const BRK_WITHDRAW_DEPOSIT: Int = ton("4.00");
+const BRK_STORAGE_RESERVE: Int = ton("0.01");
+const BRK_DEPOSIT_DEPOSIT: Int = ton("0.05");
+const BRK_WITHDRAW_DEPOSIT: Int = ton("0.05");
 
 // END Broker
 
 
 // BEGIN Brokerage Account
 
-const BRA_STORAGE_RESERVE: Int = ton("15.00");
+const BRA_STORAGE_RESERVE: Int = ton("0.01");
 
 // END Brokerage Account
