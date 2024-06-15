@@ -8,11 +8,11 @@ export const COOKIE_EXPIRES = new Date(Date.now() + 1000 * 60 * 60 * 24 * 180);
 export const DST_DEPLOY_DEPOSIT = toNano('0.02');
 
 export const NOTIFICATION_PREMIUM = toNano('0.01');
-export const NOTIFICATION_DEPOSIT = toNano('0.02');
+export const NOTIFICATION_DEPOSIT = toNano('0.03');
 
 export const DST_DEPLOY_BATCH_DEPOSIT = toNano('0.05');
 export const DST_DEPLOY_SESSION_DEPOSIT = toNano('0.05');
-export const DST_PUBLISH_CANDLESTICK_DEPOSIT = toNano('50');
+export const DST_PUBLISH_CANDLESTICK_DEPOSIT = toNano('5');
 
 export const SES_STORAGE_RESERVE = toNano('0.01');
 export const SES_SUBSCRIBE_DEPOSIT = toNano('0.05');
