@@ -7,8 +7,7 @@
   import { Menu } from 'lucide-svelte';
   import { onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
-  // @ts-expect-error
-  import logo from '$lib/assets/logo.png?enhanced';
+  import logo from '$lib/assets/logo.svg';
 
   let { children } = $props();
 
@@ -71,9 +70,8 @@
   }
 </script>
 
-<header class="container py-4 flex items-center justify-between">
-  <!-- svelte-ignore element_invalid_self_closing_tag -->
-  <enhanced:img src={logo} alt="Nenuma" class="w-8 h-8" />
+<header class="container py-4 flex items-center justify-between border-b sticky top-0 bg-ds-background-200 z-50">
+  <img src={logo} alt="Nenuma" class="w-8 h-8" />
   {#if $isDesktop}
     <nav>
       <ul class="flex space-x-4">
@@ -121,7 +119,7 @@
         <Drawer.Trigger class="w-8 h-8 border border-ds-gray-400 rounded-full">
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
-        <Drawer.Content class="bg-ds-background-100 max-h-[90%] h-full">
+        <Drawer.Content class="bg-ds-background-100 h-full">
           <Drawer.Footer class="gap-0 m-0 overflow-auto">
             <nav class="grid gap-3 pb-3 border-b">
               <Drawer.Close>

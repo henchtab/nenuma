@@ -12,6 +12,7 @@
   import { Address, fromNano } from '@ton/ton';
   import { writable } from 'svelte/store';
   import autoAnimate from '@formkit/auto-animate';
+  import { toast } from 'svelte-sonner';
 
   const streamAddress = writable('');
   const stream = createDataStream(streamAddress);
@@ -242,13 +243,13 @@
   />
 </svelte:head>
 
-<div class="container py-8">
-  <h2 class="text-ds-gray-1000 font-semibold text-5xl text-left pb-16 border-b mb-16">
+<div>
+  <h1 class="text-ds-gray-1000 container font-semibold text-4xl text-left py-6 border-b">
     Streams API
-  </h2>
+  </h1>
 
-  <div class="pb-12 mt-12 border-b">
-    <h3 class="text-ds-gray-1000 font-medium text-3xl mb-4">Data Stream</h3>
+  <div class="py-6 container border-b">
+    <h2 class="text-ds-gray-1000 font-medium text-3xl mb-4">Data Stream</h2>
     <Label class="grid gap-2">
       Stream Address
       <Input
@@ -345,11 +346,17 @@
       <Button
         class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
         onclick={async () => {
-          const result = await $stream.getTopic();
-          output.stream.unshift({
-            date: formatDate(new Date()),
-            message: JSON.stringify(result, null, 2)
-          });
+          try {
+            const result = await $stream.getTopic();
+            output.stream.unshift({
+              date: formatDate(new Date()),
+              message: JSON.stringify(result, null, 2)
+            });
+          } catch (error) {
+            if (error instanceof Error) {
+              toast.error(error.message);
+            }
+          }
         }}>Get Topic</Button
       >
 
