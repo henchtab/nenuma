@@ -11,6 +11,7 @@
   } from '$lib/wrappers';
   import { Address, fromNano } from '@ton/ton';
   import { writable } from 'svelte/store';
+  import autoAnimate from '@formkit/auto-animate';
 
   const streamAddress = writable('');
   const stream = createDataStream(streamAddress);
@@ -435,6 +436,7 @@
     <div>
       <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
       <ul
+        use:autoAnimate
         class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
       >
         {#if output.stream.length === 0}
@@ -551,6 +553,7 @@
     <div>
       <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
       <ul
+        use:autoAnimate
         class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
       >
         {#if output.batch.length === 0}
@@ -691,6 +694,7 @@
     <div>
       <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
       <ul
+        use:autoAnimate
         class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
       >
         {#if output.session.length === 0}
@@ -878,6 +882,7 @@
     <div>
       <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
       <ul
+        use:autoAnimate
         class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
       >
         {#if output.simpleSubscriber.length === 0}
