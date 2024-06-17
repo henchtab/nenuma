@@ -19,9 +19,6 @@
   const isDesktop = mediaQuery('(min-width: 768px)');
 
   onMount(() => {
-    window.onunhandledrejection = (e) =>
-      toast.error(`An unhandled promise rejection occurred - ${e.reason}`);
-
     tonConnectUI.subscribe(async (tonConnectUI) => {
       if (!tonConnectUI) {
         connectionState.isConnnected = false;

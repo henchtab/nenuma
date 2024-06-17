@@ -18,7 +18,6 @@
   const isDesktop = mediaQuery('(min-width: 768px)');
 
   onMount(() => {
-    window.onerror = (e) => toast.error(`An error occurred - ${e}`);
     window.onunhandledrejection = (e) =>
       toast.error(`An unhandled promise rejection occurred - ${e.reason}`);
 
