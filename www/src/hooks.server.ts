@@ -1,5 +1,5 @@
-import { error, redirect, type Handle } from '@sveltejs/kit';
 import { ACCESS_TOKEN_COOKIE } from '$lib/constants';
+import { error, redirect, type Handle } from '@sveltejs/kit';
 
 const AUTH_ROUTE = '/auth/sign-in';
 const PROTECTED_ROUTES_PREFIX = '/(app)';
@@ -9,7 +9,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   const routeId = event.route.id;
 
   if (routeId === null) {
-    throw error(404, 'What are you looking for?');
+    throw error(404, 'The route does not exist');
   }
 
   let canAccess = false;

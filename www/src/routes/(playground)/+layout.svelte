@@ -1,12 +1,14 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';
+  import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { tonConnectUI } from '$lib/ton-connect';
   import { mediaQuery } from '$lib/utils';
-  import { onMount } from 'svelte';
-  import { Toaster, toast } from 'svelte-sonner';
-  import * as Drawer from '$lib/components/ui/drawer';
   import { Menu } from 'lucide-svelte';
+  import { onMount } from 'svelte';
+  import { toast } from 'svelte-sonner';
+  // @ts-expect-error
+  import logo from '$lib/assets/logo.png?enhanced';
 
   let { children } = $props();
 
@@ -69,51 +71,52 @@
   }
 </script>
 
-<div class="relative isolate flex-1 flex flex-col">
-  <header class="container py-4 flex items-center justify-between">
-    <h1 class="text-xl font-medium text-center">Nenuma</h1>
-    {#if $isDesktop}
-      <nav>
-        <ul class="flex space-x-4">
-          <li>
-            <a
-              class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
-              href="/">Streams API</a
-            >
-          </li>
-          <li>
-            <a
-              class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
-              href="/options-api">Options API</a
-            >
-          </li>
-          <li>
-            <a
-              class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
-              href="/dashboard">Derivatives Exchange</a
-            >
-          </li>
-        </ul>
-      </nav>
-      <Skeleton show={connectionState.isReconnecting}>
-        <Button
-          type="button"
-          onclickcapture={() => {
-            if (connectionState.isConnnected) {
-              disconnectWallet();
-            } else {
-              connectWallet();
-            }
-          }}
-        >
-          {#if connectionState.isConnnected}
-            Connected
-          {:else}
-            Connect
-          {/if}
-        </Button>
-      </Skeleton>
-    {:else}
+<header class="container py-4 flex items-center justify-between">
+  <!-- svelte-ignore element_invalid_self_closing_tag -->
+  <enhanced:img src={logo} alt="Nenuma" class="w-8 h-8" />
+  {#if $isDesktop}
+    <nav>
+      <ul class="flex space-x-4">
+        <li>
+          <a
+            class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
+            href="/">Streams API</a
+          >
+        </li>
+        <li>
+          <a
+            class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
+            href="/options-api">Options API</a
+          >
+        </li>
+        <li>
+          <a
+            class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors"
+            href="/dashboard">Derivatives Exchange</a
+          >
+        </li>
+      </ul>
+    </nav>
+    <Skeleton show={connectionState.isReconnecting}>
+      <Button
+        type="button"
+        onclickcapture={() => {
+          if (connectionState.isConnnected) {
+            disconnectWallet();
+          } else {
+            connectWallet();
+          }
+        }}
+      >
+        {#if connectionState.isConnnected}
+          Connected
+        {:else}
+          Connect
+        {/if}
+      </Button>
+    </Skeleton>
+  {:else}
+    <div>
       <Drawer.Root>
         <Drawer.Trigger class="w-8 h-8 border border-ds-gray-400 rounded-full">
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
@@ -167,10 +170,8 @@
           </Drawer.Footer>
         </Drawer.Content>
       </Drawer.Root>
-    {/if}
-  </header>
+    </div>
+  {/if}
+</header>
 
-  {@render children()}
-</div>
-
-<Toaster position={$isDesktop ? 'bottom-right' : 'top-center'} richColors />
+{@render children()}
