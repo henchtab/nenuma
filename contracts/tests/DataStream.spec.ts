@@ -23,7 +23,7 @@ const ERR_BATCH_LIMIT_EXCEEDED = 402;
 
 describe("Core Assesment", () => {
   const BATCH_LIMIT = 3;
-  const DST_DEPLOY_DEPOSIT = toNano("0.02");
+  const DST_DEPLOY_DEPOSIT = toNano("50");
 
   let blockchain: Blockchain;
   let logger: ShrekLogger;
@@ -37,7 +37,7 @@ describe("Core Assesment", () => {
 
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger();
+    logger = new ShrekLogger(blockchain);
 
     publisher = await blockchain.treasury("publisher");
     logger.addContract(publisher, "Publisher");
@@ -61,14 +61,14 @@ describe("Core Assesment", () => {
     const DSTDeployResult = await stream.send(
       publisher.getSender(),
       {
-        value: DST_DEPLOY_DEPOSIT,
+        value: toNano("6"),
       },
       {
         $$type: "DSTDeploy",
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDeployResult.transactions);
+    await logger.logTransactions(DSTDeployResult.transactions);
 
     expect(DSTDeployResult.transactions).toHaveTransaction({
       from: publisher.address,
@@ -92,14 +92,14 @@ describe("Core Assesment", () => {
       const DSTDeployBatchResult = await stream.send(
         publisher.getSender(),
         {
-          value: await stream.getDeployBatchDeposit(),
+          value: toNano("5"),
         },
         {
           $$type: "DSTDeployBatch",
           queryId: BigInt(index),
         },
       );
-      logger.logTransactions(DSTDeployBatchResult.transactions);
+      await logger.logTransactions(DSTDeployBatchResult.transactions);
 
       expect(DSTDeployBatchResult.transactions).toHaveTransaction({
         from: stream.address,
@@ -243,14 +243,14 @@ describe("Core Assesment", () => {
     const DSTDeploySessionResult = await stream.send(
       alice.getSender(),
       {
-        value: await stream.getDeploySessionDeposit(),
+        value: toNano("7"),
       },
       {
         $$type: "DSTDeploySession",
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDeploySessionResult.transactions);
+    await logger.logTransactions(DSTDeploySessionResult.transactions);
 
     expect(DSTDeploySessionResult.transactions).toHaveTransaction({
       from: stream.address,
@@ -305,7 +305,7 @@ describe("Core Assesment", () => {
         notificationsCount: 4n,
       },
     );
-    logger.logTransactions(SESSubscribe.transactions);
+    await logger.logTransactions(SESSubscribe.transactions);
 
     const body = new Builder();
     storeSESSubscribeSuccess({
@@ -373,7 +373,7 @@ describe("Core Assesment", () => {
         notificationsCount: 2n,
       },
     );
-    logger.logTransactions(SESSubscribe.transactions, "SESSubscribe");
+    await logger.logTransactions(SESSubscribe.transactions, "SESSubscribe");
 
     const body = new Builder();
     storeSESSubscribeSuccess({
@@ -457,7 +457,7 @@ describe("Core Assesment", () => {
           },
         },
       );
-      logger.logTransactions(DSTPublishCandlestick.transactions);
+      await logger.logTransactions(DSTPublishCandlestick.transactions);
 
       const body = new Builder();
       storeSESCandlestickPublishedNotification({
@@ -567,7 +567,7 @@ describe("Core Assesment", () => {
           },
         },
       );
-      logger.logTransactions(DSTPublishCandlestick.transactions);
+      await logger.logTransactions(DSTPublishCandlestick.transactions);
 
       expect(DSTPublishCandlestick.transactions).not.toHaveTransaction({
         from: sessionAddress,
@@ -590,7 +590,7 @@ describe("Core Assesment", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDeploySessionResult.transactions);
+    await logger.logTransactions(DSTDeploySessionResult.transactions);
 
     const session = blockchain.openContract(
       Session.fromAddress(sessionAddress),
@@ -609,7 +609,7 @@ describe("Core Assesment", () => {
         notificationsCount: 3n,
       },
     );
-    logger.logTransactions(SESSubscribe.transactions, "SESSubscribe");
+    await logger.logTransactions(SESSubscribe.transactions, "SESSubscribe");
 
     const DSTPublishCandlestick = await stream.send(
       publisher.getSender(),
@@ -630,7 +630,7 @@ describe("Core Assesment", () => {
         },
       },
     );
-    logger.logTransactions(
+    await logger.logTransactions(
       DSTPublishCandlestick.transactions,
       "DSTPublishCandlestick",
     );
@@ -647,7 +647,7 @@ describe("Core Assesment", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(SESUnsubscribe.transactions, "SESUnsubscribe");
+    await logger.logTransactions(SESUnsubscribe.transactions, "SESUnsubscribe");
 
     const body = new Builder();
     storeSESUnsubscribedNotification({
@@ -709,7 +709,7 @@ describe("Core Assesment", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDestroySessionResult0.transactions);
+    await logger.logTransactions(DSTDestroySessionResult0.transactions);
 
     expect(DSTDestroySessionResult0.transactions).toHaveTransaction({
       from: alice.address,
@@ -739,7 +739,7 @@ describe("Core Assesment", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDestroySessionResult1.transactions);
+    await logger.logTransactions(DSTDestroySessionResult1.transactions);
 
     expect(DSTDestroySessionResult1.transactions).toHaveTransaction({
       from: bob.address,

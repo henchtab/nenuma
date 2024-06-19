@@ -23,7 +23,7 @@ describe("Brokerage", () => {
   // Setup the blockchain environment and initial contracts
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger();
+    logger = new ShrekLogger(blockchain);
 
     // Initialize treasury contracts for different roles
     owner = await blockchain.treasury("owner");
@@ -54,7 +54,7 @@ describe("Brokerage", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDeployResult.transactions);
+    await logger.logTransactions(DSTDeployResult.transactions);
 
     // Verify the DataStream deployment
     expect(DSTDeployResult.transactions).toHaveTransaction({
@@ -86,7 +86,7 @@ describe("Brokerage", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(BRGDeploy.transactions);
+    await logger.logTransactions(BRGDeploy.transactions);
 
     // Verify the Brokerage deployment
     expect(BRGDeploy.transactions).toHaveTransaction({
@@ -111,7 +111,7 @@ describe("Brokerage", () => {
         stream: stream.address,
       },
     );
-    logger.logTransactions(BRGDeployBroker.transactions, "Broker Deploy");
+    await logger.logTransactions(BRGDeployBroker.transactions, "Broker Deploy");
 
     // Verify the Broker deployment
     expect(BRGDeployBroker.transactions).toHaveTransaction({
@@ -142,7 +142,7 @@ describe("Brokerage", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(BRKDeposit.transactions, "Broker Deposit");
+    await logger.logTransactions(BRKDeposit.transactions, "Broker Deposit");
 
     // Verify the deposit transaction
     expect(BRKDeposit.transactions).toHaveTransaction({
@@ -169,7 +169,7 @@ describe("Brokerage", () => {
         queryId: 1n,
       },
     );
-    logger.logTransactions(BRKWithdraw.transactions, "Broker Withdraw");
+    await logger.logTransactions(BRKWithdraw.transactions, "Broker Withdraw");
 
     // Verify the withdrawal transaction
     expect(BRKWithdraw.transactions).toHaveTransaction({
@@ -193,7 +193,7 @@ describe("Brokerage", () => {
         queryId: 2n,
       },
     );
-    logger.logTransactions(BRKDeposit2.transactions, "Broker Deposit 2");
+    await logger.logTransactions(BRKDeposit2.transactions, "Broker Deposit 2");
 
     // Verify the second deposit transaction
     expect(BRKDeposit2.transactions).toHaveTransaction({
@@ -237,6 +237,9 @@ describe("Brokerage", () => {
       exitCode: 0,
     });
 
-    logger.logTransactions(BRGDeployAccount.transactions, "Account Deploy");
+    await logger.logTransactions(
+      BRGDeployAccount.transactions,
+      "Account Deploy",
+    );
   });
 });
