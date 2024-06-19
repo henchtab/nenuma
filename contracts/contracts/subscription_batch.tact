@@ -54,6 +54,8 @@ contract SubscriptionBatch {
 
   // Function to handle the deployment of the subscription batch
   receive(request: SBDeploy) {
+    dump("SBDeploy");
+
     let ctx: Context = context();
 
     // Reserve storage to ensure the contract remains active
@@ -70,6 +72,8 @@ contract SubscriptionBatch {
 
   // Function to handle new subscription requests
   receive(request: SBSubscribe) {
+    dump("SBSubscribe");
+
     let ctx: Context = context();
 
     // Ensure only the stream address can send subscription requests
@@ -107,6 +111,8 @@ contract SubscriptionBatch {
 
   // Function to handle topping up an existing subscription
   receive(request: SBTopUpSubscription) {
+    dump("SBTopUpSubscription");
+
     let ctx: Context = context();
 
     // Ensure only the stream address can send top-up requests
@@ -139,6 +145,8 @@ contract SubscriptionBatch {
 
   // Function to handle the publication of a new candlestick
   receive(request: SBPublishCandlestick) {
+    dump("SBPublishCandlestick");
+
     let ctx: Context = context();
 
     // Ensure only the stream address can send publication requests
@@ -194,6 +202,8 @@ contract SubscriptionBatch {
 
   // Function to handle unsubscription requests
   receive(request: SBUnsubscribe) {
+    dump("SBUnsubscribe");
+
     let ctx: Context = context();
 
     let session: Address = ctx.sender;

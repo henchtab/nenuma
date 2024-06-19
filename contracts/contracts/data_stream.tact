@@ -99,6 +99,8 @@ contract DataStream {
 
   // Function to handle the deployment of the data stream
   receive(request: DSTDeploy) {
+    dump("DSTDeploy");
+
     let ctx: Context = context();
 
     // Notify the publisher of the successful deployment
@@ -107,6 +109,8 @@ contract DataStream {
 
   // Function to handle the deployment of a subscription batch
   receive(request: DSTDeployBatch) {
+    dump("DSTDeployBatch");
+
     let ctx: Context = context();
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.publisher);
@@ -122,12 +126,16 @@ contract DataStream {
 
   // Function to handle a bounced batch deployment
   bounced(deploy: SBDeploy) {
+    dump("SBDeploy");
+
     // Notify the publisher of the deployment error
     self.forward(self.publisher, "SBDeployError".asComment(), false, null);
   }
 
   // Function to handle the success response for a batch deployment
   receive(response: SBDeploySuccess) {
+    dump("SBDeploySuccess");
+
     let ctx: Context = context();
 
     let batchStateInit: StateInit = initOf SubscriptionBatch(myAddress(), self.nextBatchId);
@@ -145,6 +153,8 @@ contract DataStream {
 
   // Function to handle the deployment of a session
   receive(request: DSTDeploySession) {
+    dump("DSTDeploySession");
+
     let ctx: Context = context();
 
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= DST_DEPLOY_SESSION_DEPOSIT);
@@ -160,6 +170,8 @@ contract DataStream {
 
   // Function to handle the success response for a session deployment
   receive(response: SESDeploySuccess) {
+    dump("SESDeploySuccess");
+
     let ctx: Context = context();
 
     let sessionStateInit: StateInit = initOf Session(myAddress(), response.subscriber);
@@ -173,6 +185,8 @@ contract DataStream {
 
   // Function to handle subscription requests
   receive(request: DSTSubscribe) {
+    dump("DSTSubscribe");
+
     let ctx: Context = context();
 
     let sessionStateInit: StateInit = initOf Session(myAddress(), request.subscriber);
@@ -209,6 +223,8 @@ contract DataStream {
 
   // Function to handle top-up subscription requests
   receive(request: DSTTopUpSubscription) {
+    dump("DSTTopUpSubscription");
+
     let ctx: Context = context();
 
     let sessionStateInit: StateInit = initOf Session(myAddress(), request.subscriber);
@@ -229,6 +245,8 @@ contract DataStream {
 
   // Function to handle the success response for a subscription
   receive(response: SBSubscribeSuccess) {
+    dump("SBSubscribeSuccess");
+
     let ctx: Context = context();
 
     let batch: Address = ctx.sender;
@@ -242,6 +260,8 @@ contract DataStream {
 
   // Function to handle the publishing of candlestick data
   receive(request: DSTPublishCandlestick) {
+    dump("DSTPublishCandlestick");
+
     let ctx: Context = context();
 
     // Check if the sender is the publisher
@@ -256,6 +276,9 @@ contract DataStream {
     // Loop through all batches to send candlestick data to those with subscriptions
     foreach (address, info in batches) {
       if (info.subscriptionsCount > 0) {
+        dump("info.subscriptionsCount");
+        dump(info.subscriptionsCount);
+
         // Send candlestick data to the batch
         send(SendParameters { 
           to: address, 
@@ -287,6 +310,8 @@ contract DataStream {
 
   // Function to handle notifications when a subscription is unsubscribed
   receive(notification: SBUnsubscribedNotification) {
+    dump("SBUnsubscribedNotification");
+
     let ctx: Context = context();
 
     let batch: Address = ctx.sender;

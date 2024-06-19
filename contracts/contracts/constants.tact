@@ -21,14 +21,14 @@ const ERR_SESSION_NOT_FOUND: Int = 413; // Session not found
 // BEGIN Data Stream
 
 // Constants related to data stream storage and limits
-const DST_STORAGE_RESERVE: Int = ton("0.01"); // Storage reserve for data stream
+const DST_STORAGE_RESERVE: Int = ton("0.05"); // Storage reserve for data stream
 const BATCH_LIMIT: Int = 10; // Maximum number of batches
 const SUBSCRIPTION_LIMIT: Int = 20; // Maximum number of subscriptions
 const DECIMALS: Int = 2; // Number of decimals for values
 const NOTIFICATION_PREMIUM: Int = ton("0.01"); // Premium for notifications
-const NOTIFICATION_DEPOSIT: Int = ton("0.03"); // Deposit for notifications
-const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("0.05"); // Deposit for deploying a batch
-const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("0.05"); // Deposit for deploying a session
+const NOTIFICATION_DEPOSIT: Int = ton("0.02"); // Deposit for notifications
+const DST_DEPLOY_BATCH_DEPOSIT: Int = ton("0.10"); // Deposit for deploying a batch
+const DST_DEPLOY_SESSION_DEPOSIT: Int = ton("0.10"); // Deposit for deploying a session
 const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("5"); // Deposit for publishing a candlestick
 
 // END Data Stream
@@ -36,26 +36,26 @@ const DST_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("5"); // Deposit for publishing
 // BEGIN Subscription Batch
 
 // Constants related to subscription batch storage and deposits
-const SB_STORAGE_RESERVE: Int = ton("0.01"); // Storage reserve for subscription batch
-const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("0.5"); // Deposit for publishing a candlestick in subscription batch
+const SB_STORAGE_RESERVE: Int = ton("0.05"); // Storage reserve for subscription batch
+const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("0.05"); // Deposit for publishing a candlestick in subscription batch
 
 // END Subscription Batch
 
 // BEGIN Session
 
 // Constants related to session storage and deposits
-const SES_STORAGE_RESERVE: Int = ton("0.01"); // Storage reserve for session
-const SES_SUBSCRIBE_DEPOSIT: Int = ton("0.05"); // Deposit for subscribing
-const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("0.05"); // Deposit for unsubscribing
-const SES_DESTROY_DEPOSIT: Int = ton("0.01"); // Deposit for destroying a session
+const SES_STORAGE_RESERVE: Int = ton("0.05"); // Storage reserve for session
+const SES_SUBSCRIBE_DEPOSIT: Int = ton("0.10"); // Deposit for subscribing
+const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("0.10"); // Deposit for unsubscribing
+const SES_DESTROY_DEPOSIT: Int = ton("0.10"); // Deposit for destroying a session
 
 // END Session
 
 // BEGIN Simple Subscriber
 
 // Constants related to subscription session storage and operations
-const SUS_STORAGE_RESERVE: Int = ton("1"); // Storage reserve for subscription session
-const SUS_OPERATIONAL_RESERVE: Int = ton("1"); // Operational reserve for subscription session
+const SUS_STORAGE_RESERVE: Int = ton("0.05"); // Storage reserve for subscription session
+const SUS_OPERATIONAL_RESERVE: Int = ton("2.00"); // Operational reserve for subscription session
 const SUS_TIMEOUT: Int = 3600; // Timeout for subscription session
 
 // END Subscription Subscriber

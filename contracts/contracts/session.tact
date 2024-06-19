@@ -57,6 +57,8 @@ contract Session {
 
   // Function to handle the deployment of the session
   receive(request: SESDeploy) {
+    dump("SESDeploy");
+
     let ctx: Context = context();
 
     // Notify the subscriber of the successful deployment
@@ -65,6 +67,8 @@ contract Session {
 
   // Function to handle subscription requests
   receive(request: SESSubscribe) {
+    dump("SESSubscribe");
+
     let ctx: Context = context();
 
     // Ensure the request is from the subscriber
@@ -92,6 +96,8 @@ contract Session {
 
   // Function to handle the success response for a subscription
   receive(response: DSTSubscribeSuccess) {
+    dump("DSTSubscribeSuccess");
+
     let ctx: Context = context();
 
     // Ensure the response is from the stream
@@ -106,6 +112,8 @@ contract Session {
 
   // Function to handle candlestick published notifications
   receive(notification: SBCandlestickPublishedNotification) {
+    dump("SBCandlestickPublishedNotification");
+
     let ctx: Context = context();
 
     // Ensure the notification is from the batch
@@ -117,6 +125,8 @@ contract Session {
 
   // Function to handle the notification of an unsubscribe event
   receive(notification: DSTUnsubscribedNotification) {
+    dump("DSTUnsubscribedNotification");
+
     let ctx: Context = context();
 
     // Ensure the notification is from the stream
@@ -131,12 +141,17 @@ contract Session {
 
   // Function to handle unsubscribe requests
   receive(request: SESUnsubscribe) {
+    dump("SESUnsubscribe");
+
     let ctx: Context = context();
 
     // Ensure the request is from the subscriber and the session is active
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.subscriber);
     nativeThrowUnless(ERR_STREAM_NOT_SUBSCRIBED, self.batch != null);
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= SES_UNSUBSCRIBE_DEPOSIT);
+
+    dump("myBalance()");
+    dump(myBalance());
 
     // Forward the unsubscribe request to the batch
     self.forward(self.batch!!, (SBUnsubscribe { queryId: request.queryId }).toCell(), true, null);
@@ -146,6 +161,8 @@ contract Session {
 
   // Function to handle session destruction requests
   receive(request: SESDestroy) {
+    dump("SESDestroy");
+
     let ctx: Context = context();
 
     // Ensure the request is from the subscriber and the session is not active
