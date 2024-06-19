@@ -1,370 +1,19 @@
-// TODO: It's a saved draft. Not ready for production usage yet.
-
+import "./constants";
 import "./messages";
 
-import "./data_stream";
-import "./session";
+import "./subscriber";
 
-const CNO_STATE_DEPLOYED: Int = 0;
-const CNO_STATE_PENDING_DEPLOY_SESSION: Int = 1;
-const CNO_STATE_PENDING_SUBSCRIBE_STREAM: Int = 2;
-const CNO_STATE_INITIATED: Int = 3;
-const CNO_STATE_SETTLED: Int = 4;
-const CNO_STATE_PENDING_UNSUBSCRIBE_STREAM: Int = 5;
-const CNO_STATE_PENDING_DESTROY_SESSION: Int = 6;
-
-contract CashOrNothingOption {
-  broker: Address;
-  optionId: Int;
-  state: Int;
-  agreement: Agreement?;
-  session: Address?;
-  strikePrice: Int?;
-  expirationPrice: Int?;
-
-  get fun broker(): Address {
-    return self.broker;
-  }
-
-  get fun optionId(): Int {
-    return self.optionId;
-  }
-
-  get fun state(): Int {
-    return self.state;
-  }
-
-  get fun agreement(): Agreement? {
-    return self.agreement;
-  }
-
-  get fun session(): Address? {
-    return self.session;
-  }
-
-  get fun strikePrice(): Int? {
-    return self.strikePrice;
-  }
-
-  get fun expirationPrice(): Int? {
-    return self.expirationPrice;
-  }
-
-  init(broker: Address, optionId: Int) {
-    self.broker = broker;
-    self.optionId = optionId;
-    self.state = CNO_STATE_DEPLOYED;
-  }
-
-  // delta = (agreement.expiration - agreement.initiation) / 60
-  // CNO_OPERATIONAL_DEPOSIT = DST_DEPLOY_SESSION + SES_SUBSCRIBE + 2 * (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * delta  + SES_UNSUBSCRIBE + DST_DESTROY_SESSION
-  // value = request.agreement.investment + request.agreement.payout + CNO_STORAGE_RESERVE + CNO_OPERATIONAL_DEPOSIT;
-  receive(request: CNODeploy) {
-    let ctx: Context = context();
-
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.broker);
-    nativeThrowUnless(ERR_INVALID_STATE, self.state == CNO_STATE_DEPLOYED);
-
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.agreement.initiation >= now());
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.agreement.initiation <= request.agreement.expiration);
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.agreement.initiation % 60 == 0);
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.agreement.expiration % 60 == 0);
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.agreement.investment > 0);
-    nativeThrowUnless(ERR_INVALID_ARGUMENT, request.agreement.payout > 0);
-
-    self.agreement = request.agreement;
-
-    let notificationsCount: Int = 2 * ((self.agreement!!.expiration - self.agreement!!.initiation) / 60);
-
-    if (notificationsCount <= 3) {
-      notificationsCount = 5;
-    }
-
-    nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= CNO_STORAGE_RESERVE 
-      + CNO_OPERATIONAL_DEPOSIT 
-      + self.agreement!!.investment 
-      + self.agreement!!.payout 
-      + (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount);
-
-    // CNO OPERATIONAL_DEPOSIT = request.agreement.investment + request.agreement.payout + DST_DEPLOY_SESSION_DEPOSIT + SES_SUBSCRIBE_DEPOSIT + 2 * CNO_NOTIFICATION_DEPOSIT + SES_UNSUBSCRIBE_DEPOSIT + SES_DESTROY_DEPOSIT; 
-    nativeReserve(
-      CNO_STORAGE_RESERVE + 
-      CNO_OPERATIONAL_DEPOSIT +
-      self.agreement!!.investment + self.agreement!!.payout +
-      (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount,
-      ReserveExact | ReserveBounceIfActionFail
-    );
-
-    send(SendParameters {
-      to: (self.agreement!!).stream,
-      value: DST_DEPLOY_SESSION_DEPOSIT,
-      mode: SendPayGasSeparately | SendBounceIfActionFail,
-      body: (DSTDeploySession { queryId: request.queryId }).toCell(),
-    });
-
-    send(SendParameters {
-      to: self.broker,
-      value: 0,
-      mode: SendRemainingBalance | SendBounceIfActionFail,
-      body: (CNODeploySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
-    });
-
-    self.state = CNO_STATE_PENDING_DEPLOY_SESSION;
-  }
-
-  bounced(request: bounced<CNODeploySuccess>) {
-    dump("Magic 1");
-
-    self.settleAtMoney(request.queryId);
-  }
-
-  receive(response: DSTDeploySessionSuccess) {
-    let ctx: Context = context();
-
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.agreement!!.stream);
-    nativeThrowUnless(ERR_INVALID_STATE, self.state == CNO_STATE_PENDING_DEPLOY_SESSION);
-
-    self.session = response.session;
-
-    let notificationsCount: Int = 2 * ((self.agreement!!.expiration - self.agreement!!.initiation) / 60);
-
-    send(SendParameters {
-      to: self.session!!,
-      value: SES_SUBSCRIBE_DEPOSIT + (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount,
-      mode: SendBounceIfActionFail,
-      body: (SESSubscribe { queryId: response.queryId, notificationsCount }).toCell(),
-    });
-
-    self.state = CNO_STATE_PENDING_SUBSCRIBE_STREAM;
-  }
-
-  bounced(request: bounced<SESSubscribe>) {
-    dump("Magic 2");
-
-    self.settleAtMoney(request.queryId);
-  }
-
-  receive(response: SESSubscribeSuccess) {
-    let ctx: Context = context();
-
-    nativeThrowUnless(ERR_INVALID_STATE, self.state == CNO_STATE_PENDING_SUBSCRIBE_STREAM);
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
-
-    self.state = CNO_STATE_INITIATED;
-  }
-
-  fun settleInMoney(queryId: Int) {
-    dump("ITM");
-
-    send(SendParameters {
-      to: self.agreement!!.holder,
-      value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
-      mode: SendIgnoreErrors | SendPayGasSeparately,
-      body: (CNOSettleInMoneyNotification { queryId }).toCell(),
-    });
-
-    send(SendParameters {
-      to: self.agreement!!.writer,
-      value: NOTIFICATION_DEPOSIT,
-      mode: SendIgnoreErrors | SendPayGasSeparately,
-      body: (CNOSettleInMoneyNotification { queryId }).toCell(),
-    });
-
-    self.state = CNO_STATE_SETTLED;
-  }
-
-  fun settleOutMoney(queryId: Int) {
-    dump("OTM");
-
-    send(SendParameters {
-      to: self.agreement!!.writer,
-      value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
-      mode: SendIgnoreErrors | SendPayGasSeparately,
-      body: (CNOSettleInMoneyNotification { queryId }).toCell(),
-    });
-
-    send(SendParameters {
-      to: self.agreement!!.holder,
-      value: NOTIFICATION_DEPOSIT,
-      mode: SendIgnoreErrors | SendPayGasSeparately,
-      body: (CNOSettleInMoneyNotification { queryId }).toCell(),
-    });
-
-    self.state = CNO_STATE_SETTLED;
-  }
-
-  fun settleAtMoney(queryId: Int) {
-    dump("ATM");
-
-    send(SendParameters {
-      to: self.agreement!!.holder,
-      value: NOTIFICATION_DEPOSIT + self.agreement!!.investment,
-      mode: SendIgnoreErrors | SendPayGasSeparately,
-      body: (CNOSettleAtMoneyNotification { queryId }).toCell(),
-    });
-
-    send(SendParameters {
-      to: self.agreement!!.writer,
-      value: NOTIFICATION_DEPOSIT + self.agreement!!.payout,
-      mode: SendIgnoreErrors | SendPayGasSeparately,
-      body: (CNOSettleAtMoneyNotification { queryId }).toCell(),
-    });
-
-    self.state = CNO_STATE_SETTLED;
-  }
-
-  receive(notification: SESCandlestickPublishedNotification) {
-    let ctx: Context = context();
-
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
-    // dump("notification.remainingNotificationsCount");
-    // dump(notification.remainingNotificationsCount);
-
-    if (notification.candlestick.start == self.agreement!!.initiation) {
-      dump("Case 1");
-
-      self.strikePrice = notification.candlestick.open;
-    }
-
-    if (notification.candlestick.end == self.agreement!!.expiration) {
-
-      if (self.strikePrice == null) {
-        dump("Magic 3");
-        self.settleAtMoney(notification.queryId);
-      }
-
-      else if (self.agreement!!.type == CNO_TYPE_CALL && notification.candlestick.close >= self.strikePrice!!) {
-        dump("Case #3");
-        self.settleInMoney(notification.queryId);
-      } 
-
-      else if (self.agreement!!.type == CNO_TYPE_PUT && notification.candlestick.close <= self.strikePrice!!) {
-        dump("Case #4");
-        self.settleInMoney(notification.queryId);
-      }
-
-      else {
-        dump("Case #5");
-        self.settleOutMoney(notification.queryId);
-      }
-
-      self.expirationPrice = notification.candlestick.close;
-      self.state = CNO_STATE_SETTLED;
-    }
-  }
-
-  receive(request: CNOCheckTimeout) {
-    nativeThrowUnless(ERR_INVALID_STATE, self.state <= CNO_STATE_INITIATED);
-    nativeThrowUnless(ERR_OPTION_NOT_EXPIRED, now() > self.agreement!!.expiration + CNO_TIMEOUT);
-
-    let ctx: Context = context();
-
-    send(SendParameters {
-      to: ctx.sender,
-      value: ctx.value,
-      mode: SendPayGasSeparately,
-      body: (CNOTimeoutExceeded { queryId: request.queryId }).toCell()
-    });
-
-    dump("Magic 7");
-    self.settleAtMoney(request.queryId);
-  }
-
-  receive(request: CNODestroy) {
-    let ctx: Context = context();
-    
-    nativeThrowUnless(ERR_INVALID_STATE, self.state == CNO_STATE_SETTLED);
-
-    send(SendParameters {
-      to: self.session!!,
-      value: SES_UNSUBSCRIBE_DEPOSIT,
-      mode: SendIgnoreErrors,
-      body: (SESUnsubscribe { queryId: request.queryId }).toCell(),
-    });
-
-    self.state = CNO_STATE_PENDING_UNSUBSCRIBE_STREAM;
-  }
-
-  bounced(request: SESUnsubscribe) {
-    send(SendParameters {
-      to: self.broker,
-      value: 0,
-      mode: SendRemainingBalance | SendDestroyIfZero,
-      body: (CNODestroySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
-    });
-  }
-
-  receive(notification: SESUnsubscribedNotification) {
-    let ctx: Context = context();
-
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
-
-    if (self.state < CNO_STATE_SETTLED) {
-      dump("Magic 4");
-      self.settleAtMoney(notification.queryId);
-    }
-
-    send(SendParameters {
-      to: self.session!!,
-      value: SES_DESTROY_DEPOSIT,
-      mode: SendBounceIfActionFail,
-      body: (SESDestroy { queryId: notification.queryId }).toCell(),
-    });
-
-    self.state = CNO_STATE_PENDING_DESTROY_SESSION;
-  }
-
-  bounced(request: SESDestroy) {
-    send(SendParameters {
-      to: self.broker,
-      value: 0,
-      mode: SendRemainingBalance | SendDestroyIfZero,
-      body: (CNODestroySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
-    });
-  }
-
-  receive(response: SESDestroySuccess) {
-    let ctx: Context = context();
-
-    nativeThrowUnless(ERR_INVALID_STATE, self.state == CNO_STATE_PENDING_DESTROY_SESSION);
-    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
-
-    send(SendParameters {
-      to: self.broker,
-      value: 0,
-      mode: SendIgnoreErrors | SendRemainingBalance | SendDestroyIfZero,
-      body: (CNODestroySuccess { queryId: response.queryId, optionId: self.optionId }).toCell(),
-    });
-  }
-}
-
-const CNO_STORAGE_RESERVE: Int = ton("0.01");
-const CNO_OPERATIONAL_DEPOSIT: Int = ton("1.00");
-
-const CNO_TIMEOUT: Int = 3600;
-
-const CNO_TYPE_CALL: Bool = true;
-const CNO_TYPE_PUT: Bool = false;
-
-struct Agreement {
-  holder: Address;
-  writer: Address;
-  stream: Address; // In the future updates, should be substitued for underlyingAsset once the Data Streams Router is present to enable Data Stream contract upgradeability.
-  initiation: Int;
-  expiration: Int;
-  type: Bool;
-  investment: Int;
-  payout: Int;
-}
-
+// Message representing a subscriber deployment request
 message CNODeploy {
-  queryId: Int as uint64;
+  queryId: Int as uint64;  // Query ID for the request
+  stream: Address; // In the future updates, should be substitued for underlyingAsset once the Data Streams Router is present to enable Data Stream contract upgradeability.
   agreement: Agreement;
 }
 
+// Message representing a successful subscriber deployment
 message CNODeploySuccess {
-  queryId: Int as uint64;
-  optionId: Int;
+  queryId: Int as uint64;  // Query ID for the response
+  optionId: Int;  // Unique identifier for the subscriber
 }
 
 message CNOSettleInMoneyNotification {
@@ -379,20 +28,179 @@ message CNOSettleAtMoneyNotification {
   queryId: Int as uint64;
 }
 
-message CNOCheckTimeout {
-  queryId: Int as uint64;
+struct Agreement {
+  holder: Address;
+  writer: Address;
+  initiation: Int;
+  expiration: Int; 
+  type: Bool;
+  investment: Int;
+  payout: Int;
 }
 
-message CNOTimeoutExceeded {
-  queryId: Int as uint64;
-}
+const CASH_OR_NOTHING_OPTION_TYPE_CALL: Bool = true;
+const CASH_OR_NOTHING_OPTION_TYPE_PUT : Bool = false;
 
-message CNODestroy {
-  queryId: Int as uint64;
-}
+// Contract representing a simple subscriber
+contract CashOrNothingOption with Subscriber {
+    deployer: Address;  // Address of the deployer of this subscriber contract
+    
+    stream: Address?;  // Address of the stream to which the subscriber is subscribed
+    notificationsCount: Int?;  // Number of notifications the subscriber is entitled to receive
+    session: Address?;  // Address of the subscription session
+    // FIXME: substitute for DATA_STREAM_TIMEOUT
+    timeout: Int?;  // Expiry time of the subscription
+    
+    optionId: Int;  // Unique identifier for the subscriber
+    agreement: Agreement?;
 
-message CNODestroySuccess {
-  queryId: Int as uint64;
-  optionId: Int;
-}
+    strikePrice: Int?;
+    isSettled: Bool = false;
 
+    get fun optionId(): Int {
+      return self.optionId;
+    }
+
+    // Getter function for the latest candlestick
+    get fun agreement(): Agreement? {
+      return self.agreement;
+    }
+    
+    // Initialize the contract with the deployer address and subscriber ID
+    init(deployer: Address, optionId: Int) {
+      self.deployer = deployer;
+      self.optionId = optionId;
+    }
+
+    // FIXME: refactor this 
+    fun validateAgreement(agreement: Agreement) {
+      nativeThrowUnless(500, agreement.initiation > now());
+      nativeThrowUnless(501, agreement.initiation < agreement.expiration);
+      nativeThrowUnless(502, agreement.initiation % 60 == 0); // FIXME: Technically, there's no need in this check as devision rounds down the value; if user subscribes for 0:59, it's the save as subscribing to 0:00 as the candlestick is published only on 1:00
+      nativeThrowUnless(503, agreement.expiration % 60 == 0); // FIXME:
+      nativeThrowUnless(504, agreement.investment > 0);
+      nativeThrowUnless(505, agreement.payout > 0);
+    }
+
+    // Function to handle the deployment of the subscriber
+    receive(request: CNODeploy) {
+      dump("CNODeploy");
+
+      let ctx: Context = context();
+      nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.deployer);
+
+      self.validateAgreement(request.agreement);
+      self.agreement = request.agreement;
+
+      let notificationsCount: Int = (request.agreement.expiration - now()) / 60 + 1;
+      self.subscribeStream(request.queryId, request.stream, notificationsCount, request.agreement.expiration);
+
+      nativeReserve(request.agreement.investment + request.agreement.payout, ReserveExact | ReserveAddOriginalBalance);
+
+      // Send a success response back to the deployer
+      send(SendParameters {
+        to: self.deployer,
+        value: 0,
+        mode: SendRemainingBalance,
+        body: (CNODeploySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
+      });
+    }
+
+    fun settleAtMoney(queryId: Int) {
+      dump("self.settleAtMoney()");
+
+      send(SendParameters {
+        to: self.agreement!!.holder,
+        value: NOTIFICATION_DEPOSIT + self.agreement!!.investment,
+        mode: SendIgnoreErrors | SendPayGasSeparately,
+        body: (CNOSettleAtMoneyNotification { queryId }).toCell(),
+      });
+
+      send(SendParameters {
+        to: self.agreement!!.writer,
+        value: NOTIFICATION_DEPOSIT + self.agreement!!.payout,
+        mode: SendIgnoreErrors | SendPayGasSeparately,
+        body: (CNOSettleAtMoneyNotification { queryId }).toCell(),
+      });
+    }
+
+    fun settleInMoney(queryId: Int) {
+      dump("self.settleInMoney()");
+
+      send(SendParameters {
+        to: self.agreement!!.holder,
+        value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
+        mode: SendIgnoreErrors | SendPayGasSeparately,
+        body: (CNOSettleInMoneyNotification { queryId }).toCell(),
+      });
+
+      send(SendParameters {
+        to: self.agreement!!.writer,
+        value: NOTIFICATION_DEPOSIT,
+        mode: SendIgnoreErrors | SendPayGasSeparately,
+        body: (CNOSettleInMoneyNotification { queryId }).toCell(),
+      });
+    }
+
+    fun settleOutMoney(queryId: Int) {      
+      send(SendParameters {
+        to: self.agreement!!.holder,
+        value: NOTIFICATION_DEPOSIT,
+        mode: SendIgnoreErrors | SendPayGasSeparately,
+        body: (CNOSettleOutMoneyNotification { queryId }).toCell(),
+      });
+
+      send(SendParameters {
+        to: self.agreement!!.writer,
+        value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
+        mode: SendIgnoreErrors | SendPayGasSeparately,
+        body: (CNOSettleOutMoneyNotification { queryId }).toCell(),
+      });
+    }
+
+    override fun handleCandlestick(queryId: Int, candlestick: Candlestick) {
+      dump("self.handleCandlestick()");
+      
+      let ctx: Context = context();
+
+      nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
+
+      if (candlestick.start == self.agreement!!.initiation) {
+        dump("Case #1");
+
+        self.strikePrice = candlestick.open;
+      }
+
+      if (candlestick.end == self.agreement!!.expiration) {
+        if (self.strikePrice == null) {
+          dump("Case #2");
+
+          self.settleAtMoney(queryId);
+        } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_CALL && candlestick.close >= self.strikePrice!!) {
+          dump("Case #3");
+          
+          self.settleInMoney(queryId);
+        } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_PUT && candlestick.close <= self.strikePrice!!) {
+          dump("Case #4");
+          
+          self.settleInMoney(queryId);
+        } else {
+          dump("Case #5");
+          
+          self.settleOutMoney(queryId);
+        }
+
+        self.isSettled = true;
+      }
+    }
+
+    override fun handleDestroy(queryId: Int) {
+      dump("self.handleDestroy()");
+
+      if (!self.isSettled) {
+        dump("Case #6");
+
+        self.settleAtMoney(queryId);
+      } 
+    }
+}
