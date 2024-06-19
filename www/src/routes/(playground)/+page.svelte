@@ -244,183 +244,188 @@
 </svelte:head>
 
 <div>
-  <h1 class="text-ds-gray-1000 container font-semibold text-4xl text-left py-6 border-b">
-    Streams API
-  </h1>
+  <div class="py-6 border-b">
+    <h1 class="text-ds-gray-1000 container font-semibold text-4xl text-left">Streams API</h1>
+  </div>
 
-  <div class="py-6 container border-b">
-    <h2 class="text-ds-gray-1000 font-medium text-3xl mb-4">Data Stream</h2>
-    <Label class="grid gap-2">
-      Stream Address
-      <Input
-        type="text"
-        placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
-        class="w-fit"
-        bind:value={$streamAddress}
-      />
-    </Label>
-    <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[768px]">
-      The Data Stream smart contract makes it easy to securely stream data and manage subscriptions
-      on the blockchain. Publishers can deploy data batches, handle sessions, and manage
-      subscriptions effortlessly. It ensures safe handling of deposits and notifications, offering a
-      solid framework for real-time data interaction. Key features include verifying publishers,
-      creating batches, deploying sessions, and automating notifications.
-      <br />
-      <br />
-      For more details, check out the
-      <a
-        class="underline"
-        href="https://github.com/dreamqip/nenuma/blob/main/contracts/contracts/data_stream.tact"
-        target="_blank">contract code</a
-      > and its features here.
-    </p>
-    <div class="flex gap-4 items-end overflow-x-auto">
-      <form class="flex flex-col gap-4 min-w-max" onsubmit={handleDeploySubmit}>
-        <Label class="flex flex-col gap-2"
-          >Topic
-          <Input type="text" name="topic" placeholder="1.candlestick.TONUSDT" required />
-        </Label>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
-          >Deploy Stream</Button
+  <div class="py-6 border-b">
+    <div class="container">
+      <h2 class="text-ds-gray-1000 font-medium text-3xl mb-4">Data Stream</h2>
+      <Label class="grid gap-2">
+        Stream Address
+        <Input
+          type="text"
+          placeholder="0QDCiYqpPo9esMDX35_BWYcsR1NKS7lbnPcPF6IMH8MNx2Lj"
+          class="w-fit"
+          bind:value={$streamAddress}
+        />
+      </Label>
+      <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[768px]">
+        The Data Stream smart contract makes it easy to securely stream data and manage
+        subscriptions on the blockchain. Publishers can deploy data batches, handle sessions, and
+        manage subscriptions effortlessly. It ensures safe handling of deposits and notifications,
+        offering a solid framework for real-time data interaction. Key features include verifying
+        publishers, creating batches, deploying sessions, and automating notifications.
+        <br />
+        <br />
+        For more details, check out the
+        <a
+          class="underline"
+          href="https://github.com/dreamqip/nenuma/blob/main/contracts/contracts/data_stream.tact"
+          target="_blank">contract code</a
+        > and its features here.
+      </p>
+      <div class="flex gap-4 items-end overflow-x-auto">
+        <form class="flex flex-col gap-4 min-w-max" onsubmit={handleDeploySubmit}>
+          <Label class="flex flex-col gap-2"
+            >Topic
+            <Input type="text" name="topic" placeholder="1.candlestick.TONUSDT" required />
+          </Label>
+          <Label class="flex flex-col gap-2"
+            >Query ID
+            <Input type="number" name="queryId" placeholder="777" required min="0" />
+          </Label>
+          <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
+            >Deploy Stream</Button
+          >
+        </form>
+
+        <form class="flex flex-col gap-4 w-max" onsubmit={handleDeployBatchSubmit}>
+          <Label class="flex flex-col gap-2"
+            >Query ID
+            <Input type="number" name="queryId" placeholder="777" required min="0" />
+          </Label>
+          <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
+            >Deploy Batch</Button
+          >
+        </form>
+
+        <form class="flex flex-col gap-4 w-max" onsubmit={handleDeploySessionSubmit}>
+          <Label class="flex flex-col gap-2"
+            >Query ID
+            <Input type="number" name="queryId" placeholder="777" required min="0" />
+          </Label>
+          <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
+            >Deploy Session</Button
+          >
+        </form>
+
+        <form class="flex flex-col gap-4 w-max" onsubmit={handlePublishCandlestickSubmit}>
+          <Label class="grid gap-2">
+            Start
+            <Input type="number" name="start" placeholder="1718207640000" required />
+          </Label>
+          <Label class="grid gap-2">
+            End
+            <Input type="number" name="end" placeholder="1718207699999" required />
+          </Label>
+          <Label class="grid gap-2">
+            Open
+            <Input type="number" name="open" placeholder="6969709" required />
+          </Label>
+          <Label class="grid gap-2">
+            High
+            <Input type="number" name="high" placeholder="6969774" required />
+          </Label>
+          <Label class="grid gap-2">
+            Low
+            <Input type="number" name="low" placeholder="6970129" required />
+          </Label>
+          <Label class="grid gap-2">
+            Close
+            <Input type="number" name="close" placeholder="6966979" required />
+          </Label>
+          <Label class="grid gap-2">
+            Query ID
+            <Input type="number" name="queryId" placeholder="777" required />
+          </Label>
+          <Button type="submit" class="bg-ds-green-800 text-white hover:bg-ds-green-700"
+            >Publish Candlestick</Button
+          >
+        </form>
+
+        <Button
+          class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+          onclick={async () => {
+            try {
+              const result = await $stream.getTopic();
+              output.stream.unshift({
+                date: formatDate(new Date()),
+                message: JSON.stringify(result, null, 2)
+              });
+            } catch (error) {
+              if (error instanceof Error) {
+                toast.error(error.message);
+              }
+            }
+          }}>Get Topic</Button
         >
-      </form>
 
-      <form class="flex flex-col gap-4 w-max" onsubmit={handleDeployBatchSubmit}>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
-          >Deploy Batch</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4 w-max" onsubmit={handleDeploySessionSubmit}>
-        <Label class="flex flex-col gap-2"
-          >Query ID
-          <Input type="number" name="queryId" placeholder="777" required min="0" />
-        </Label>
-        <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700" type="submit"
-          >Deploy Session</Button
-        >
-      </form>
-
-      <form class="flex flex-col gap-4 w-max" onsubmit={handlePublishCandlestickSubmit}>
-        <Label class="grid gap-2">
-          Start
-          <Input type="number" name="start" placeholder="1718207640000" required />
-        </Label>
-        <Label class="grid gap-2">
-          End
-          <Input type="number" name="end" placeholder="1718207699999" required />
-        </Label>
-        <Label class="grid gap-2">
-          Open
-          <Input type="number" name="open" placeholder="6969709" required />
-        </Label>
-        <Label class="grid gap-2">
-          High
-          <Input type="number" name="high" placeholder="6969774" required />
-        </Label>
-        <Label class="grid gap-2">
-          Low
-          <Input type="number" name="low" placeholder="6970129" required />
-        </Label>
-        <Label class="grid gap-2">
-          Close
-          <Input type="number" name="close" placeholder="6966979" required />
-        </Label>
-        <Label class="grid gap-2">
-          Query ID
-          <Input type="number" name="queryId" placeholder="777" required />
-        </Label>
-        <Button type="submit" class="bg-ds-green-800 text-white hover:bg-ds-green-700"
-          >Publish Candlestick</Button
-        >
-      </form>
-
-      <Button
-        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-        onclick={async () => {
-          try {
-            const result = await $stream.getTopic();
+        <Button
+          class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+          onclick={async () => {
+            const result = await $stream.getBalance();
             output.stream.unshift({
               date: formatDate(new Date()),
-              message: JSON.stringify(result, null, 2)
+              message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
             });
-          } catch (error) {
-            if (error instanceof Error) {
-              toast.error(error.message);
-            }
-          }
-        }}>Get Topic</Button
-      >
-
-      <Button
-        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-        onclick={async () => {
-          const result = await $stream.getBalance();
-          output.stream.unshift({
-            date: formatDate(new Date()),
-            message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
-          });
-        }}>Get Balance</Button
-      >
-
-      <Button
-        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-        onclick={async () => {
-          const result = await $stream.getPublisherAddress();
-          output.stream.unshift({
-            date: formatDate(new Date()),
-            message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
-          });
-        }}>Get Publisher Address</Button
-      >
-
-      <Button
-        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-        onclick={async () => {
-          const result = await $stream.getNextBatchId();
-          output.stream.unshift({
-            date: formatDate(new Date()),
-            message: JSON.stringify(result.toString(), null, 2)
-          });
-        }}>Get Next Batch Id</Button
-      >
-
-      <form class="flex flex-col gap-4" onsubmit={handleSessionAddressSubmit}>
-        <Label class="grid gap-2">
-          Subscriber Address
-          <Input
-            type="text"
-            name="subscriberAddress"
-            placeholder="Enter a subscriber address"
-            required
-          />
-        </Label>
-        <Button type="submit" class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-          >Get Session Address</Button
+          }}>Get Balance</Button
         >
-      </form>
 
-      <form class="flex flex-col gap-4" onsubmit={handleBatchAddressSubmit}>
-        <Label class="grid gap-2">
-          Batch ID
-          <Input type="number" name="batchId" placeholder="Enter a batch ID" required />
-        </Label>
-        <Button type="submit" class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-          >Get Batch Address</Button
+        <Button
+          class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+          onclick={async () => {
+            const result = await $stream.getPublisherAddress();
+            output.stream.unshift({
+              date: formatDate(new Date()),
+              message: JSON.stringify(
+                result.toString({ testOnly: true, bounceable: false }),
+                null,
+                2
+              )
+            });
+          }}>Get Publisher Address</Button
         >
-      </form>
 
-      <Button
-        class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
-        onclick={async () => {
+        <Button
+          class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+          onclick={async () => {
+            const result = await $stream.getNextBatchId();
+            output.stream.unshift({
+              date: formatDate(new Date()),
+              message: JSON.stringify(result.toString(), null, 2)
+            });
+          }}>Get Next Batch Id</Button
+        >
+
+        <form class="flex flex-col gap-4" onsubmit={handleSessionAddressSubmit}>
+          <Label class="grid gap-2">
+            Subscriber Address
+            <Input
+              type="text"
+              name="subscriberAddress"
+              placeholder="Enter a subscriber address"
+              required
+            />
+          </Label>
+          <Button type="submit" class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+            >Get Session Address</Button
+          >
+        </form>
+
+        <form class="flex flex-col gap-4" onsubmit={handleBatchAddressSubmit}>
+          <Label class="grid gap-2">
+            Batch ID
+            <Input type="number" name="batchId" placeholder="Enter a batch ID" required />
+          </Label>
+          <Button type="submit" class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+            >Get Batch Address</Button
+          >
+        </form>
+
+        <Button
+          class="bg-ds-blue-800 text-white hover:bg-ds-blue-700"
+          onclick={async () => {
           const result = await $stream.getBatches();
 
           const batches: {
@@ -437,31 +442,32 @@
             message: JSON.stringify(batches, null, 2)
           });
         }}
-        >Get Batches</Button
-      >
-    </div>
-    <div>
-      <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
-      <ul
-        use:autoAnimate
-        class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
-      >
-        {#if output.stream.length === 0}
-          <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
-        {:else}
-          {#each output.stream as line (line.date)}
-            <li class="inline-flex h-8 gap-3 w-full items-center">
-              <span class="text-ds-green-900">{line.date}:</span>
-              <div class="h-5 w-[1px] bg-ds-green-400"></div>
-              <span class="text-ds-green-900">{line.message}</span>
-            </li>
-          {/each}
-        {/if}
-      </ul>
+          >Get Batches</Button
+        >
+      </div>
+      <div>
+        <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
+        <ul
+          use:autoAnimate
+          class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
+        >
+          {#if output.stream.length === 0}
+            <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
+          {:else}
+            {#each output.stream as line (line.date)}
+              <li class="inline-flex h-8 gap-3 w-full items-center">
+                <span class="text-ds-green-900">{line.date}:</span>
+                <div class="h-5 w-[1px] bg-ds-green-400"></div>
+                <span class="text-ds-green-900">{line.message}</span>
+              </li>
+            {/each}
+          {/if}
+        </ul>
 
-      <Button class="mt-4" variant="destructive" onclick={() => (output.stream = [])}
-        >Clear Output</Button
-      >
+        <Button class="mt-4" variant="destructive" onclick={() => (output.stream = [])}
+          >Clear Output</Button
+        >
+      </div>
     </div>
   </div>
 

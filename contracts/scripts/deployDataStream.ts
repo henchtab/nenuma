@@ -4,7 +4,7 @@ import { NetworkProvider } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider) {
     const publisher = provider.sender();
-    const topic = 'philosophy.1.love';
+    const topic = '1.candlestick.ZAQ';
     console.log('Publisher:', publisher.address);
 
     if (!publisher.address) {
