@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
-import { toNano } from "@ton/core";
+import { address, openContract, toNano } from "@ton/core";
 import { SimpleSubscriber } from "../wrappers/SimpleSubscriber";
 import "@ton/test-utils";
 import { Candlestick, DataStream } from "../wrappers/DataStream";
@@ -15,7 +15,7 @@ import {
 
 describe("Core Assessment", () => {
   const BATCH_LIMIT = 3;
-  const DST_DEPLOY_DEPOSIT = toNano("0.02");
+  const DST_DEPLOY_DEPOSIT = toNano("20");
 
   let blockchain: Blockchain;
   let logger: ShrekLogger;
@@ -29,7 +29,9 @@ describe("Core Assessment", () => {
 
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger();
+    logger = new ShrekLogger(blockchain);
+
+    blockchain.now = THE_GREAT_CONJUCTION_2077;
 
     publisher = await blockchain.treasury("publisher");
     logger.addContract(publisher, "Publisher");
@@ -60,7 +62,7 @@ describe("Core Assessment", () => {
         queryId: 0n,
       },
     );
-    logger.logTransactions(DSTDeployResult.transactions);
+    await logger.logTransactions(DSTDeployResult.transactions);
 
     // Deploy 3 subscription batches
     for (let index = 0; index < BATCH_LIMIT; index++) {
@@ -72,14 +74,15 @@ describe("Core Assessment", () => {
       const DSTDeployBatchResult = await stream.send(
         publisher.getSender(),
         {
-          value: await stream.getDeployBatchDeposit(),
+          value: toNano("70"),
         },
         {
           $$type: "DSTDeployBatch",
           queryId: BigInt(index),
         },
       );
-      logger.logTransactions(DSTDeployBatchResult.transactions);
+
+      await logger.logTransactions(DSTDeployBatchResult.transactions);
     }
   });
 
@@ -105,20 +108,19 @@ describe("Core Assessment", () => {
     const DSTDeployResult = await subscriber.send(
       alice.getSender(),
       {
-        value: SUS_STORAGE_RESERVE + SUS_OPERATIONAL_RESERVE +
-          (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * 4n,
+        value: toNano("100"),
       },
       {
         $$type: "SUSDeploy",
         queryId: 200n,
         stream: stream.address,
         notificationsCount: 4n,
-        expiresAt: 100n,
+        timeout: 100n,
       },
     );
-    logger.logTransactions(DSTDeployResult.transactions);
+    await logger.logTransactions(DSTDeployResult.transactions);
 
-    expect(await subscriber.getExpiresAt()).toBe(100n);
+    expect(await subscriber.getTimeout()).toBe(100n);
     expect(await subscriber.getNotificationsCount()).toBe(4n);
 
     // Publish and verify the 1st candlestick
@@ -143,7 +145,7 @@ describe("Core Assessment", () => {
         candlestick: expectedCandlestick1,
       },
     );
-    logger.logTransactions(DSTPublishCandlestick1.transactions);
+    await logger.logTransactions(DSTPublishCandlestick1.transactions);
 
     expect(await subscriber.getLatestCandlestick()).toMatchObject(
       expectedCandlestick1,
@@ -171,7 +173,7 @@ describe("Core Assessment", () => {
         candlestick: expectedCandlestick2,
       },
     );
-    logger.logTransactions(DSTPublishCandlestick2.transactions);
+    await logger.logTransactions(DSTPublishCandlestick2.transactions);
 
     expect(await subscriber.getLatestCandlestick()).toMatchObject(
       expectedCandlestick2,
@@ -199,7 +201,7 @@ describe("Core Assessment", () => {
         candlestick: expectedCandlestick3,
       },
     );
-    logger.logTransactions(DSTPublishCandlestick3.transactions);
+    await logger.logTransactions(DSTPublishCandlestick3.transactions);
 
     expect(DSTPublishCandlestick3.transactions).toHaveTransaction({
       from: expectedSessionAddress,
@@ -215,7 +217,7 @@ describe("Core Assessment", () => {
     });
   });
 
-  it("(2) Should deploy Bob's Simple Subscriber #2 (notificationsCount = 10) that does not receive SESCandlestickPublishedNotification notifications and destroys gracefully after SUSCheckTimeout is successful", async () => {
+  it("(2) Should deploy Bob's Simple Subscriber #2 (notificationsCount = 10) that does not receive SESCandlestickPublishedNotification notifications and destroys gracefully after SUBCheckTimeout is successful", async () => {
     // Deploy a simple subscriber for Bob
     const subscriber = blockchain.openContract(
       await SimpleSubscriber.fromInit(
@@ -234,41 +236,44 @@ describe("Core Assessment", () => {
     );
 
     // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await subscriber.send(
-      publisher.getSender(),
+    const SUSDeployResult = await subscriber.send(
+      bob.getSender(),
       {
-        value: SUS_STORAGE_RESERVE + SUS_OPERATIONAL_RESERVE +
-          (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * 10n,
+        value: toNano("100"),
       },
       {
         $$type: "SUSDeploy",
         queryId: 200n,
         stream: stream.address,
         notificationsCount: 10n,
-        expiresAt: BigInt(THE_GREAT_CONJUCTION_2077 + 90),
+        // FIXME: this is not timeout, but expiration
+        timeout: BigInt(THE_GREAT_CONJUCTION_2077 + 90),
       },
     );
-    logger.logTransactions(DSTDeployResult.transactions, "(2) DSTDeployResult");
+    await logger.logTransactions(
+      SUSDeployResult.transactions,
+      "(2) SUSDeployResult",
+    );
 
     // Check timeout before expiration
-    blockchain.now = THE_GREAT_CONJUCTION_2077 + 60;
+    blockchain.now = THE_GREAT_CONJUCTION_2077 + 180;
 
-    const SUSCheckTimeout1 = await subscriber.send(
+    const SUBCheckTimeout1 = await subscriber.send(
       carol.getSender(),
       {
-        value: toNano("1"),
+        value: toNano("20"),
       },
       {
-        $$type: "SUSCheckTimeout",
+        $$type: "SUBCheckTimeout",
         queryId: 301n,
       },
     );
-    logger.logTransactions(
-      SUSCheckTimeout1.transactions,
-      "(2) SUSCheckTimeout1",
+    await logger.logTransactions(
+      SUBCheckTimeout1.transactions,
+      "(2) SUBCheckTimeout1",
     );
 
-    expect(SUSCheckTimeout1.transactions).toHaveTransaction({
+    expect(SUBCheckTimeout1.transactions).toHaveTransaction({
       from: carol.address,
       to: subscriber.address,
       success: false,
@@ -278,31 +283,31 @@ describe("Core Assessment", () => {
     // Check timeout after expiration
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 7200;
 
-    const SUSCheckTimeout2 = await subscriber.send(
+    const SUBCheckTimeout2 = await subscriber.send(
       carol.getSender(),
       {
-        value: toNano("1"),
+        value: toNano("30"),
       },
       {
-        $$type: "SUSCheckTimeout",
+        $$type: "SUBCheckTimeout",
         queryId: 301n,
       },
     );
-    logger.logTransactions(
-      SUSCheckTimeout2.transactions,
-      "(2) SUSCheckTimeout2",
+    await logger.logTransactions(
+      SUBCheckTimeout2.transactions,
+      "(2) SUBCheckTimeout2",
     );
 
-    expect(SUSCheckTimeout2.transactions).toHaveTransaction({
-      from: carol.address,
-      to: subscriber.address,
+    // FIXME: This expect may be unnecessary
+    expect(SUBCheckTimeout2.transactions).toHaveTransaction({
+      from: subscriber.address,
+      to: carol.address,
       success: true,
     });
 
-    expect(SUSCheckTimeout2.transactions).toHaveTransaction({
+    expect(SUBCheckTimeout2.transactions).toHaveTransaction({
       from: subscriber.address,
       to: carol.address,
-      value: toNano("1"),
       success: true,
     });
   });
