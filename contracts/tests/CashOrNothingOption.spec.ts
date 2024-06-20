@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
-import { address, openContract, toNano } from "@ton/core";
+import { toNano } from "@ton/core";
 import { SimpleSubscriber } from "../wrappers/SimpleSubscriber";
 import "@ton/test-utils";
 import { Candlestick, DataStream } from "../wrappers/DataStream";
@@ -7,15 +7,18 @@ import { ShrekLogger } from "./utils";
 import {
   DAY,
   ERR_TIMEOUT_NOT_EXCEEDED,
-  SOL,
-  THE_CELESTIAL_CONVERGENCE,
   THE_GREAT_CONJUCTION_2077,
 } from "../wrappers/constants";
 import {
-  Agreement,
   CashOrNothingOption,
+  CashOrNothingOptionAgreement,
+  CashOrNothingOptionType,
 } from "../wrappers/CashOrNothingOption";
+import { SUBSCRIBER_TIMEOUT } from "../wrappers/SimpleSubscriber.compile";
 
+/**
+ * Tests related to Core Assessment using Cash-or-Nothing options and DataStream contracts.
+ */
 describe("Core Assessment", () => {
   const BATCH_LIMIT = 3;
   const DST_DEPLOY_DEPOSIT = toNano("20");
@@ -32,7 +35,10 @@ describe("Core Assessment", () => {
   let bob: SandboxContract<TreasuryContract>;
   let carol: SandboxContract<TreasuryContract>;
 
-  beforeEach(async () => {
+  /**
+   * Set up contracts and initial conditions before each test case.
+   */
+  beforeAll(async () => {
     blockchain = await Blockchain.create();
     logger = new ShrekLogger(blockchain);
 
@@ -94,79 +100,68 @@ describe("Core Assessment", () => {
     }
   });
 
-  it("(1) Should deploy Broker's Option #1 (holder=Alice, writer=Bob, initiation=TGC2077+120, expiration=TGC2077+720, type=Call, investment=10TON; payout=7.4TON) that does not receive SESCandlestickPublishedNotification notifications and destroys gracefully after SUBCheckTimeout is successful", async () => {
-    // Deploy a Cash-or-Nothing option for Alice and Bob by Deployer
+  /**
+   * Test case to deploy Broker's Option #1 and ensure graceful destruction after successful SUBCheckTimeout.
+   */
+  it("(1) Should deploy Broker's Option #1 and destroy gracefully after SUBCheckTimeout is successful", async () => {
+    blockchain.now = THE_GREAT_CONJUCTION_2077;
+
+    // Deploy Cash-or-Nothing option for Alice and Bob by Broker
     const option = blockchain.openContract(
-      await CashOrNothingOption.fromInit(
-        broker.address,
-        21n,
-      ),
+      await CashOrNothingOption.fromInit(broker.address, 21n),
     );
     logger.addContract(option, "Broker's Option #1");
 
     const expectedSessionAddress = await stream.getSessionAddress(
       option.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Broker's Option #1's Session`,
-    );
+    logger.addContract(expectedSessionAddress, `Broker's Option #1's Session`);
 
-    const agreement: Agreement = {
-      $$type: "Agreement",
+    const agreement: CashOrNothingOptionAgreement = {
+      $$type: "CashOrNothingOptionAgreement",
       holder: alice.address,
       writer: bob.address,
-      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 120),
-      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 720),
-      type: true, // FIXME: CASH_OR_NOTHING_OPTION_TYPE_CALL;
+      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 120 + 59),
+      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 720 + 59),
+      type: CashOrNothingOptionType.Call,
       investment: toNano("10"),
       payout: toNano("7.4"),
     };
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const CNODeployResult = await option.send(
-      broker.getSender(),
-      {
-        value: toNano("100"),
-      },
-      {
-        $$type: "CNODeploy",
-        queryId: 300n,
-        stream: stream.address,
-        agreement,
-      },
-    );
+    // Deploy the Cash-or-Nothing Option contract and log transactions
+    const CNODeployResult = await option.send(broker.getSender(), {
+      value: toNano("10") + toNano("7.4") + toNano("1"),
+    }, {
+      $$type: "CashOrNothingOptionDeploy",
+      queryId: 300n,
+      stream: stream.address,
+      agreement,
+    });
     await logger.logTransactions(CNODeployResult.transactions);
 
-    // FIXME:
-    expect(await option.getTimeout()).toBe(
-      BigInt(THE_GREAT_CONJUCTION_2077 + 720),
+    // Verify expiration and notifications count
+    expect(await option.getExpiration()).toBe(
+      BigInt(THE_GREAT_CONJUCTION_2077 + 720 + 59),
     );
-
-    // FIXME:
     expect(await option.getNotificationsCount()).toBe(13n);
 
     await logger.logContracts();
-    // expect(await option.getNotificationsCount()).toBe(4n);
 
-    // Check timeout before expiration
+    // Check SUBCheckTimeout before expiration
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 180;
 
-    const SUBCheckTimeout1 = await option.send(
-      carol.getSender(),
-      {
-        value: toNano("20"),
-      },
-      {
-        $$type: "SUBCheckTimeout",
-        queryId: 301n,
-      },
-    );
+    const SUBCheckTimeout1 = await option.send(carol.getSender(), {
+      value: toNano("20"),
+    }, {
+      $$type: "SubscriberCheckTimeout",
+      queryId: 301n,
+    });
     await logger.logTransactions(
       SUBCheckTimeout1.transactions,
       "(2) SUBCheckTimeout1",
     );
 
+    // Verify SUBCheckTimeout behavior
     expect(SUBCheckTimeout1.transactions).toHaveTransaction({
       from: carol.address,
       to: option.address,
@@ -174,29 +169,24 @@ describe("Core Assessment", () => {
       exitCode: ERR_TIMEOUT_NOT_EXCEEDED,
     });
 
-    // Check timeout after expiration
-    // FIXME: 3600 = SUBSCRIBER_TIMEOUT | DATA_STREAM_TIMEOUT;
-    blockchain.now = THE_GREAT_CONJUCTION_2077 + 720 + 3600 + 1;
+    // Check SUBCheckTimeout after expiration
+    blockchain.now = THE_GREAT_CONJUCTION_2077 + 720 + SUBSCRIBER_TIMEOUT + 60;
 
-    const SUBCheckTimeout2 = await option.send(
-      carol.getSender(),
-      {
-        value: toNano("30"),
-      },
-      {
-        $$type: "SUBCheckTimeout",
-        queryId: 301n,
-      },
-    );
+    const SUBCheckTimeout2 = await option.send(carol.getSender(), {
+      value: toNano("30"),
+    }, {
+      $$type: "SubscriberCheckTimeout",
+      queryId: 301n,
+    });
     await logger.logTransactions(
       SUBCheckTimeout2.transactions,
       "(2) SUBCheckTimeout2",
     );
 
-    // FIXME: This expect may be unnecessary
+    // Verify SUBCheckTimeout behavior post-expiration
     expect(SUBCheckTimeout2.transactions).toHaveTransaction({
-      from: option.address,
-      to: carol.address,
+      from: carol.address,
+      to: option.address,
       success: true,
     });
 
@@ -207,76 +197,69 @@ describe("Core Assessment", () => {
     });
   });
 
-  it("(2) Should deploy Broker's Option #2 (holder=Alice, writer=Bob, initiation=TGC2077+DAY+120, expiration=TGC2077+DAY+720, type=Put, investment=10TON; payout=7.4TON) and settle in the money after the 12th candlestick is published", async () => {
-    blockchain.now = THE_GREAT_CONJUCTION_2077 + 1 * DAY;
+  /**
+   * Test case to deploy Broker's Option #2 and settle in the money after the 12th candlestick is published.
+   */
+  it("(2) Should deploy Broker's Option #2 and settle in the money after the 12th candlestick is published", async () => {
+    blockchain.now = THE_GREAT_CONJUCTION_2077 + DAY;
 
-    // Deploy a Cash-or-Nothing option for Alice and Bob by Deployer
+    // Deploy Cash-or-Nothing option for Alice and Bob by Broker
     const option = blockchain.openContract(
-      await CashOrNothingOption.fromInit(
-        broker.address,
-        22n,
-      ),
+      await CashOrNothingOption.fromInit(broker.address, 22n),
     );
     logger.addContract(option, "Broker's Option #2");
 
     const expectedSessionAddress = await stream.getSessionAddress(
       option.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Broker's Option #2's Session`,
-    );
+    logger.addContract(expectedSessionAddress, `Broker's Option #2's Session`);
 
-    const agreement: Agreement = {
-      $$type: "Agreement",
+    const agreement: CashOrNothingOptionAgreement = {
+      $$type: "CashOrNothingOptionAgreement",
       holder: alice.address,
       writer: bob.address,
-      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 1 * DAY + 120),
-      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 1 * DAY + 720),
-      type: true, // FIXME: CASH_OR_NOTHING_OPTION_TYPE_CALL;
+      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 120),
+      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 720),
+      type: CashOrNothingOptionType.Call,
       investment: toNano("10"),
       payout: toNano("7.4"),
     };
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await option.send(
-      broker.getSender(),
-      {
-        value: toNano("100"),
-      },
-      {
-        $$type: "CNODeploy",
-        queryId: 300n,
-        stream: stream.address,
-        agreement,
-      },
-    );
+    // Deploy the Cash-or-Nothing Option contract and log transactions
+    const DSTDeployResult = await option.send(broker.getSender(), {
+      value: toNano("10") + toNano("7.4") + toNano("1"),
+    }, {
+      $$type: "CashOrNothingOptionDeploy",
+      queryId: 300n,
+      stream: stream.address,
+      agreement,
+    });
     await logger.logTransactions(DSTDeployResult.transactions);
 
-    // FIXME:
-    expect(await option.getTimeout()).toBe(
-      BigInt(THE_GREAT_CONJUCTION_2077 + 1 * DAY + 720),
+    // Verify expiration and notifications count
+    expect(await option.getExpiration()).toBe(
+      BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 720),
     );
-
     expect(await option.getNotificationsCount()).toBe(13n);
 
     await logger.logContracts();
 
-    console.warn("!!!", blockchain.now);
-
+    // Publish 12 candlesticks
     for (let index = 0; index < 12; index++) {
-      blockchain.now = THE_GREAT_CONJUCTION_2077 + 1 * DAY + 60 * index;
+      blockchain.now = THE_GREAT_CONJUCTION_2077 + DAY + 60 * index;
 
+      // Simulate candlestick data
       const candlestick: Candlestick = {
         $$type: "Candlestick",
-        start: BigInt(THE_GREAT_CONJUCTION_2077 + 1 * DAY + 60 * index),
-        end: BigInt(THE_GREAT_CONJUCTION_2077 + 1 * DAY + 60 * (index + 1)),
+        start: BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 60 * index),
+        end: BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 60 * (index + 1)),
         open: BigInt(10 + index * 1),
         close: BigInt(10 + index * 2),
         high: BigInt(5 + index * 1),
         low: BigInt(15 + index * 3),
       };
 
+      // Publish candlestick and log transactions
       const DSTPublishCandlestickResult = await stream.send(
         publisher.getSender(),
         {
@@ -291,6 +274,7 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
+      // Check settlement transactions after 12th candlestick
       if (index === 11) {
         expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
           from: option.address,
@@ -309,74 +293,73 @@ describe("Core Assessment", () => {
     }
   });
 
-  it("(3) Should deploy Broker's Option #3 (holder=Alice, writer=Bob, initiation=TGC2077+3*DAY+120, expiration=TGC2077+3*DAY+720, type=Put, investment=5TON; payout=2TON) and settle in the money after the 12th candlestick is published", async () => {
+  /**
+   * Test case to deploy Broker's Option #3 and settle in the money after the 12th candlestick is published.
+   */
+  it("(3) Should deploy Broker's Option #3 and settle in the money after the 12th candlestick is published", async () => {
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 2 * DAY;
 
-    // Deploy a Cash-or-Nothing option for Alice and Bob by Deployer
+    // Deploy Cash-or-Nothing option for Alice and Bob by Broker
     const option = blockchain.openContract(
-      await CashOrNothingOption.fromInit(
-        broker.address,
-        23n,
-      ),
+      await CashOrNothingOption.fromInit(broker.address, 23n),
     );
     logger.addContract(option, "Broker's Option #3");
 
     const expectedSessionAddress = await stream.getSessionAddress(
       option.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Broker's Option #3's Session`,
-    );
+    logger.addContract(expectedSessionAddress, `Broker's Option #3's Session`);
 
-    const agreement: Agreement = {
-      $$type: "Agreement",
+    /**
+     * Agreement details for the Cash-or-Nothing option.
+     * @type {CashOrNothingOptionAgreement}
+     */
+    const agreement: CashOrNothingOptionAgreement = {
+      $$type: "CashOrNothingOptionAgreement",
       holder: alice.address,
       writer: bob.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 120),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 720),
-      type: false, // FIXME: CASH_OR_NOTHING_OPTION_TYPE_CALL;
-      investment: toNano("10"),
-      payout: toNano("7.4"),
+      type: CashOrNothingOptionType.Put,
+      investment: toNano("5"),
+      payout: toNano("2"),
     };
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await option.send(
-      broker.getSender(),
-      {
-        value: toNano("100"),
-      },
-      {
-        $$type: "CNODeploy",
-        queryId: 300n,
-        stream: stream.address,
-        agreement,
-      },
-    );
+    // Deploy the Cash-or-Nothing Option contract and log transactions
+    const DSTDeployResult = await option.send(broker.getSender(), {
+      value: toNano("5") + toNano("2") + toNano("1"),
+    }, {
+      $$type: "CashOrNothingOptionDeploy",
+      queryId: 300n,
+      stream: stream.address,
+      agreement,
+    });
     await logger.logTransactions(DSTDeployResult.transactions);
 
-    // FIXME:
-    expect(await option.getTimeout()).toBe(
+    // Verify expiration and notifications count
+    expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 720),
     );
-
     expect(await option.getNotificationsCount()).toBe(13n);
 
     await logger.logContracts();
 
+    // Publish 12 candlesticks
     for (let index = 0; index < 12; index++) {
       blockchain.now = THE_GREAT_CONJUCTION_2077 + 2 * DAY + 60 * index;
 
+      // Simulate candlestick data
       const candlestick: Candlestick = {
         $$type: "Candlestick",
         start: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 60 * index),
         end: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 60 * (index + 1)),
-        open: BigInt(10 - index * 1),
-        close: BigInt(10 - index * 2),
-        high: BigInt(5 - index * 1),
-        low: BigInt(15 - index * 3),
+        open: BigInt(1000 - index * 1),
+        close: BigInt(1000 - index * 2),
+        high: BigInt(500 - index * 1),
+        low: BigInt(1500 - index * 3),
       };
 
+      // Publish candlestick and log transactions
       const DSTPublishCandlestickResult = await stream.send(
         publisher.getSender(),
         {
@@ -391,11 +374,12 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
+      // Check settlement transactions after 12th candlestick
       if (index === 11) {
         expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
           from: option.address,
           to: alice.address,
-          value: toNano("17.42"),
+          value: toNano("7.02"),
           success: true,
         });
 
@@ -409,74 +393,73 @@ describe("Core Assessment", () => {
     }
   });
 
-  it("(4) Should deploy Broker's Option #4 (holder=Bob, writer=Carol, initiation=TGC2077+3*DAY+120, expiration=TGC2077+3*DAY+720, type=Call, investment=5TON; payout=2TON) and settle in the money after the 12th candlestick is published", async () => {
-    blockchain.now = THE_GREAT_CONJUCTION_2077 + 2 * DAY;
+  /**
+   * Test case to deploy Broker's Option #4 and settle out of the money after the 12th candlestick is published.
+   */
+  it("(4) Should deploy Broker's Option #4 and settle out of the money after the 12th candlestick is published", async () => {
+    blockchain.now = THE_GREAT_CONJUCTION_2077 + 3 * DAY;
 
-    // Deploy a Cash-or-Nothing option for Alice and Bob by Deployer
+    // Deploy Cash-or-Nothing option for Bob and Carol by Broker
     const option = blockchain.openContract(
-      await CashOrNothingOption.fromInit(
-        broker.address,
-        24n,
-      ),
+      await CashOrNothingOption.fromInit(broker.address, 24n),
     );
     logger.addContract(option, "Broker's Option #4");
 
     const expectedSessionAddress = await stream.getSessionAddress(
       option.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Broker's Option #4's Session`,
-    );
+    logger.addContract(expectedSessionAddress, `Broker's Option #4's Session`);
 
-    const agreement: Agreement = {
-      $$type: "Agreement",
+    /**
+     * Agreement details for the Cash-or-Nothing option.
+     * @type {CashOrNothingOptionAgreement}
+     */
+    const agreement: CashOrNothingOptionAgreement = {
+      $$type: "CashOrNothingOptionAgreement",
       holder: bob.address,
       writer: carol.address,
-      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 120),
-      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 720),
-      type: true, // FIXME: CASH_OR_NOTHING_OPTION_TYPE_CALL;
+      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 120),
+      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 720),
+      type: CashOrNothingOptionType.Call,
       investment: toNano("5"),
       payout: toNano("2"),
     };
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await option.send(
-      broker.getSender(),
-      {
-        value: toNano("100"),
-      },
-      {
-        $$type: "CNODeploy",
-        queryId: 300n,
-        stream: stream.address,
-        agreement,
-      },
-    );
+    // Deploy the Cash-or-Nothing Option contract and log transactions
+    const DSTDeployResult = await option.send(broker.getSender(), {
+      value: toNano("5") + toNano("2") + toNano("1"),
+    }, {
+      $$type: "CashOrNothingOptionDeploy",
+      queryId: 300n,
+      stream: stream.address,
+      agreement,
+    });
     await logger.logTransactions(DSTDeployResult.transactions);
 
-    // FIXME:
-    expect(await option.getTimeout()).toBe(
-      BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 720),
+    // Verify expiration and notifications count
+    expect(await option.getExpiration()).toBe(
+      BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 720),
     );
-
     expect(await option.getNotificationsCount()).toBe(13n);
 
     await logger.logContracts();
 
+    // Publish 12 candlesticks
     for (let index = 0; index < 12; index++) {
-      blockchain.now = THE_GREAT_CONJUCTION_2077 + 2 * DAY + 60 * index;
+      blockchain.now = THE_GREAT_CONJUCTION_2077 + 3 * DAY + 60 * index;
 
+      // Simulate candlestick data
       const candlestick: Candlestick = {
         $$type: "Candlestick",
-        start: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 60 * index),
-        end: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 60 * (index + 1)),
-        open: BigInt(10 - index * 1),
-        close: BigInt(10 - index * 2),
-        high: BigInt(5 - index * 1),
-        low: BigInt(15 - index * 3),
+        start: BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 60 * index),
+        end: BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 60 * (index + 1)),
+        open: BigInt(1000 - index * 1),
+        close: BigInt(1000 - index * 2),
+        high: BigInt(500 - index * 1),
+        low: BigInt(1500 - index * 3),
       };
 
+      // Publish candlestick and log transactions
       const DSTPublishCandlestickResult = await stream.send(
         publisher.getSender(),
         {
@@ -491,6 +474,7 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
+      // Check settlement transactions after 12th candlestick
       if (index === 11) {
         expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
           from: option.address,
@@ -509,66 +493,152 @@ describe("Core Assessment", () => {
     }
   });
 
-  it("(5) Should deploy Broker's Option #5 (holder=Bob, writer=Carol, initiation=TGC2077+DAY+120, expiration=TGC2077+DAY+720, type=Put, investment=5TON; payout=2TON) and settle out the money after the 12th candlestick is published", async () => {
-    blockchain.now = THE_GREAT_CONJUCTION_2077 + 5 * DAY;
+  /**
+   * Test case to deploy Broker's Option #5 and settle out the money after the 12th candlestick is published.
+   */
+  it("(5) Should deploy Broker's Option #5 and settle out the money after the 12th candlestick is published", async () => {
+    blockchain.now = THE_GREAT_CONJUCTION_2077 + 4 * DAY;
 
-    // Deploy a Cash-or-Nothing option for Alice and Bob by Deployer
+    // Deploy Cash-or-Nothing option for Bob and Carol by Broker
     const option = blockchain.openContract(
-      await CashOrNothingOption.fromInit(
-        broker.address,
-        24n,
-      ),
+      await CashOrNothingOption.fromInit(broker.address, 25n),
     );
     logger.addContract(option, "Broker's Option #5");
 
     const expectedSessionAddress = await stream.getSessionAddress(
       option.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Broker's Option #5's Session`,
-    );
+    logger.addContract(expectedSessionAddress, `Broker's Option #5's Session`);
 
-    const agreement: Agreement = {
-      $$type: "Agreement",
+    const agreement: CashOrNothingOptionAgreement = {
+      $$type: "CashOrNothingOptionAgreement",
       holder: bob.address,
       writer: carol.address,
-      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 120),
-      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 720),
-      type: false, // FIXME: CASH_OR_NOTHING_OPTION_TYPE_CALL;
+      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 120),
+      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 720),
+      type: CashOrNothingOptionType.Put,
       investment: toNano("5"),
       payout: toNano("2"),
     };
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await option.send(
-      broker.getSender(),
-      {
-        value: toNano("100"),
-      },
-      {
-        $$type: "CNODeploy",
-        queryId: 300n,
-        stream: stream.address,
-        agreement,
-      },
-    );
+    // Deploy the Cash-or-Nothing Option contract and log transactions
+    const DSTDeployResult = await option.send(broker.getSender(), {
+      value: toNano("5") + toNano("2") + toNano("1"),
+    }, {
+      $$type: "CashOrNothingOptionDeploy",
+      queryId: 300n,
+      stream: stream.address,
+      agreement,
+    });
     await logger.logTransactions(DSTDeployResult.transactions);
 
-    // FIXME:
-    expect(await option.getTimeout()).toBe(
-      BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 720),
+    // Verify expiration and notifications count
+    expect(await option.getExpiration()).toBe(
+      BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 720),
     );
-
     expect(await option.getNotificationsCount()).toBe(13n);
 
     await logger.logContracts();
 
-    console.warn("!!!", blockchain.now);
-
     for (let index = 0; index < 12; index++) {
+      blockchain.now = THE_GREAT_CONJUCTION_2077 + 4 * DAY + 60 * index;
+
+      // Simulate candlestick data
+      const candlestick: Candlestick = {
+        $$type: "Candlestick",
+        start: BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 60 * index),
+        end: BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 60 * (index + 1)),
+        open: BigInt(10 + index * 1),
+        close: BigInt(10 + index * 2),
+        high: BigInt(5 + index * 1),
+        low: BigInt(15 + index * 3),
+      };
+
+      // Publish candlestick and log transactions
+      const DSTPublishCandlestickResult = await stream.send(
+        publisher.getSender(),
+        {
+          value: await stream.getPublishCandlestickDeposit(),
+        },
+        {
+          $$type: "DSTPublishCandlestick",
+          queryId: BigInt(400 + index),
+          candlestick,
+        },
+      );
+
+      await logger.logTransactions(DSTPublishCandlestickResult.transactions);
+
+      // Check settlement transactions after 12th candlestick
+      if (index === 11) {
+        expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
+          from: option.address,
+          to: bob.address,
+          value: toNano("0.02"),
+          success: true,
+        });
+
+        expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
+          from: option.address,
+          to: carol.address,
+          value: toNano("7.02"),
+          success: true,
+        });
+      }
+    }
+  });
+
+  /**
+   * Test case to deploy Broker's Option #6 and settle at the money after the 7th candlestick is published.
+   */
+  it("(6) Should deploy Broker's Option #6 and settle at the money after the 7th candlestick is published because the strike price candlestick was not published", async () => {
+    blockchain.now = THE_GREAT_CONJUCTION_2077 + 5 * DAY;
+
+    // Deploy Cash-or-Nothing option for Bob and Carol by Broker
+    const option = blockchain.openContract(
+      await CashOrNothingOption.fromInit(broker.address, 26n),
+    );
+    logger.addContract(option, "Broker's Option #6");
+
+    const expectedSessionAddress = await stream.getSessionAddress(
+      option.address,
+    );
+    logger.addContract(expectedSessionAddress, `Broker's Option #6's Session`);
+
+    const agreement: CashOrNothingOptionAgreement = {
+      $$type: "CashOrNothingOptionAgreement",
+      holder: bob.address,
+      writer: carol.address,
+      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 120),
+      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 720),
+      type: CashOrNothingOptionType.Put,
+      investment: toNano("5"),
+      payout: toNano("2"),
+    };
+
+    // Deploy the Cash-or-Nothing Option contract and log transactions
+    const DSTDeployResult = await option.send(broker.getSender(), {
+      value: toNano("5") + toNano("2") + toNano("1"),
+    }, {
+      $$type: "CashOrNothingOptionDeploy",
+      queryId: 301n,
+      stream: stream.address,
+      agreement,
+    });
+    await logger.logTransactions(DSTDeployResult.transactions);
+
+    // Verify expiration and notifications count
+    expect(await option.getExpiration()).toBe(
+      BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 720),
+    );
+    expect(await option.getNotificationsCount()).toBe(13n);
+
+    await logger.logContracts();
+
+    for (let index = 5; index < 12; index++) {
       blockchain.now = THE_GREAT_CONJUCTION_2077 + 5 * DAY + 60 * index;
 
+      // Simulate candlestick data
       const candlestick: Candlestick = {
         $$type: "Candlestick",
         start: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 60 * index),
@@ -579,6 +649,7 @@ describe("Core Assessment", () => {
         low: BigInt(15 + index * 3),
       };
 
+      // Publish candlestick and log transactions
       const DSTPublishCandlestickResult = await stream.send(
         publisher.getSender(),
         {
@@ -593,108 +664,7 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
-      if (index === 11) {
-        expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
-          from: option.address,
-          to: bob.address,
-          value: toNano("0.02"),
-          success: true,
-        });
-
-        expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
-          from: option.address,
-          to: carol.address,
-          value: toNano("7.02"),
-          success: true,
-        });
-      }
-    }
-  });
-
-  it("(6) Should deploy Broker's Option #6 (holder=Bob, writer=Carol, initiation=TGC2077+DAY+120, expiration=TGC2077+DAY+720, type=Put, investment=5TON; payout=2TON) and settle at the money after the 7th candlestick is published because the candlestick containing strike price was not published", async () => {
-    blockchain.now = THE_GREAT_CONJUCTION_2077 + 6 * DAY;
-
-    // Deploy a Cash-or-Nothing option for Alice and Bob by Deployer
-    const option = blockchain.openContract(
-      await CashOrNothingOption.fromInit(
-        broker.address,
-        24n,
-      ),
-    );
-    logger.addContract(option, "Broker's Option #6");
-
-    const expectedSessionAddress = await stream.getSessionAddress(
-      option.address,
-    );
-    logger.addContract(
-      expectedSessionAddress,
-      `Broker's Option #6's Session`,
-    );
-
-    const agreement: Agreement = {
-      $$type: "Agreement",
-      holder: bob.address,
-      writer: carol.address,
-      initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 6 * DAY + 120),
-      expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 6 * DAY + 720),
-      type: false, // FIXME: CASH_OR_NOTHING_OPTION_TYPE_CALL;
-      investment: toNano("5"),
-      payout: toNano("2"),
-    };
-
-    // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await option.send(
-      broker.getSender(),
-      {
-        value: toNano("100"),
-      },
-      {
-        $$type: "CNODeploy",
-        queryId: 300n,
-        stream: stream.address,
-        agreement,
-      },
-    );
-    await logger.logTransactions(DSTDeployResult.transactions);
-
-    // FIXME:
-    expect(await option.getTimeout()).toBe(
-      BigInt(THE_GREAT_CONJUCTION_2077 + 6 * DAY + 720),
-    );
-
-    expect(await option.getNotificationsCount()).toBe(13n);
-
-    await logger.logContracts();
-
-    console.warn("!!!", blockchain.now);
-
-    for (let index = 5; index < 12; index++) {
-      blockchain.now = THE_GREAT_CONJUCTION_2077 + 6 * DAY + 60 * index;
-
-      const candlestick: Candlestick = {
-        $$type: "Candlestick",
-        start: BigInt(THE_GREAT_CONJUCTION_2077 + 6 * DAY + 60 * index),
-        end: BigInt(THE_GREAT_CONJUCTION_2077 + 6 * DAY + 60 * (index + 1)),
-        open: BigInt(10 + index * 1),
-        close: BigInt(10 + index * 2),
-        high: BigInt(5 + index * 1),
-        low: BigInt(15 + index * 3),
-      };
-
-      const DSTPublishCandlestickResult = await stream.send(
-        publisher.getSender(),
-        {
-          value: await stream.getPublishCandlestickDeposit(),
-        },
-        {
-          $$type: "DSTPublishCandlestick",
-          queryId: BigInt(400 + index),
-          candlestick,
-        },
-      );
-
-      await logger.logTransactions(DSTPublishCandlestickResult.transactions);
-
+      // Check settlement transactions after 7th candlestick
       if (index === 11) {
         expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
           from: option.address,

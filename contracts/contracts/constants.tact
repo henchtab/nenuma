@@ -51,16 +51,6 @@ const SES_DESTROY_DEPOSIT: Int = ton("0.10"); // Deposit for destroying a sessio
 
 // END Session
 
-// BEGIN Simple Subscriber
-
-// Constants related to subscription session storage and operations
-const SUS_STORAGE_RESERVE: Int = ton("0.05"); // Storage reserve for subscription session
-const SUS_OPERATIONAL_RESERVE: Int = ton("2.00"); // Operational reserve for subscription session
-const SUS_TIMEOUT: Int = 3600; // Timeout for subscription session
-
-// END Subscription Subscriber
-
-
 // BEGIN Brokerage
 
 // Constants related to brokerage storage and deposits

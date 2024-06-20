@@ -1,18 +1,17 @@
 import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
-import { address, openContract, toNano } from "@ton/core";
+import { toNano } from "@ton/core";
 import { SimpleSubscriber } from "../wrappers/SimpleSubscriber";
 import "@ton/test-utils";
 import { Candlestick, DataStream } from "../wrappers/DataStream";
 import { ShrekLogger } from "./utils";
 import {
   ERR_TIMEOUT_NOT_EXCEEDED,
-  NOTIFICATION_DEPOSIT,
-  NOTIFICATION_PREMIUM,
-  SUS_OPERATIONAL_RESERVE,
-  SUS_STORAGE_RESERVE,
   THE_GREAT_CONJUCTION_2077,
 } from "../wrappers/constants";
 
+/**
+ * Core Assessment Test Suite
+ */
 describe("Core Assessment", () => {
   const BATCH_LIMIT = 3;
   const DST_DEPLOY_DEPOSIT = toNano("20");
@@ -27,10 +26,12 @@ describe("Core Assessment", () => {
   let bob: SandboxContract<TreasuryContract>;
   let carol: SandboxContract<TreasuryContract>;
 
+  /**
+   * Sets up the blockchain and contracts before running tests.
+   */
   beforeAll(async () => {
     blockchain = await Blockchain.create();
     logger = new ShrekLogger(blockchain);
-
     blockchain.now = THE_GREAT_CONJUCTION_2077;
 
     publisher = await blockchain.treasury("publisher");
@@ -45,85 +46,67 @@ describe("Core Assessment", () => {
     carol = await blockchain.treasury("carol");
     logger.addContract(carol, "Carol");
 
-    // Initialize the DataStream contract and log it
     stream = blockchain.openContract(
-      await DataStream.fromInit(publisher.address, "candlestick.1.BTCUSDT"),
+      await DataStream.fromInit(
+        publisher.address,
+        "candlestick.1.BTCUSDT",
+      ),
     );
     logger.addContract(stream, "Data Stream");
 
-    // Deploy the DataStream contract and log the transactions
-    const DSTDeployResult = await stream.send(
+    const dstDeployResult = await stream.send(
       publisher.getSender(),
-      {
-        value: DST_DEPLOY_DEPOSIT,
-      },
-      {
-        $$type: "DSTDeploy",
-        queryId: 0n,
-      },
+      { value: DST_DEPLOY_DEPOSIT },
+      { $$type: "DSTDeploy", queryId: 0n },
     );
-    await logger.logTransactions(DSTDeployResult.transactions);
+    await logger.logTransactions(dstDeployResult.transactions);
 
-    // Deploy 3 subscription batches
     for (let index = 0; index < BATCH_LIMIT; index++) {
       const batchId = await stream.getNextBatchId();
-
       const batchAddress = await stream.getBatchAddress(batchId);
       logger.addContract(batchAddress, `Subscription Batch #${batchId}`);
 
-      const DSTDeployBatchResult = await stream.send(
+      const dstDeployBatchResult = await stream.send(
         publisher.getSender(),
-        {
-          value: toNano("70"),
-        },
-        {
-          $$type: "DSTDeployBatch",
-          queryId: BigInt(index),
-        },
+        { value: toNano("70") },
+        { $$type: "DSTDeployBatch", queryId: BigInt(index) },
       );
-
-      await logger.logTransactions(DSTDeployBatchResult.transactions);
+      await logger.logTransactions(dstDeployBatchResult.transactions);
     }
   });
 
-  it("(1) Should deploy Alice's Simple Subscriber #1 (notificationsCount = 3) that gracefully destroys after receiving the 3rd candlestick", async () => {
-    // Deploy a simple subscriber for Alice
-    const subscriber = blockchain.openContract(
-      await SimpleSubscriber.fromInit(
-        alice.address,
-        1n,
-      ),
+  /**
+   * Tests deployment and behavior of Alice's Simple Subscriber.
+   */
+  it("(1) Deploys Alice's Simple Subscriber #1 and verifies candlestick handling and destruction", async () => {
+    const aliceSubscriber = blockchain.openContract(
+      await SimpleSubscriber.fromInit(alice.address, 1n),
     );
-    logger.addContract(subscriber, "Alice's Simple Subscriber #1");
+    logger.addContract(aliceSubscriber, "Alice's Simple Subscriber #1");
 
-    const expectedSessionAddress = await stream.getSessionAddress(
-      subscriber.address,
+    const aliceSessionAddress = await stream.getSessionAddress(
+      aliceSubscriber.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Alice's Simple Subscriber #1's Session`,
-    );
+    logger.addContract(aliceSessionAddress, `Alice's Subscriber #1 Session`);
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const DSTDeployResult = await subscriber.send(
+    const SimpleSubscriberDeployResult = await aliceSubscriber.send(
       alice.getSender(),
       {
-        value: toNano("100"),
+        value: toNano("1"),
       },
       {
-        $$type: "SUSDeploy",
+        $$type: "SimpleSubscriberDeploy",
         queryId: 200n,
         stream: stream.address,
         notificationsCount: 4n,
-        timeout: 100n,
+        expiration: 100n,
       },
     );
-    await logger.logTransactions(DSTDeployResult.transactions);
+    await logger.logTransactions(SimpleSubscriberDeployResult.transactions);
 
-    expect(await subscriber.getTimeout()).toBe(100n);
-    expect(await subscriber.getNotificationsCount()).toBe(4n);
+    expect(await aliceSubscriber.getExpiration()).toBe(100n);
+    expect(await aliceSubscriber.getNotificationsCount()).toBe(4n);
 
-    // Publish and verify the 1st candlestick
     const expectedCandlestick1: Candlestick = {
       $$type: "Candlestick",
       start: 7n,
@@ -134,7 +117,7 @@ describe("Core Assessment", () => {
       low: 7n,
     };
 
-    const DSTPublishCandlestick1 = await stream.send(
+    const DSTPublishCandlestick1Result = await stream.send(
       publisher.getSender(),
       {
         value: await stream.getPublishCandlestickDeposit(),
@@ -145,13 +128,12 @@ describe("Core Assessment", () => {
         candlestick: expectedCandlestick1,
       },
     );
-    await logger.logTransactions(DSTPublishCandlestick1.transactions);
+    await logger.logTransactions(DSTPublishCandlestick1Result.transactions);
 
-    expect(await subscriber.getLatestCandlestick()).toMatchObject(
+    expect(await aliceSubscriber.getLatestCandlestick()).toMatchObject(
       expectedCandlestick1,
     );
 
-    // Publish and verify the 2nd candlestick
     const expectedCandlestick2: Candlestick = {
       $$type: "Candlestick",
       start: 8n,
@@ -162,7 +144,7 @@ describe("Core Assessment", () => {
       low: 8n,
     };
 
-    const DSTPublishCandlestick2 = await stream.send(
+    const DSTPublishCandlestick2Result = await stream.send(
       publisher.getSender(),
       {
         value: await stream.getPublishCandlestickDeposit(),
@@ -173,13 +155,12 @@ describe("Core Assessment", () => {
         candlestick: expectedCandlestick2,
       },
     );
-    await logger.logTransactions(DSTPublishCandlestick2.transactions);
+    await logger.logTransactions(DSTPublishCandlestick2Result.transactions);
 
-    expect(await subscriber.getLatestCandlestick()).toMatchObject(
+    expect(await aliceSubscriber.getLatestCandlestick()).toMatchObject(
       expectedCandlestick2,
     );
 
-    // Publish and verify the 3rd candlestick, and check for the destruction of the subscriber
     const expectedCandlestick3: Candlestick = {
       $$type: "Candlestick",
       start: 9n,
@@ -190,7 +171,7 @@ describe("Core Assessment", () => {
       low: 9n,
     };
 
-    const DSTPublishCandlestick3 = await stream.send(
+    const DSTPublishCandlestick3Result = await stream.send(
       publisher.getSender(),
       {
         value: await stream.getPublishCandlestickDeposit(),
@@ -201,81 +182,69 @@ describe("Core Assessment", () => {
         candlestick: expectedCandlestick3,
       },
     );
-    await logger.logTransactions(DSTPublishCandlestick3.transactions);
+    await logger.logTransactions(DSTPublishCandlestick3Result.transactions);
 
-    expect(DSTPublishCandlestick3.transactions).toHaveTransaction({
-      from: expectedSessionAddress,
-      to: subscriber.address,
+    expect(DSTPublishCandlestick3Result.transactions).toHaveTransaction({
+      from: aliceSessionAddress,
+      to: aliceSubscriber.address,
       success: true,
       destroyed: true,
     });
 
-    expect(DSTPublishCandlestick3.transactions).toHaveTransaction({
-      from: subscriber.address,
+    expect(DSTPublishCandlestick3Result.transactions).toHaveTransaction({
+      from: aliceSubscriber.address,
       to: alice.address,
       success: true,
     });
   });
 
-  it("(2) Should deploy Bob's Simple Subscriber #2 (notificationsCount = 10) that does not receive SESCandlestickPublishedNotification notifications and destroys gracefully after SUBCheckTimeout is successful", async () => {
-    // Deploy a simple subscriber for Bob
-    const subscriber = blockchain.openContract(
-      await SimpleSubscriber.fromInit(
-        bob.address,
-        2n,
-      ),
+  /**
+   * Tests deployment and behavior of Bob's Simple Subscriber.
+   */
+  it("(2) Deploys Bob's Simple Subscriber #2 and verifies timeout handling", async () => {
+    const bobSubscriber = blockchain.openContract(
+      await SimpleSubscriber.fromInit(bob.address, 2n),
     );
-    logger.addContract(subscriber, "Bob's Simple Subscriber #2");
+    logger.addContract(bobSubscriber, "Bob's Simple Subscriber #2");
 
-    const expectedSessionAddress = await stream.getSessionAddress(
-      subscriber.address,
+    const bobSessionAddress = await stream.getSessionAddress(
+      bobSubscriber.address,
     );
-    logger.addContract(
-      expectedSessionAddress,
-      `Bob's Simple Subscriber #2's Session`,
-    );
+    logger.addContract(bobSessionAddress, `Bob's Subscriber #2 Session`);
 
-    // Deploy the Simple Subscriber contract and log the transactions
-    const SUSDeployResult = await subscriber.send(
+    const SimpleSubscriberDeployResult = await bobSubscriber.send(
       bob.getSender(),
       {
-        value: toNano("100"),
+        value: toNano("1"),
       },
       {
-        $$type: "SUSDeploy",
+        $$type: "SimpleSubscriberDeploy",
         queryId: 200n,
         stream: stream.address,
         notificationsCount: 10n,
-        // FIXME: this is not timeout, but expiration
-        timeout: BigInt(THE_GREAT_CONJUCTION_2077 + 90),
+        expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 90),
       },
     );
-    await logger.logTransactions(
-      SUSDeployResult.transactions,
-      "(2) SUSDeployResult",
-    );
+    await logger.logTransactions(SimpleSubscriberDeployResult.transactions);
 
     // Check timeout before expiration
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 180;
 
-    const SUBCheckTimeout1 = await subscriber.send(
+    const SubscriberCheckTimeout1Result = await bobSubscriber.send(
       carol.getSender(),
       {
-        value: toNano("20"),
+        value: toNano("1"),
       },
       {
-        $$type: "SUBCheckTimeout",
+        $$type: "SubscriberCheckTimeout",
         queryId: 301n,
       },
     );
-    await logger.logTransactions(
-      SUBCheckTimeout1.transactions,
-      "(2) SUBCheckTimeout1",
-    );
+    await logger.logTransactions(SubscriberCheckTimeout1Result.transactions);
 
-    expect(SUBCheckTimeout1.transactions).toHaveTransaction({
+    expect(SubscriberCheckTimeout1Result.transactions).toHaveTransaction({
       from: carol.address,
-      to: subscriber.address,
+      to: bobSubscriber.address,
       success: false,
       exitCode: ERR_TIMEOUT_NOT_EXCEEDED,
     });
@@ -283,30 +252,26 @@ describe("Core Assessment", () => {
     // Check timeout after expiration
     blockchain.now = THE_GREAT_CONJUCTION_2077 + 7200;
 
-    const SUBCheckTimeout2 = await subscriber.send(
+    const SubscriberCheckTimeout2Result = await bobSubscriber.send(
       carol.getSender(),
       {
-        value: toNano("30"),
+        value: toNano("1"),
       },
       {
-        $$type: "SUBCheckTimeout",
+        $$type: "SubscriberCheckTimeout",
         queryId: 301n,
       },
     );
-    await logger.logTransactions(
-      SUBCheckTimeout2.transactions,
-      "(2) SUBCheckTimeout2",
-    );
+    await logger.logTransactions(SubscriberCheckTimeout2Result.transactions);
 
-    // FIXME: This expect may be unnecessary
-    expect(SUBCheckTimeout2.transactions).toHaveTransaction({
-      from: subscriber.address,
-      to: carol.address,
+    expect(SubscriberCheckTimeout2Result.transactions).toHaveTransaction({
+      from: carol.address,
+      to: bobSubscriber.address,
       success: true,
     });
 
-    expect(SUBCheckTimeout2.transactions).toHaveTransaction({
-      from: subscriber.address,
+    expect(SubscriberCheckTimeout2Result.transactions).toHaveTransaction({
+      from: bobSubscriber.address,
       to: carol.address,
       success: true,
     });

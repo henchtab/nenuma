@@ -1,34 +1,49 @@
 import "./constants";
 import "./messages";
-
 import "./subscriber";
 
-// Message representing a subscriber deployment request
-message CNODeploy {
+/**
+ * Message representing a cash-or-nothing option deployment request.
+ */
+message CashOrNothingOptionDeploy {
   queryId: Int as uint64;  // Query ID for the request
-  stream: Address; // In the future updates, should be substitued for underlyingAsset once the Data Streams Router is present to enable Data Stream contract upgradeability.
-  agreement: Agreement;
+  stream: Address; // In the future updates, should be substituted for underlyingAsset once the Data Streams Router is present to enable Data Stream contract upgradeability.
+  agreement: CashOrNothingOptionAgreement;
 }
 
-// Message representing a successful subscriber deployment
-message CNODeploySuccess {
+/**
+ * Message representing a successful cash-or-nothing option deployment.
+ */
+message CashOrNothingOptionDeploySuccess {
   queryId: Int as uint64;  // Query ID for the response
-  optionId: Int;  // Unique identifier for the subscriber
+  optionId: Int;  // Unique identifier for the option
 }
 
-message CNOSettleInMoneyNotification {
+/**
+ * Message representing a cash-or-nothing option settled in the money notification.
+ */
+message CashOrNothingOptionSettledInMoneyNotification {
   queryId: Int as uint64;
 }
 
-message CNOSettleOutMoneyNotification {
+/**
+ * Message representing a cash-or-nothing option settled out of the money notification.
+ */
+message CashOrNothingOptionSettledOutMoneyNotification {
   queryId: Int as uint64;
 }
 
-message CNOSettleAtMoneyNotification {
+/**
+ * Message representing a cash-or-nothing option settled at the money notification.
+ */
+message CashOrNothingOptionSettledAtMoneyNotification {
   queryId: Int as uint64;
 }
 
-struct Agreement {
+/**
+ * Structure representing a cash-or-nothing option agreement.
+ */
+struct CashOrNothingOptionAgreement {
   holder: Address;
   writer: Address;
   initiation: Int;
@@ -41,166 +56,203 @@ struct Agreement {
 const CASH_OR_NOTHING_OPTION_TYPE_CALL: Bool = true;
 const CASH_OR_NOTHING_OPTION_TYPE_PUT : Bool = false;
 
-// Contract representing a simple subscriber
+/**
+* Contract representing a cash-or-nothing option.
+*/
 contract CashOrNothingOption with Subscriber {
-    deployer: Address;  // Address of the deployer of this subscriber contract
+  deployer: Address;
+  stream: Address?;
+  notificationsCount: Int?; // Number of notifications the subscriber is entitled to receive
+  session: Address?;
+  expiration: Int?; // Expiry time of the subscription
+  
+  optionId: Int;
+  agreement: CashOrNothingOptionAgreement?;
+  strikePrice: Int?;
+  isSettled: Bool = false;
+
+  /**
+    * Retrieves the unique identifier for the option.
+    */
+  get fun optionId(): Int {
+    return self.optionId;
+  }
+
+  /**
+    * Retrieves the agreement details of the option.
+    */
+  get fun agreement(): CashOrNothingOptionAgreement? {
+    return self.agreement;
+  }
+  
+  /**
+    * Initializes the contract with the deployer address and option ID.
+    * @param {Address} deployer - The address of the deployer.
+    * @param {Int} optionId - The unique identifier for the option.
+    */
+  init(deployer: Address, optionId: Int) {
+    self.deployer = deployer;
+    self.optionId = optionId;
+  }
+
+  /**
+    * Validates the cash-or-nothing option agreement.
+    * @param {CashOrNothingOptionAgreement} agreement - The agreement to validate.
+    */
+  fun validateAgreement(agreement: CashOrNothingOptionAgreement) {
+    nativeThrowUnless(500, agreement.initiation > now());
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.initiation < agreement.expiration);
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.investment > 0);
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.payout > 0);
+  }
+
+  /**
+    * Handles the deployment of a cash-or-nothing option.
+    * @param {CashOrNothingOptionDeploy} request - The deployment request.
+    */
+  receive(request: CashOrNothingOptionDeploy) {
+    dump("CashOrNothingOptionDeploy");
+
+    let ctx: Context = context();
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.deployer);
+
+    self.validateAgreement(request.agreement);
+    self.agreement = request.agreement;
+
+    let notificationsCount: Int = (request.agreement.expiration - now()) / 60 + 1;
+    self.subscribeStream(request.queryId, request.stream, notificationsCount, request.agreement.expiration);
+
+    nativeReserve(request.agreement.investment + request.agreement.payout, ReserveExact | ReserveAddOriginalBalance);
+
+    // Send a success response back to the deployer
+    send(SendParameters {
+      to: self.deployer,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (CashOrNothingOptionDeploySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
+    });
+  }
+
+  /**
+    * Sets the option as settled at the money.
+    * @param {Int} queryId - The query ID associated with the settlement.
+    */
+  fun settleAtMoney(queryId: Int) {
+    dump("self.settleAtMoney()");
+
+    send(SendParameters {
+      to: self.agreement!!.holder,
+      value: NOTIFICATION_DEPOSIT + self.agreement!!.investment,
+      mode: SendIgnoreErrors | SendPayGasSeparately,
+      body: (CashOrNothingOptionSettledAtMoneyNotification { queryId }).toCell(),
+    });
+
+    send(SendParameters {
+      to: self.agreement!!.writer,
+      value: NOTIFICATION_DEPOSIT + self.agreement!!.payout,
+      mode: SendIgnoreErrors | SendPayGasSeparately,
+      body: (CashOrNothingOptionSettledAtMoneyNotification { queryId }).toCell(),
+    });
+  }
+
+  /**
+    * Sets the option as settled in the money.
+    * @param {Int} queryId - The query ID associated with the settlement.
+    */
+  fun settleInMoney(queryId: Int) {
+    dump("self.settleInMoney()");
+
+    send(SendParameters {
+      to: self.agreement!!.holder,
+      value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
+      mode: SendIgnoreErrors | SendPayGasSeparately,
+      body: (CashOrNothingOptionSettledInMoneyNotification { queryId }).toCell(),
+    });
+
+    send(SendParameters {
+      to: self.agreement!!.writer,
+      value: NOTIFICATION_DEPOSIT,
+      mode: SendIgnoreErrors | SendPayGasSeparately,
+      body: (CashOrNothingOptionSettledInMoneyNotification { queryId }).toCell(),
+    });
+  }
+
+  /**
+    * Sets the option as settled out of the money.
+    * @param {Int} queryId - The query ID associated with the settlement.
+    */
+  fun settleOutMoney(queryId: Int) {      
+    send(SendParameters {
+      to: self.agreement!!.holder,
+      value: NOTIFICATION_DEPOSIT,
+      mode: SendIgnoreErrors | SendPayGasSeparately,
+      body: (CashOrNothingOptionSettledOutMoneyNotification { queryId }).toCell(),
+    });
+
+    send(SendParameters {
+      to: self.agreement!!.writer,
+      value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
+      mode: SendIgnoreErrors | SendPayGasSeparately,
+      body: (CashOrNothingOptionSettledOutMoneyNotification { queryId }).toCell(),
+    });
+  }
+
+  /**
+    * Handles the candlestick event for the cash-or-nothing option.
+    * @param {Int} queryId - The query ID associated with the candlestick event.
+    * @param {Candlestick} candlestick - The candlestick data.
+    */
+  override fun handleCandlestick(queryId: Int, candlestick: Candlestick) {
+    dump("self.handleCandlestick()");
     
-    stream: Address?;  // Address of the stream to which the subscriber is subscribed
-    notificationsCount: Int?;  // Number of notifications the subscriber is entitled to receive
-    session: Address?;  // Address of the subscription session
-    // FIXME: substitute for DATA_STREAM_TIMEOUT
-    timeout: Int?;  // Expiry time of the subscription
-    
-    optionId: Int;  // Unique identifier for the subscriber
-    agreement: Agreement?;
+    let ctx: Context = context();
 
-    strikePrice: Int?;
-    isSettled: Bool = false;
+    dump("candlestick.start");
+    dump(candlestick.start);
 
-    get fun optionId(): Int {
-      return self.optionId;
+    nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
+
+    if (candlestick.start == self.agreement!!.initiation) {
+      dump("Case #1");
+
+      self.strikePrice = candlestick.open;
     }
 
-    // Getter function for the latest candlestick
-    get fun agreement(): Agreement? {
-      return self.agreement;
-    }
-    
-    // Initialize the contract with the deployer address and subscriber ID
-    init(deployer: Address, optionId: Int) {
-      self.deployer = deployer;
-      self.optionId = optionId;
-    }
-
-    // FIXME: refactor this 
-    fun validateAgreement(agreement: Agreement) {
-      nativeThrowUnless(500, agreement.initiation > now());
-      nativeThrowUnless(501, agreement.initiation < agreement.expiration);
-      nativeThrowUnless(502, agreement.initiation % 60 == 0); // FIXME: Technically, there's no need in this check as devision rounds down the value; if user subscribes for 0:59, it's the save as subscribing to 0:00 as the candlestick is published only on 1:00
-      nativeThrowUnless(503, agreement.expiration % 60 == 0); // FIXME:
-      nativeThrowUnless(504, agreement.investment > 0);
-      nativeThrowUnless(505, agreement.payout > 0);
-    }
-
-    // Function to handle the deployment of the subscriber
-    receive(request: CNODeploy) {
-      dump("CNODeploy");
-
-      let ctx: Context = context();
-      nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.deployer);
-
-      self.validateAgreement(request.agreement);
-      self.agreement = request.agreement;
-
-      let notificationsCount: Int = (request.agreement.expiration - now()) / 60 + 1;
-      self.subscribeStream(request.queryId, request.stream, notificationsCount, request.agreement.expiration);
-
-      nativeReserve(request.agreement.investment + request.agreement.payout, ReserveExact | ReserveAddOriginalBalance);
-
-      // Send a success response back to the deployer
-      send(SendParameters {
-        to: self.deployer,
-        value: 0,
-        mode: SendRemainingBalance,
-        body: (CNODeploySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
-      });
-    }
-
-    fun settleAtMoney(queryId: Int) {
-      dump("self.settleAtMoney()");
-
-      send(SendParameters {
-        to: self.agreement!!.holder,
-        value: NOTIFICATION_DEPOSIT + self.agreement!!.investment,
-        mode: SendIgnoreErrors | SendPayGasSeparately,
-        body: (CNOSettleAtMoneyNotification { queryId }).toCell(),
-      });
-
-      send(SendParameters {
-        to: self.agreement!!.writer,
-        value: NOTIFICATION_DEPOSIT + self.agreement!!.payout,
-        mode: SendIgnoreErrors | SendPayGasSeparately,
-        body: (CNOSettleAtMoneyNotification { queryId }).toCell(),
-      });
-    }
-
-    fun settleInMoney(queryId: Int) {
-      dump("self.settleInMoney()");
-
-      send(SendParameters {
-        to: self.agreement!!.holder,
-        value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
-        mode: SendIgnoreErrors | SendPayGasSeparately,
-        body: (CNOSettleInMoneyNotification { queryId }).toCell(),
-      });
-
-      send(SendParameters {
-        to: self.agreement!!.writer,
-        value: NOTIFICATION_DEPOSIT,
-        mode: SendIgnoreErrors | SendPayGasSeparately,
-        body: (CNOSettleInMoneyNotification { queryId }).toCell(),
-      });
-    }
-
-    fun settleOutMoney(queryId: Int) {      
-      send(SendParameters {
-        to: self.agreement!!.holder,
-        value: NOTIFICATION_DEPOSIT,
-        mode: SendIgnoreErrors | SendPayGasSeparately,
-        body: (CNOSettleOutMoneyNotification { queryId }).toCell(),
-      });
-
-      send(SendParameters {
-        to: self.agreement!!.writer,
-        value: NOTIFICATION_DEPOSIT + self.agreement!!.investment + self.agreement!!.payout,
-        mode: SendIgnoreErrors | SendPayGasSeparately,
-        body: (CNOSettleOutMoneyNotification { queryId }).toCell(),
-      });
-    }
-
-    override fun handleCandlestick(queryId: Int, candlestick: Candlestick) {
-      dump("self.handleCandlestick()");
-      
-      let ctx: Context = context();
-
-      nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
-
-      if (candlestick.start == self.agreement!!.initiation) {
-        dump("Case #1");
-
-        self.strikePrice = candlestick.open;
-      }
-
-      if (candlestick.end == self.agreement!!.expiration) {
-        if (self.strikePrice == null) {
-          dump("Case #2");
-
-          self.settleAtMoney(queryId);
-        } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_CALL && candlestick.close >= self.strikePrice!!) {
-          dump("Case #3");
-          
-          self.settleInMoney(queryId);
-        } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_PUT && candlestick.close <= self.strikePrice!!) {
-          dump("Case #4");
-          
-          self.settleInMoney(queryId);
-        } else {
-          dump("Case #5");
-          
-          self.settleOutMoney(queryId);
-        }
-
-        self.isSettled = true;
-      }
-    }
-
-    override fun handleDestroy(queryId: Int) {
-      dump("self.handleDestroy()");
-
-      if (!self.isSettled) {
-        dump("Case #6");
+    if (candlestick.end == self.agreement!!.expiration) {
+      if (self.strikePrice == null) {
+        dump("Case #2");
 
         self.settleAtMoney(queryId);
-      } 
+        self.unsubscribeSession(queryId);
+      } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_CALL && candlestick.close >= self.strikePrice!!) {
+        dump("Case #3");
+        
+        self.settleInMoney(queryId);
+      } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_PUT && candlestick.close <= self.strikePrice!!) {
+        dump("Case #4");
+        
+        self.settleInMoney(queryId);
+      } else {
+        dump("Case #5");
+        
+        self.settleOutMoney(queryId);
+      }
+
+      self.isSettled = true;
     }
+  }
+
+  /**
+    * Handles the destruction of the cash-or-nothing option.
+    * @param {Int} queryId - The query ID associated with the destruction.
+    */
+  override fun handleDestroy(queryId: Int) {
+    dump("self.handleDestroy()");
+
+    if (!self.isSettled) {
+      dump("Case #6");
+
+      self.settleAtMoney(queryId);
+    }
+  }
 }

@@ -22,8 +22,6 @@ export const SUS_OPERATIONAL_RESERVE = toNano("2");
 // THE_GREAT_CONJUCTION_2077 is the timestamp for a significant celestial event in 2077 in seconds since the Unix epoch.
 export const THE_GREAT_CONJUCTION_2077: number = 3407270400; // Equivalent to '2077-12-31T00:00:00Z'
 
-export const SOL: number = 88775;
-
 export const DAY: number = 86400;
 
 // THE_CELESTIAL_CONVERGENCE is the timestamp for a notable space phenomenon in 2078 in seconds since the Unix epoch.
