@@ -17,6 +17,7 @@ message CashOrNothingOptionDeploy {
 message CashOrNothingOptionDeploySuccess {
   queryId: Int as uint64;  // Query ID for the response
   optionId: Int;  // Unique identifier for the option
+  holder: Address;
 }
 
 /**
@@ -48,7 +49,7 @@ struct CashOrNothingOptionAgreement {
   writer: Address;
   initiation: Int;
   expiration: Int; 
-  type: Bool;
+  optionType: Bool;
   investment: Int;
   payout: Int;
 }
@@ -100,7 +101,7 @@ contract CashOrNothingOption with Subscriber {
     * @param {CashOrNothingOptionAgreement} agreement - The agreement to validate.
     */
   fun validateAgreement(agreement: CashOrNothingOptionAgreement) {
-    nativeThrowUnless(500, agreement.initiation > now());
+    nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.initiation > now());
     nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.initiation < agreement.expiration);
     nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.investment > 0);
     nativeThrowUnless(ERR_INVALID_ARGUMENT, agreement.payout > 0);
@@ -129,7 +130,7 @@ contract CashOrNothingOption with Subscriber {
       to: self.deployer,
       value: 0,
       mode: SendRemainingBalance,
-      body: (CashOrNothingOptionDeploySuccess { queryId: request.queryId, optionId: self.optionId }).toCell(),
+      body: (CashOrNothingOptionDeploySuccess { queryId: request.queryId, optionId: self.optionId, holder: request.agreement.holder }).toCell(),
     });
   }
 
@@ -224,11 +225,11 @@ contract CashOrNothingOption with Subscriber {
 
         self.settleAtMoney(queryId);
         self.unsubscribeSession(queryId);
-      } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_CALL && candlestick.close >= self.strikePrice!!) {
+      } else if (self.agreement!!.optionType == CASH_OR_NOTHING_OPTION_TYPE_CALL && candlestick.close >= self.strikePrice!!) {
         dump("Case #3");
         
         self.settleInMoney(queryId);
-      } else if (self.agreement!!.type == CASH_OR_NOTHING_OPTION_TYPE_PUT && candlestick.close <= self.strikePrice!!) {
+      } else if (self.agreement!!.optionType == CASH_OR_NOTHING_OPTION_TYPE_PUT && candlestick.close <= self.strikePrice!!) {
         dump("Case #4");
         
         self.settleInMoney(queryId);

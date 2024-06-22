@@ -123,7 +123,7 @@ describe("Core Assessment", () => {
       writer: bob.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 120 + 59),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 720 + 59),
-      type: CashOrNothingOptionType.Call,
+      optionType: CashOrNothingOptionType.Call,
       investment: toNano("10"),
       payout: toNano("7.4"),
     };
@@ -220,7 +220,7 @@ describe("Core Assessment", () => {
       writer: bob.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 120),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 720),
-      type: CashOrNothingOptionType.Call,
+      optionType: CashOrNothingOptionType.Call,
       investment: toNano("10"),
       payout: toNano("7.4"),
     };
@@ -320,7 +320,7 @@ describe("Core Assessment", () => {
       writer: bob.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 120),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 720),
-      type: CashOrNothingOptionType.Put,
+      optionType: CashOrNothingOptionType.Put,
       investment: toNano("5"),
       payout: toNano("2"),
     };
@@ -420,7 +420,7 @@ describe("Core Assessment", () => {
       writer: carol.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 120),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 720),
-      type: CashOrNothingOptionType.Call,
+      optionType: CashOrNothingOptionType.Call,
       investment: toNano("5"),
       payout: toNano("2"),
     };
@@ -516,7 +516,7 @@ describe("Core Assessment", () => {
       writer: carol.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 120),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 720),
-      type: CashOrNothingOptionType.Put,
+      optionType: CashOrNothingOptionType.Put,
       investment: toNano("5"),
       payout: toNano("2"),
     };
@@ -611,7 +611,7 @@ describe("Core Assessment", () => {
       writer: carol.address,
       initiation: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 120),
       expiration: BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 720),
-      type: CashOrNothingOptionType.Put,
+      optionType: CashOrNothingOptionType.Put,
       investment: toNano("5"),
       payout: toNano("2"),
     };
