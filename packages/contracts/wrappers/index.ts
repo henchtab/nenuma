@@ -6,7 +6,7 @@ export {
   type CashOrNothingOptionAgreement,
   storeCashOrNothingOptionDeploy,
 } from './CashOrNothingOption';
-export { DataStream, storeDSTDeploy, storeStateInit, type Candlestick } from './DataStream';
+export { DataStream, storeDSTDeploy, storeStateInit, type Candlestick, storeDSTPublishCandlestick } from './DataStream';
 export { Session } from './Session';
 export { SimpleSubscriber, storeSimpleSubscriberDeploy } from './SimpleSubscriber';
 export { SubscriptionBatch, type SBInfo, type SubscriptionInfo } from './SubscriptionBatch';
