@@ -5,7 +5,8 @@ import { mnemonicToPrivateKey } from '@ton/crypto';
 import { Address, TonClient, WalletContractV4, beginCell, internal } from '@ton/ton';
 import type { FastifyPluginAsync } from 'fastify';
 
-import { DataStream, storeDSTPublishCandlestick } from 'nenuma-contracts';
+import * as nenuma from 'nenuma-contracts';
+
 import z from 'zod';
 
 const routes: FastifyPluginAsync = async (server) => {
@@ -31,7 +32,7 @@ const routes: FastifyPluginAsync = async (server) => {
               });
 
               const stream = client.open(
-                DataStream.fromAddress(
+                nenuma.DataStream.fromAddress(
                   Address.parse('kQDZnFY0yew3AcB0pk0H0CL5L2kclQXH0VHO_cWyfdOQ0SEp'),
                 ),
               );
@@ -86,6 +87,21 @@ const routes: FastifyPluginAsync = async (server) => {
               // Create a transfer
               let seqno: number = await contract.getSeqno();
 
+              const candlestickToPublish = {
+                $$type: 'Candlestick' as const,
+                open: BigInt(candlestick.open.split('.').join('')),
+                high: BigInt(candlestick.high.split('.').join('')),
+                low: BigInt(candlestick.low.split('.').join('')),
+                close: BigInt(candlestick.close.split('.').join('')),
+                start: BigInt(candlestick.start),
+                end: BigInt(candlestick.end),
+              };
+
+              console.log(
+                'Publishing Candlestick: ',
+                JSON.stringify(candlestickToPublish, null, 2),
+              );
+
               await contract.sendTransfer({
                 seqno,
                 secretKey: keyPair.secretKey,
@@ -95,18 +111,10 @@ const routes: FastifyPluginAsync = async (server) => {
                     to: 'kQDZnFY0yew3AcB0pk0H0CL5L2kclQXH0VHO_cWyfdOQ0SEp',
                     body: beginCell()
                       .store(
-                        storeDSTPublishCandlestick({
+                        nenuma.storeDSTPublishCandlestick({
                           $$type: 'DSTPublishCandlestick',
                           queryId: 777n,
-                          candlestick: {
-                            $$type: 'Candlestick',
-                            open: BigInt(candlestick.open.split('.').join('')),
-                            high: BigInt(candlestick.high.split('.').join('')),
-                            low: BigInt(candlestick.low.split('.').join('')),
-                            close: BigInt(candlestick.close.split('.').join('')),
-                            start: BigInt(candlestick.start),
-                            end: BigInt(candlestick.end),
-                          },
+                          candlestick: candlestickToPublish,
                         }),
                       )
                       .endCell(),

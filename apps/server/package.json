@@ -40,8 +40,7 @@
     "fastify-plugin": "^4.5.1",
     "fastify-type-provider-zod": "^1.2.0",
     "tweetnacl": "^1.0.3",
-    "zod": "^3.23.8",
-    "nenuma-contracts": "workspace:*"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
@@ -53,7 +52,8 @@
     "tsup": "^8.1.0",
     "tsx": "^4.11.0",
     "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "nenuma-contracts": "workspace:*"
   },
   "engines": {
     "node": ">=18.0.0"
