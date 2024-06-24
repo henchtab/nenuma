@@ -7,7 +7,7 @@
     "build:all": "blueprint build --all",
     "test": "jest --verbose",
     "build:prod": "tsup",
-    "postinstall": "tsup && pnpm run build:all"
+    "postinstall": "pnpm run build:all && tsup"
   },
   "exports": {
     ".": {
