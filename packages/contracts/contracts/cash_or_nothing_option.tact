@@ -47,11 +47,11 @@ message CashOrNothingOptionSettledAtMoneyNotification {
 struct CashOrNothingOptionAgreement {
   holder: Address;
   writer: Address;
-  initiation: Int;
-  expiration: Int; 
+  initiation: Int as uint32;
+  expiration: Int as uint32; 
   optionType: Bool;
-  investment: Int;
-  payout: Int;
+  investment: Int as coins;
+  payout: Int as coins;
 }
 
 const CASH_OR_NOTHING_OPTION_TYPE_CALL: Bool = true;
