@@ -5,12 +5,12 @@ import { mnemonicToPrivateKey } from '@ton/crypto';
 import { Address, TonClient, WalletContractV4, beginCell, internal } from '@ton/ton';
 import type { FastifyPluginAsync } from 'fastify';
 
-import * as nenuma from 'nenuma-contracts';
+import { DataStream, storeDSTPublishCandlestick } from 'nenuma-contracts';
 
 import z from 'zod';
 
 const routes: FastifyPluginAsync = async (server) => {
-  const { redis, bybit } = server;
+  const { redis, bybit, log } = server;
 
   bybit.ws.subscribeV5(Object.values(BybitKlineTopic), 'spot');
 
@@ -32,7 +32,7 @@ const routes: FastifyPluginAsync = async (server) => {
               });
 
               const stream = client.open(
-                nenuma.DataStream.fromAddress(
+                DataStream.fromAddress(
                   Address.parse('kQDZnFY0yew3AcB0pk0H0CL5L2kclQXH0VHO_cWyfdOQ0SEp'),
                 ),
               );
@@ -42,6 +42,7 @@ const routes: FastifyPluginAsync = async (server) => {
               let shouldSkip = false;
               // Check if every batch is empty
               for (const [_, info] of batches) {
+                log.debug('Batch Info: ', info.subscriptionsCount.toString());
                 if (info.subscriptionsCount > 0) {
                   shouldSkip = false;
                 } else {
@@ -97,9 +98,13 @@ const routes: FastifyPluginAsync = async (server) => {
                 end: BigInt(candlestick.end),
               };
 
-              console.log(
+              log.debug(
                 'Publishing Candlestick: ',
-                JSON.stringify(candlestickToPublish, null, 2),
+                JSON.stringify(
+                  candlestickToPublish,
+                  (_, v) => (typeof v === 'bigint' ? v.toString() : v),
+                  2,
+                ),
               );
 
               await contract.sendTransfer({
@@ -111,7 +116,7 @@ const routes: FastifyPluginAsync = async (server) => {
                     to: 'kQDZnFY0yew3AcB0pk0H0CL5L2kclQXH0VHO_cWyfdOQ0SEp',
                     body: beginCell()
                       .store(
-                        nenuma.storeDSTPublishCandlestick({
+                        storeDSTPublishCandlestick({
                           $$type: 'DSTPublishCandlestick',
                           queryId: 777n,
                           candlestick: candlestickToPublish,
