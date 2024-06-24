@@ -5,12 +5,12 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig(({ command, mode }) => {
   return {
-    plugins: [enhancedImages(), sveltekit(), nodePolyfills()],
+    plugins: [enhancedImages(), sveltekit(), nodePolyfills({ include: ['buffer'] })],
     server: {
-      https: {
-        key: './certs/SSLforMyHosts-key.pem',
-        cert: './certs/SSLforMyHosts-certificate.pem'
-      }
+      // https: {
+      //   key: './certs/SSLforMyHosts-key.pem',
+      //   cert: './certs/SSLforMyHosts-certificate.pem'
+      // }
     }
   };
 });

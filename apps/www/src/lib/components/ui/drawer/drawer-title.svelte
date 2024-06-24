@@ -11,7 +11,7 @@
 
 <DrawerPrimitive.Title
 	bind:el
-	class={cn("text-lg font-semibold leading-none tracking-tight", className)}
+	class={cn("text-lg text-ds-gray-1000 font-semibold leading-none tracking-tight", className)}
 	{...$$restProps}
 >
 	<slot />

@@ -7,6 +7,7 @@ const buttonVariants = tv({
   variants: {
     variant: {
       default: 'bg-ds-gray-1000 text-ds-background-100 hover:bg-[#cacaca]',
+      secondary: 'bg-ds-background-100 ring-1 ring-ds-gray-400 text-ds-gray-1000 hover:bg-ds-gray-200 hover:text-ds-gray-1000',
       destructive: 'bg-ds-red-800 text-white hover:bg-ds-red-700',
     },
     size: {

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { tonConnectUI } from '$lib/ton-connect';
-  import { KlineTopic, ws } from '$lib/ws.svelte';
+  import { tonConnectUI } from '$lib/stores/ton-connect';
+  import { KlineTopic, ws } from '$lib/stores/ws.svelte';
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { onDestroy, onMount } from 'svelte';
   import { type Unsubscriber } from 'svelte/store';

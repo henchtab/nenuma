@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { ws } from '$lib/ws.svelte';
+  import { ws } from '$lib/stores/ws.svelte';
   import { createChart, type CandlestickData, type IChartApi } from 'lightweight-charts';
   import { onMount } from 'svelte';
 

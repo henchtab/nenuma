@@ -30,28 +30,4 @@ export async function recreateTonProofPayload(
   }
 }
 
-export function formatDate(date: Date) {
-  const months = [
-    'JAN',
-    'FEB',
-    'MAR',
-    'APR',
-    'MAY',
-    'JUN',
-    'JUL',
-    'AUG',
-    'SEP',
-    'OCT',
-    'NOV',
-    'DEC'
-  ];
 
-  const month = months[date.getMonth()];
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  const milliseconds = String(date.getMilliseconds()).padStart(3, '0').slice(0, 2);
-
-  return `${month} ${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
-}

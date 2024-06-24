@@ -1,12 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { tonConnectUI } from '$lib/ton-connect';
+  import { tonConnectUI } from '$lib/stores/ton-connect';
   import { Button } from '$lib/components/ui/button';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { getAccountInfo, reset } from '$lib/data';
   import { cn, mediaQuery } from '$lib/utils';
-  import { KlineTopic, latestPrices } from '$lib/ws.svelte';
+  import { KlineTopic, latestPrices } from '$lib/stores/ws.svelte';
   import { createQuery } from '@tanstack/svelte-query';
   import CandlestickChart from 'lucide-svelte/icons/candlestick-chart';
   import Coins from 'lucide-svelte/icons/coins';

@@ -1,20 +1,29 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { recreateTonProofPayload } from '$lib';
   import { Button } from '$lib/components/ui/button';
   import { TON_PROOF_REFRESH_INTERVAL_MS } from '$lib/constants';
   import { checkProofAndRedirect, reset } from '$lib/data';
-  import { tonConnectUI } from '$lib/ton-connect';
+  import { tonConnectUI } from '$lib/stores/ton-connect';
+  import { initBackButton } from '@tma.js/sdk';
   import { type ConnectedWallet } from '@tonconnect/ui';
   import LogIn from 'lucide-svelte/icons/log-in';
   import { onDestroy, onMount } from 'svelte';
-  import ArrowLeft from 'lucide-svelte/icons/arrow-left';
-  import { browser } from '$app/environment';
-  import { goto } from '$app/navigation';
 
   let intervalId: ReturnType<typeof setInterval> | undefined = $state();
   let isFirstProofLoading = $state(true);
 
+  let backButton = $state<ReturnType<typeof initBackButton>>();
+
   onMount(() => {
+    backButton = initBackButton();
+
+    backButton[0]?.show();
+
+    backButton[0]?.on('click', () => {
+      goto('/');
+    });
+
     tonConnectUI.subscribe((tonConnectUI) => {
       if (!tonConnectUI) {
         return;
@@ -36,6 +45,11 @@
   onDestroy(() => {
     if (intervalId) {
       clearInterval(intervalId);
+    }
+
+    if (backButton) {
+      backButton[0]?.hide();
+      backButton[1]?.();
     }
   });
 
@@ -70,11 +84,14 @@
   }
 </script>
 
-<header class="fixed top-0 container py-8">
-  <button class="size-12 flex items-center justify-center" onclickcapture={() => browser && goto('/')}>
+<!-- <header class="fixed top-0 container py-8">
+  <button
+    class="size-12 flex items-center justify-center"
+    onclickcapture={() => browser && goto('/')}
+  >
     <ArrowLeft size="24" />
   </button>
-</header>
+</header> -->
 
 <div class="flex flex-col items-center justify-center min-h-screen">
   <div class="flex min-h-full flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8">

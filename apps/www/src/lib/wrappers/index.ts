@@ -1,7 +1,8 @@
 import { browser } from '$app/environment';
-import { Address, Dictionary, TonClient, beginCell, toNano } from '@ton/ton';
+import { PUBLIC_RPC_PROVIDER_API_KEY } from '$env/static/public';
+import { Address, Dictionary, OpenedContract, TonClient, beginCell, toNano } from '@ton/ton';
 import { toast } from 'svelte-sonner';
-import { derived, readable, type Readable, type Writable } from 'svelte/store';
+import { derived, readable, writable, type Readable, type Writable } from 'svelte/store';
 import {
   BRG_DEPLOY_ACCOUNT_DEPOSIT,
   BRG_DEPLOY_BROKER_DEPOSIT,
@@ -9,24 +10,43 @@ import {
   DST_DEPLOY_DEPOSIT,
   DST_DEPLOY_SESSION_DEPOSIT,
   DST_PUBLISH_CANDLESTICK_DEPOSIT,
+  LATEST_OPTION_STORAGE_KEY,
   NOTIFICATION_DEPOSIT,
   NOTIFICATION_PREMIUM,
+  OPTIONS_STORAGE_KEY,
   SES_DESTROY_DEPOSIT,
   SES_SUBSCRIBE_DEPOSIT,
   SES_UNSUBSCRIBE_DEPOSIT
 } from '../constants';
-import { sender, tonConnectUI } from '../ton-connect';
-import { Broker, storeBRGDeploy } from './tact_Broker';
-import { Brokerage, storeStateInit as bStoreStateInit } from './tact_Brokerage';
-import { DataStream, storeDSTDeploy, storeStateInit, type Candlestick } from './tact_DataStream';
-import { Session } from './tact_Session';
-import { SubscriptionBatch, type SBInfo, type SubscriptionInfo } from './tact_SubscriptionBatch';
-import { BrokerageAccount } from './tact_BrokerageAccount';
+import { sender, tonConnectUI } from '../stores/ton-connect';
 import {
+  SubscriptionBatch,
+  type SBInfo,
+  type SubscriptionInfo,
+  DataStream,
+  storeDSTDeploy,
+  storeStateInit,
+  type Candlestick,
   SimpleSubscriber,
-  storeSUSDeploy,
-  storeStateInit as ssStoreStateInit
-} from './tact_SimpleSubscriber';
+  storeSimpleSubscriberDeploy,
+  Session,
+  BrokerageAccount,
+  Brokerage,
+  Broker,
+  storeBRGDeploy,
+  CashOrNothingOption,
+  CashOrNothingOptionAgreement,
+  storeCashOrNothingOptionDeploy
+} from 'nenuma-contracts';
+
+export const publicClient = readable<TonClient>(undefined, (set) => {
+  set(
+    new TonClient({
+      endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+      apiKey: PUBLIC_RPC_PROVIDER_API_KEY
+    })
+  );
+});
 
 type DataStreamMethods = {
   deploy: (args: { topic: string; queryId: bigint }) => Promise<void>;
@@ -45,6 +65,7 @@ type DataStreamMethods = {
   getSessionAddress: (subscriberAddress: Address) => Promise<Address>;
 };
 
+export type TDataStream = ReturnType<typeof createDataStream>;
 export const createDataStream = (streamAddress?: Writable<string>): Readable<DataStreamMethods> => {
   const provider = new TonClient({
     endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
@@ -621,7 +642,7 @@ export const createBrokerage = (): Readable<BrokerageMethods> => {
             amount: toNano('0.05').toString(),
             stateInit: beginCell()
               .store(
-                bStoreStateInit({
+                storeStateInit({
                   $$type: 'StateInit',
                   ...brokerage.init!
                 })
@@ -984,12 +1005,12 @@ export const createSimpleSubscriber = (
               ).toString(),
               payload: beginCell()
                 .store(
-                  storeSUSDeploy({
-                    $$type: 'SUSDeploy',
+                  storeSimpleSubscriberDeploy({
+                    $$type: 'SimpleSubscriberDeploy',
                     queryId: args.subscriberId,
                     stream: Address.parse(args.stream),
                     notificationsCount: args.notificationsCount,
-                    expiresAt: args.expiresAt
+                    expiration: args.expiresAt
                   })
                 )
                 .endCell()
@@ -997,7 +1018,7 @@ export const createSimpleSubscriber = (
                 .toString('base64'),
               stateInit: beginCell()
                 .store(
-                  ssStoreStateInit({
+                  storeStateInit({
                     $$type: 'StateInit',
                     ...subscriber.init!
                   })
@@ -1033,7 +1054,7 @@ export const createSimpleSubscriber = (
             value: toNano('0.05')
           },
           {
-            $$type: 'SUSCheckTimeout',
+            $$type: 'SubscriberCheckTimeout',
             queryId: args.queryId
           }
         );
@@ -1064,7 +1085,7 @@ export const createSimpleSubscriber = (
           SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
         );
 
-        return await subscriber.getOwnerAddress();
+        return await subscriber.getDeployerAddress();
       };
 
       const getNotificationsCount = async () => {
@@ -1092,7 +1113,7 @@ export const createSimpleSubscriber = (
           SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
         );
 
-        return await subscriber.getExpiresAt();
+        return await subscriber.getExpiration();
       };
 
       const getStreamAddress = async () => {
@@ -1151,3 +1172,164 @@ export const createSimpleSubscriber = (
     }
   );
 };
+
+function saveOptionAddress(option: OpenedContract<CashOrNothingOption> | string) {
+  try {
+    const storageKey = OPTIONS_STORAGE_KEY.toString();
+    const options = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    let optionAddress: string;
+
+    if (typeof option === 'string') {
+      optionAddress = option;
+    } else {
+      optionAddress = option.address.toString({ testOnly: true });
+    }
+
+    localStorage.setItem(LATEST_OPTION_STORAGE_KEY.toString(), optionAddress);
+    localStorage.setItem(storageKey, JSON.stringify({ ...options, [storageKey]: optionAddress }));
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+}
+
+/**
+ * Gets the latest option address from the local storage.
+ * @throws {Error} If no latest option address is found in local storage.
+ */
+function getOptionContract(publicClient: TonClient) {
+  const optionAddress = localStorage.getItem(LATEST_OPTION_STORAGE_KEY.toString());
+
+  if (!optionAddress) {
+    throw new Error('No option found. Did you deploy an option?');
+  }
+
+  return publicClient.open(CashOrNothingOption.fromAddress(Address.parse(optionAddress)));
+}
+
+export type TCashOrNothingOption = Readable<CashOrNothingOptionMethods>;
+
+type CashOrNothingOptionMethods = {
+  deploy: (args: {
+    optionId: bigint;
+    queryId: bigint;
+    agreement: Omit<CashOrNothingOptionAgreement, '$$type'>;
+  }) => Promise<void>;
+  checkTimeout: (args: { queryId: bigint }) => Promise<void>;
+  getOptionId: () => Promise<bigint>;
+  getAgreement: () => Promise<CashOrNothingOptionAgreement | null>;
+  getBalance: () => Promise<bigint>;
+  getDeployerAddress: () => Promise<Address>;
+  getStreamAddress: () => Promise<Address | null>;
+  getNotificationsCount: () => Promise<bigint | null>;
+  getExpiration: () => Promise<bigint | null>;
+  getSessionAddress: () => Promise<Address | null>;
+};
+
+export const createCashOrNothingOption = (
+  streamAddress: Writable<string>
+): Readable<CashOrNothingOptionMethods> =>
+  derived(
+    [publicClient, tonConnectUI, sender, streamAddress],
+    ([$publicClient, $tonConnectUI, $sender, $streamAddress], set) => {
+      const deploy = async (args: {
+        optionId: bigint;
+        queryId: bigint;
+        agreement: Omit<CashOrNothingOptionAgreement, '$$type'>;
+      }) => {
+        const owner = $tonConnectUI.account?.address;
+
+        if (!owner) {
+          throw new Error('No account connected. Did you connect to the wallet?');
+        }
+
+        const option = $publicClient.open(
+          await CashOrNothingOption.fromInit(Address.parse(owner), args.optionId)
+        );
+        saveOptionAddress(option);
+
+        $tonConnectUI.sendTransaction({
+          validUntil: Math.floor(Date.now() / 1000) + 360,
+          messages: [
+            {
+              address: option.address.toString(),
+              amount: (args.agreement.investment + args.agreement.payout + toNano('1')).toString(),
+              payload: beginCell()
+                .store(
+                  storeCashOrNothingOptionDeploy({
+                    $$type: 'CashOrNothingOptionDeploy',
+                    queryId: args.queryId,
+                    agreement: {
+                      ...args.agreement,
+                      $$type: 'CashOrNothingOptionAgreement'
+                    },
+                    stream: Address.parse($streamAddress)
+                  })
+                )
+                .endCell()
+                .toBoc()
+                .toString('base64'),
+              stateInit: beginCell()
+                .store(
+                  storeStateInit({
+                    $$type: 'StateInit',
+                    ...option.init!
+                  })
+                )
+                .endCell()
+                .toBoc()
+                .toString('base64')
+            }
+          ]
+        });
+      };
+
+      const checkTimeout = async (args: { queryId: bigint }) => {
+        const option = getOptionContract($publicClient);
+
+        await option.send(
+          $sender,
+          {
+            value: toNano('0.05')
+          },
+          {
+            $$type: 'SubscriberCheckTimeout',
+            queryId: args.queryId
+          }
+        );
+      };
+
+      const getOptionId = async () => await getOptionContract($publicClient).getOptionId();
+
+      const getAgreement = async () => await getOptionContract($publicClient).getAgreement();
+
+      const getBalance = async () => await getOptionContract($publicClient).getBalance();
+
+      const getDeployerAddress = async () =>
+        await getOptionContract($publicClient).getDeployerAddress();
+
+      const getStreamAddress = async () =>
+        await getOptionContract($publicClient).getStreamAddress();
+
+      const getNotificationsCount = async () =>
+        await getOptionContract($publicClient).getNotificationsCount();
+
+      const getExpiration = async () => await getOptionContract($publicClient).getExpiration();
+
+      const getSessionAddress = async () =>
+        await getOptionContract($publicClient).getSessionAddress();
+
+      set({
+        deploy,
+        checkTimeout,
+        getOptionId,
+        getAgreement,
+        getBalance,
+        getDeployerAddress,
+        getStreamAddress,
+        getNotificationsCount,
+        getExpiration,
+        getSessionAddress
+      });
+    }
+  );

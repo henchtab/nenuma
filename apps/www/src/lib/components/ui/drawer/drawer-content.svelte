@@ -13,7 +13,7 @@
   <DrawerOverlay />
   <DrawerPrimitive.Content
     class={cn(
-      'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80%] flex-col rounded-t-[10px] border bg-background',
+      'fixed inset-x-0 bottom-0 top-[15%] z-50 flex flex-col rounded-t-[10px] border-t bg-ds-background-100',
       className
     )}
     {...$$restProps}

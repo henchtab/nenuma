@@ -20,6 +20,10 @@
     'flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-ds-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-gray-600 disabled:cursor-not-allowed disabled:opacity-50',
     className
   )}
+  autocapitalize="none"
+  autocomplete="off"
+  autocorrect="off"
+  spellcheck="false"
   bind:value
   {readonly}
   on:blur

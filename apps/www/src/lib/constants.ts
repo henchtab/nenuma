@@ -26,3 +26,6 @@ export const BRK_DEPOSIT_DEPOSIT = toNano('0.05');
 export const BRK_WITHDRAW_DEPOSIT = toNano('0.05');
 
 export const TON_CONNECT_UI_KEY = 'tonConnectUI';
+
+export const LATEST_OPTION_STORAGE_KEY = Symbol('latestOption');
+export const OPTIONS_STORAGE_KEY = Symbol('options');

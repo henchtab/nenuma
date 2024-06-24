@@ -3,7 +3,7 @@ import { PUBLIC_API_URL } from '$env/static/public';
 import cookie from 'js-cookie';
 import type { UTCTimestamp } from 'lightweight-charts';
 import { writable } from 'svelte/store';
-import { ACCESS_TOKEN_COOKIE } from './constants';
+import { ACCESS_TOKEN_COOKIE } from '../constants';
 
 const WS_DISCONNECT_RETRY_INTERVAL = 1000;
 
