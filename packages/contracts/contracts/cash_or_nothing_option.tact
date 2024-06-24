@@ -71,6 +71,7 @@ contract CashOrNothingOption with Subscriber {
   agreement: CashOrNothingOptionAgreement?;
   strikePrice: Int?;
   isSettled: Bool = false;
+  latestCandlestick: Candlestick?;
 
   /**
     * Retrieves the unique identifier for the option.
@@ -86,11 +87,12 @@ contract CashOrNothingOption with Subscriber {
     return self.agreement;
   }
 
-  /**
-  * Retrieves the agreement details of the option.
-  */
   get fun strikePrice(): Int? {
     return self.strikePrice;
+  }
+
+  get fun latestCandlestick(): Candlestick? {
+    return self.latestCandlestick;
   }
   
   /**
@@ -219,6 +221,8 @@ contract CashOrNothingOption with Subscriber {
     dump(candlestick.start);
 
     nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.session!!);
+
+    self.latestCandlestick = candlestick;
 
     if (candlestick.start == self.agreement!!.initiation) {
       dump("Case #1");

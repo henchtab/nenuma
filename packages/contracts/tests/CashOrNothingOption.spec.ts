@@ -549,6 +549,13 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
+      console.warn(
+        "strikePrice=",
+        await option.getStrikePrice(),
+        "latestCandlestick=",
+        await option.getLatestCandlestick(),
+      );
+
       // Check settlement transactions after 12th candlestick
       if (index === 11) {
         expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
@@ -643,6 +650,13 @@ describe("Core Assessment", () => {
       );
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
+
+      console.warn(
+        "strikePrice=",
+        await option.getStrikePrice(),
+        "latestCandlestick=",
+        await option.getLatestCandlestick(),
+      );
 
       // Check settlement transactions after 7th candlestick
       if (index === 11) {
