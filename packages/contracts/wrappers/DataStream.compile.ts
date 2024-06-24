@@ -4,6 +4,6 @@ export const compile: CompilerConfig = {
   lang: "tact",
   target: "contracts/data_stream.tact",
   options: {
-    debug: true,
+    debug: false,
   },
 };
