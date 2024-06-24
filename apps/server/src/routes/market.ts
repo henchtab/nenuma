@@ -95,7 +95,7 @@ const routes: FastifyPluginAsync = async (server) => {
                 low: BigInt(candlestick.low.split('.').join('')),
                 close: BigInt(candlestick.close.split('.').join('')),
                 start: BigInt(candlestick.start.toString().slice(0, -3)),
-                end: BigInt(candlestick.start.toString().slice(0, -3)),
+                end: BigInt(candlestick.end.toString().slice(0, -3)),
               };
 
               log.debug(
