@@ -42,7 +42,7 @@ const routes: FastifyPluginAsync = async (server) => {
               let shouldSkip = false;
               // Check if every batch is empty
               for (const [_, info] of batches) {
-                log.debug('Batch Info: ', info.subscriptionsCount.toString());
+                log.debug('Batch Info: %s', info.subscriptionsCount.toString());
                 if (info.subscriptionsCount > 0) {
                   shouldSkip = false;
                 } else {
@@ -99,7 +99,7 @@ const routes: FastifyPluginAsync = async (server) => {
               };
 
               log.debug(
-                'Publishing Candlestick: ',
+                'Publishing Candlestick: %s',
                 JSON.stringify(
                   candlestickToPublish,
                   (_, v) => (typeof v === 'bigint' ? v.toString() : v),
