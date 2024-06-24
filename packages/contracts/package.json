@@ -5,7 +5,8 @@
     "start": "blueprint run",
     "build": "blueprint build",
     "test": "jest --verbose",
-    "build:prod": "tsup"
+    "build:prod": "tsup",
+    "postinstall": "tsup"
   },
   "exports": {
     ".": {
