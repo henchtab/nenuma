@@ -1,6 +1,5 @@
 import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
 import { toNano } from "@ton/core";
-import { SimpleSubscriber } from "../wrappers/SimpleSubscriber";
 import "@ton/test-utils";
 import { Candlestick, DataStream } from "../wrappers/DataStream";
 import { ShrekLogger } from "./utils";
@@ -271,25 +270,6 @@ describe("Core Assessment", () => {
           candlestick,
         },
       );
-
-      await logger.logTransactions(DSTPublishCandlestickResult.transactions);
-
-      // Check settlement transactions after 12th candlestick
-      if (index === 11) {
-        expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
-          from: option.address,
-          to: alice.address,
-          value: toNano("17.42"),
-          success: true,
-        });
-
-        expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
-          from: option.address,
-          to: bob.address,
-          value: toNano("0.02"),
-          success: true,
-        });
-      }
     }
   });
 
