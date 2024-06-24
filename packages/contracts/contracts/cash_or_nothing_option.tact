@@ -85,6 +85,13 @@ contract CashOrNothingOption with Subscriber {
   get fun agreement(): CashOrNothingOptionAgreement? {
     return self.agreement;
   }
+
+  /**
+  * Retrieves the agreement details of the option.
+  */
+  get fun strikePrice(): Int? {
+    return self.strikePrice;
+  }
   
   /**
     * Initializes the contract with the deployer address and option ID.
