@@ -142,7 +142,7 @@ describe("Core Assessment", () => {
     expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + 720 + 59),
     );
-    expect(await option.getNotificationsCount()).toBe(13n);
+    expect(await option.getNotificationsCount()).toBe(14n);
 
     await logger.logContracts();
 
@@ -239,7 +239,7 @@ describe("Core Assessment", () => {
     expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + DAY + 720),
     );
-    expect(await option.getNotificationsCount()).toBe(13n);
+    expect(await option.getNotificationsCount()).toBe(14n);
 
     await logger.logContracts();
 
@@ -320,7 +320,7 @@ describe("Core Assessment", () => {
     expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + 2 * DAY + 720),
     );
-    expect(await option.getNotificationsCount()).toBe(13n);
+    expect(await option.getNotificationsCount()).toBe(14n);
 
     await logger.logContracts();
 
@@ -420,7 +420,7 @@ describe("Core Assessment", () => {
     expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + 3 * DAY + 720),
     );
-    expect(await option.getNotificationsCount()).toBe(13n);
+    expect(await option.getNotificationsCount()).toBe(14n);
 
     await logger.logContracts();
 
@@ -516,7 +516,7 @@ describe("Core Assessment", () => {
     expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + 4 * DAY + 720),
     );
-    expect(await option.getNotificationsCount()).toBe(13n);
+    expect(await option.getNotificationsCount()).toBe(14n);
 
     await logger.logContracts();
 
@@ -618,7 +618,7 @@ describe("Core Assessment", () => {
     expect(await option.getExpiration()).toBe(
       BigInt(THE_GREAT_CONJUCTION_2077 + 5 * DAY + 720),
     );
-    expect(await option.getNotificationsCount()).toBe(13n);
+    expect(await option.getNotificationsCount()).toBe(14n);
 
     await logger.logContracts();
 
@@ -651,12 +651,14 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
-      console.warn(
-        "strikePrice=",
-        await option.getStrikePrice(),
-        "latestCandlestick=",
-        await option.getLatestCandlestick(),
-      );
+      if (index < 11) {
+        console.warn(
+          "strikePrice=",
+          await option.getStrikePrice(),
+          "latestCandlestick=",
+          await option.getLatestCandlestick(),
+        );
+      }
 
       // Check settlement transactions after 7th candlestick
       if (index === 11) {

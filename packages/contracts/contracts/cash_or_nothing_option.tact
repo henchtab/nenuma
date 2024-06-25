@@ -129,7 +129,7 @@ contract CashOrNothingOption with Subscriber {
     self.validateAgreement(request.agreement);
     self.agreement = request.agreement;
 
-    let notificationsCount: Int = (request.agreement.expiration - now()) / 60 + 1;
+    let notificationsCount: Int = (request.agreement.expiration - now()) / 60 + 2;
     self.subscribeStream(request.queryId, request.stream, notificationsCount, request.agreement.expiration);
 
     nativeReserve(request.agreement.investment + request.agreement.payout, ReserveExact | ReserveAddOriginalBalance);
