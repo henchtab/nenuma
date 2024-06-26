@@ -1,17 +1,5 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate } from '$lib/utils';
-  import { createSimpleSubscriber, useSession, useSubscriptioBatch } from '$lib/wrappers';
-  import autoAnimate from '@formkit/auto-animate';
-  import { fromNano } from '@ton/ton';
-  import { writable } from 'svelte/store';
   import { DataStream, Session, SimpleSubscriber, SubscriptionBatch } from './components';
-
-  
-
-  
 </script>
 
 <svelte:head>
@@ -23,7 +11,9 @@
 </svelte:head>
 
 <DataStream />
+<SubscriptionBatch />
 <Session />
+<SimpleSubscriber />
 <!-- 
 <div>
   <div class="py-6 border-b">
