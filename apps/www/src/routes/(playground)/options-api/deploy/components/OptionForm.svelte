@@ -4,7 +4,7 @@
   import { Label } from '$lib/components/ui/label';
   import * as ToggleGroup from '$lib/components/ui/toggle-group';
   import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { formatTime } from '$lib/utils';
+  import { formatTime, randomize } from '$lib/utils';
   import { createCashOrNothingOption } from '$lib/wrappers';
   import { Address, toNano } from '@ton/core';
   import ChevronDown from 'lucide-svelte/icons/chevron-down';
@@ -22,11 +22,11 @@
   const option = createCashOrNothingOption(writable(stream));
 
   let form = $state<HTMLFormElement>();
-  let holder = $state<string>();
+  let writer = $state<string>();
 
   let optionId = $state<number>();
   let queryId = $state<number>();
-  let initiation = $state(initiationTime(2));
+  let initiation = $state(initiationTime(3));
   let optionType = $state<string>();
 
   $effect(() => {
@@ -53,7 +53,7 @@
       const account = $tonConnectUI.account;
 
       if (account) {
-        holder = Address.parse(account.address).toString({
+        writer = Address.parse(account.address).toString({
           testOnly: true,
           bounceable: false
         });
@@ -61,8 +61,8 @@
     });
 
     const interval = setInterval(() => {
-      if (initiation < initiationTime(2)) {
-        initiation = initiationTime(2);
+      if (initiation < initiationTime(3)) {
+        initiation = initiationTime(3);
       }
     }, 1000 * 30);
 
@@ -71,11 +71,6 @@
       clearInterval(interval);
     };
   });
-
-  function randomize() {
-    $hapticFeedback.impactOccurred('light');
-    return Math.floor(Math.random() * 10000);
-  }
 
   function initiationTime(numberOfMinutes: number) {
     return formatTime(new Date(Date.now() + 1000 * 60 * numberOfMinutes));
@@ -114,8 +109,6 @@
           payout: toNano(formData.get('payout') as string)
         }
       };
-
-      console.log('Args: ', args);
 
       await $option.deploy(args);
     } catch (error) {
@@ -187,7 +180,6 @@
       id="holder"
       type="text"
       name="holder"
-      bind:value={holder}
       placeholder="0QAXeOTnpkBx_A6zKVxAYNDYqNuWPyrZkYZySJRZ_-zV4gLV"
       required
     />
@@ -199,6 +191,7 @@
       id="writer"
       type="text"
       name="writer"
+      bind:value={writer}
       placeholder="0QAXeOTnpkBx_A6zKVxAYNDYqNuWPyrZkYZySJRZ_-zV4gLV"
       required
     />

@@ -1,16 +1,25 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+  import { page } from '$app/stores';
+  import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { backButton, mainButton } from '$lib/stores/tma';
-  import type { TDataStream as CDataStream } from '$lib/wrappers';
-  import { getContext, onMount } from 'svelte';
+  import { mainButton } from '$lib/stores/tma';
+  import { randomize } from '$lib/utils';
+  import { createDataStream } from '$lib/wrappers';
+  import { onDestroy } from 'svelte';
+  import { writable } from 'svelte/store';
 
-  const stream = ((getContext < DataStream) as CDataStream) > 'stream';
-  let isOpened = $state(false);
+  const searchParams = $page.url.searchParams;
+
+  const streamAddress = searchParams.get('streamAddress') || '';
+  const stream = createDataStream(writable(streamAddress));
+
   let form = $state<HTMLFormElement>();
+  let queryId = $state<number>(0);
 
   $effect(() => {
-    if ($mainButton && isOpened && form) {
+    if ($mainButton && form) {
       $mainButton.setText('Publish Candlestick').enable().show();
 
       const unsubscribe = $mainButton.on('click', () => form?.requestSubmit());
@@ -21,17 +30,10 @@
     }
   });
 
-  onMount(() => {
-    $backButton.show();
-
-    const unsubscribe = $backButton.on('click', async () => {
-      history.back();
-    });
-
-    return () => {
-      unsubscribe();
-      $backButton.hide();
-    };
+  onDestroy(() => {
+    if (browser) {
+      $mainButton.hide().disable();
+    }
   });
 
   async function handlePublishCandlestickSubmit(
@@ -76,30 +78,53 @@
 >
   <div class="grid gap-2">
     <Label for="start" class="w-fit">Start</Label>
-    <Input id="start" type="number" name="start" placeholder="1718207640000" required />
+    <Input id="start" type="number" name="start" placeholder="1718207640" required />
   </div>
+
   <div class="grid gap-2">
     <Label for="end" class="w-fit">End</Label>
-    <Input id="end" type="number" name="end" placeholder="1718207699999" required />
+    <Input id="end" type="number" name="end" placeholder="1718207699" required />
   </div>
+
   <div class="grid gap-2">
     <Label id="open" class="w-fit">Open</Label>
     <Input id="open" type="number" name="open" placeholder="6969709" required />
   </div>
+
   <div class="grid gap-2">
     <Label for="high" class="w-fit">High</Label>
     <Input id="high" type="number" name="high" placeholder="6969774" required />
   </div>
+
   <div class="grid gap-2">
     <Label for="low" class="w-fit">Low</Label>
     <Input id="low" type="number" name="low" placeholder="6970129" required />
   </div>
+
   <div class="grid gap-2">
     <Label for="close" class="w-fit">Close</Label>
     <Input id="close" type="number" name="close" placeholder="6966979" required />
   </div>
+
   <div class="grid gap-2">
-    <Label for="query" class="w-fit">Query ID</Label>
-    <Input id="query" type="number" name="queryId" placeholder="777" required />
+    <Label for="queryId" class="w-fit">Query ID</Label>
+    <div
+      class="flex relative ring-1 ring-ds-gray-400 rounded-md transition-all duration-300 focus-within:ring-2 focus-within:ring-ds-gray-600"
+    >
+      <Input
+        id="queryId"
+        type="number"
+        name="queryId"
+        placeholder="101"
+        required
+        bind:value={queryId}
+        class="rounded-r-none border-0 border-r focus-visible:ring-0 appearance-none"
+      />
+      <Button
+        variant="secondary"
+        class="text-sm rounded-l-none ring-0"
+        onclick={() => (queryId = randomize())}>Randomize</Button
+      >
+    </div>
   </div>
 </form>

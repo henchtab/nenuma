@@ -1,6 +1,15 @@
 import { browser } from '$app/environment';
 import { PUBLIC_RPC_PROVIDER_API_KEY } from '$env/static/public';
-import { Address, Dictionary, OpenedContract, TonClient, beginCell, toNano } from '@ton/ton';
+import {
+  Address,
+  Dictionary,
+  OpenedContract,
+  TonClient,
+  TonClient4,
+  TupleBuilder,
+  beginCell,
+  toNano
+} from '@ton/ton';
 import { toast } from 'svelte-sonner';
 import { derived, readable, writable, type Readable, type Writable } from 'svelte/store';
 import {
@@ -39,11 +48,11 @@ import {
   storeCashOrNothingOptionDeploy
 } from 'nenuma-contracts';
 
-export const publicClient = readable<TonClient>(undefined, (set) => {
+export const publicClient = readable<TonClient4>(undefined, (set) => {
   set(
-    new TonClient({
-      endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-      apiKey: PUBLIC_RPC_PROVIDER_API_KEY
+    new TonClient4({
+      endpoint: 'https://testnet-v4.tonhubapi.com/'
+      // apiKey: PUBLIC_RPC_PROVIDER_API_KEY
     })
   );
 });
@@ -639,7 +648,7 @@ export const createBrokerage = (): Readable<BrokerageMethods> => {
         messages: [
           {
             address: brokerage.address.toString(),
-            amount: toNano('0.05').toString(),
+            amount: toNano('0.2').toString(),
             stateInit: beginCell()
               .store(
                 storeStateInit({
@@ -798,7 +807,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         await broker.send(
           $sender,
           {
-            value: toNano('0.05')
+            value: toNano('0.2')
           },
           { $$type: 'BRKDeploy', queryId: args.queryId }
         );
@@ -848,7 +857,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         await broker.send(
           $sender,
           {
-            value: toNano('0.05')
+            value: toNano('0.2')
           },
           { $$type: 'BRKWithdraw', queryId: args.queryId }
         );
@@ -1051,7 +1060,7 @@ export const createSimpleSubscriber = (
         await subscriber.send(
           $sender,
           {
-            value: toNano('0.05')
+            value: toNano('0.2')
           },
           {
             $$type: 'SubscriberCheckTimeout',
@@ -1197,7 +1206,7 @@ function saveOptionAddress(option: OpenedContract<CashOrNothingOption> | string)
  * Gets the latest option address from the local storage.
  * @throws {Error} If no latest option address is found in local storage.
  */
-function getOptionContract(publicClient: TonClient) {
+function getOptionContract(publicClient: TonClient4) {
   const optionAddress = localStorage.getItem(LATEST_OPTION_STORAGE_KEY.toString());
 
   if (!optionAddress) {
@@ -1218,6 +1227,8 @@ type CashOrNothingOptionMethods = {
   checkTimeout: (args: { queryId: bigint }) => Promise<void>;
   getOptionId: () => Promise<bigint>;
   getAgreement: () => Promise<CashOrNothingOptionAgreement | null>;
+  getStrikePrice: () => Promise<bigint | null>;
+  getLatestCandlestick: () => Promise<Candlestick | null>;
   getBalance: () => Promise<bigint>;
   getDeployerAddress: () => Promise<Address>;
   getStreamAddress: () => Promise<Address | null>;
@@ -1303,10 +1314,14 @@ export const createCashOrNothingOption = (
 
       const getAgreement = async () => await getOptionContract($publicClient).getAgreement();
 
-      const getBalance = async () => await getOptionContract($publicClient).getBalance();
+      const getStrikePrice = async () => await getOptionContract($publicClient).getStrikePrice();
+
+      const getLatestCandlestick = async () => await getOptionContract($publicClient).getLatestCandlestick();
 
       const getDeployerAddress = async () =>
         await getOptionContract($publicClient).getDeployerAddress();
+
+      const getBalance = async () => await getOptionContract($publicClient).getBalance();
 
       const getStreamAddress = async () =>
         await getOptionContract($publicClient).getStreamAddress();
@@ -1324,6 +1339,8 @@ export const createCashOrNothingOption = (
         checkTimeout,
         getOptionId,
         getAgreement,
+        getStrikePrice,
+        getLatestCandlestick,
         getBalance,
         getDeployerAddress,
         getStreamAddress,

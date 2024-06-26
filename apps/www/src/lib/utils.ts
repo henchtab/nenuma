@@ -4,6 +4,7 @@ import { readable } from 'svelte/store';
 import type { TransitionConfig } from 'svelte/transition';
 import { browser } from '$app/environment';
 import { twMerge } from 'tailwind-merge';
+import { hapticFeedback } from './stores/tma';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -127,4 +128,16 @@ export function mediaQuery(query: string) {
 
     return cleanup;
   });
+}
+
+export function randomize() {
+  const uns = hapticFeedback.subscribe((f) => {
+    if (f) f.impactOccurred('light');
+  });
+
+  setTimeout(() => {
+    uns();
+  }, 1000);
+
+  return Math.floor(Math.random() * 10000);
 }

@@ -102,7 +102,7 @@
             <a
               data-active={$page.url.pathname === '/options-api'}
               class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors data-[active=true]:text-ds-gray-1000"
-              href="/options-api">Options API</a
+              href="/options-api">Derivatives API</a
             >
           </li>
           <li>
@@ -251,7 +251,7 @@
               </section>
 
               <section class="flex flex-col gap-2">
-                <span class="text-lg text-ds-gray-900 font-medium">Options API</span>
+                <span class="text-lg text-ds-gray-900 font-medium">Derivatives API</span>
                 <ul class="pl-4">
                   <li>
                     <Drawer.Close asChild let:builder>

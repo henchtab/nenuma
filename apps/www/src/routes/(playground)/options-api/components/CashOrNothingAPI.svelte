@@ -1,45 +1,68 @@
 <script lang="ts">
-  import { formatOutputDate } from '$lib/utils';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { derived, writable } from 'svelte/store';
+  import { formatOutputDate, formatTime } from '$lib/utils';
   import { createCashOrNothingOption } from '$lib/wrappers';
-  import autoAnimate from '@formkit/auto-animate';
+  import { Address, fromNano } from '@ton/core';
   import clsx from 'clsx';
+  import { toast } from 'svelte-sonner';
+  import { derived, writable } from 'svelte/store';
+  import Output from '../../components/Output.svelte';
   import Section from './Section.svelte';
-  import { Address } from '@ton/core';
 
   const streamAddress = writable('');
-
   const option = createCashOrNothingOption(streamAddress);
 
   const shouldDisableActions = derived([streamAddress], ([$streamAddress]) => !$streamAddress);
 
   let output = $state<{ date: string; message: string }[]>([]);
 
-  function postToOutput(message: string | bigint | object | Address | null) {
-    if (message === null) {
-      return;
+  function formatOutput(input: {
+    type: 'coins' | 'object' | 'address' | 'timestamp' | 'other';
+    value: bigint | object | Address | null;
+  }) {
+    if (input.value === null) {
+      return 'Empty response.';
     }
 
-    if (typeof message === 'bigint') {
-      message = message.toString();
+    if (input.type === 'coins') {
+      return fromNano(input.value as bigint).toString();
     }
 
-    objectIf: if (typeof message === 'object') {
-      if (message instanceof Address) {
-        message = message.toString({
-          testOnly: true,
-          bounceable: false
-        });
-
-        break objectIf;
-      }
-
-      message = JSON.stringify(message, null, 2);
+    if (input.type === 'timestamp') {
+      return formatTime(new Date(Number(input.value) * 1000));
     }
 
+    if (input.type === 'object') {
+      return JSON.stringify(
+        input.value,
+        (_, v) => {
+          if (v instanceof Address) {
+            return v.toString({ testOnly: true, bounceable: false });
+          }
+
+          if (typeof v === 'bigint') {
+            return v.toString();
+          }
+
+          return v;
+        },
+        2
+      );
+    }
+
+    if (input.type === 'address') {
+      return (input.value as Address).toString({
+        testOnly: true,
+        bounceable: false
+      });
+    }
+
+    return input.value.toString();
+  }
+
+  function postToOutput(message: string) {
     output.unshift({ date: formatOutputDate(new Date()), message });
   }
 </script>
@@ -88,7 +111,19 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getOptionId())}
+      onclick={async () => {
+        try {
+          const result = await $option.getOptionId();
+          postToOutput(
+            formatOutput({
+              type: 'other',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Option ID
     </Button>
@@ -96,7 +131,19 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getAgreement())}
+      onclick={async () => {
+        try {
+          const result = await $option.getAgreement();
+          postToOutput(
+            formatOutput({
+              type: 'object',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Agreement
     </Button>
@@ -104,7 +151,59 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getExpiration())}
+      onclick={async () => {
+        try {
+          const result = await $option.getStrikePrice();
+          postToOutput(
+            formatOutput({
+              type: 'other',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
+    >
+      Get Strike Price
+    </Button>
+
+    <Button
+      class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
+      disabled={$shouldDisableActions}
+      onclick={async () => {
+        try {
+          const result = await $option.getLatestCandlestick();
+          postToOutput(
+            formatOutput({
+              type: 'object',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
+    >
+      Get Latest Candlestick
+    </Button>
+
+    <Button
+      class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
+      disabled={$shouldDisableActions}
+      onclick={async () => {
+        try {
+          const result = await $option.getExpiration();
+          postToOutput(
+            formatOutput({
+              type: 'timestamp',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Expiration
     </Button>
@@ -112,7 +211,19 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getBalance())}
+      onclick={async () => {
+        try {
+          const result = await $option.getBalance();
+          postToOutput(
+            formatOutput({
+              type: 'coins',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Balance
     </Button>
@@ -120,7 +231,19 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getDeployerAddress())}
+      onclick={async () => {
+        try {
+          const result = await $option.getDeployerAddress();
+          postToOutput(
+            formatOutput({
+              type: 'address',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Deployer Address
     </Button>
@@ -128,7 +251,19 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getStreamAddress())}
+      onclick={async () => {
+        try {
+          const result = await $option.getStreamAddress();
+          postToOutput(
+            formatOutput({
+              type: 'address',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Stream Address
     </Button>
@@ -136,7 +271,19 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getSessionAddress())}
+      onclick={async () => {
+        try {
+          const result = await $option.getSessionAddress();
+          postToOutput(
+            formatOutput({
+              type: 'address',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Session Address
     </Button>
@@ -144,30 +291,23 @@
     <Button
       class="bg-ds-blue-800 hover:bg-ds-blue-700 snap-start text-white"
       disabled={$shouldDisableActions}
-      onclick={async () => postToOutput(await $option.getNotificationsCount())}
+      onclick={async () => {
+        try {
+          const result = await $option.getNotificationsCount();
+          postToOutput(
+            formatOutput({
+              type: 'other',
+              value: result
+            })
+          );
+        } catch (error) {
+          toast.error('Option has not been deployed or it has expired.');
+        }
+      }}
     >
       Get Notifications Count
     </Button>
   </div>
-  <div>
-    <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
-    <ul
-      use:autoAnimate
-      class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
-    >
-      {#if output.length === 0}
-        <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
-      {:else}
-        {#each output as line (line.date)}
-          <li class="inline-flex h-8 gap-3 w-full items-center">
-            <span class="text-ds-green-900">{line.date}:</span>
-            <div class="h-5 w-[1px] bg-ds-green-400"></div>
-            <span class="text-ds-green-900">{line.message}</span>
-          </li>
-        {/each}
-      {/if}
-    </ul>
 
-    <Button class="mt-4" variant="destructive" onclick={() => (output = [])}>Clear Output</Button>
-  </div>
+  <Output bind:output />
 </Section>

@@ -1,17 +1,19 @@
 <script lang="ts">
-  import { formatOutputDate } from '$lib/utils';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import { formatOutputDate } from '$lib/utils';
   import { useBroker } from '$lib/wrappers';
-  import autoAnimate from '@formkit/auto-animate';
   import { fromNano, toNano } from '@ton/core';
   import { toast } from 'svelte-sonner';
   import { writable } from 'svelte/store';
+  import Output from '../../components/Output.svelte';
   import Section from './Section.svelte';
 
   const brokerAddress = writable('');
   const broker = useBroker(brokerAddress);
+
+  let output = $state<{ date: string; message: string }[]>([]);
 
   async function handleDepositSubmit(
     e: SubmitEvent & {
@@ -50,8 +52,6 @@
 
     await $broker.withdraw(args);
   }
-
-  let output = $state<{ date: Date | string; message: string }[]>([]);
 </script>
 
 <Section title="Broker">
@@ -103,25 +103,6 @@
       }}>Get Stream</Button
     >
   </div>
-  <div>
-    <h3 class="text-ds-gray-1000 font-medium text-2xl mt-6">Output</h3>
-    <ul
-      use:autoAnimate
-      class="border-b border-t font-mono max-h-40 min-h-40 m-0 text-[13px] leading-5 break-normal mt-4 overflow-auto py-4"
-    >
-      {#if output.length === 0}
-        <li class="h-8 text-ds-gray-900 inline-flex items-center">Logs will appear here...</li>
-      {:else}
-        {#each output as line (line.date)}
-          <li class="inline-flex h-8 gap-3 w-full items-center">
-            <span class="text-ds-green-900">{line.date}:</span>
-            <div class="h-5 w-[1px] bg-ds-green-400"></div>
-            <span class="text-ds-green-900">{line.message}</span>
-          </li>
-        {/each}
-      {/if}
-    </ul>
 
-    <Button class="mt-4" variant="destructive" onclick={() => (output = [])}>Clear Output</Button>
-  </div>
+  <Output bind:output />
 </Section>
