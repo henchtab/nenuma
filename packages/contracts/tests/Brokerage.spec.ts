@@ -2,16 +2,17 @@ import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
 import { Builder, toNano } from "@ton/core";
 import { Brokerage, storeBRGDeploySuccess } from "../wrappers/Brokerage";
 import "@ton/test-utils";
-import { formatCoins, ShrekLogger } from "./utils";
 import { DataStream } from "../wrappers/DataStream";
 import { Broker } from "../wrappers/Broker";
+
+import { Logger } from "@henchtab/shrek";
 
 describe("Brokerage", () => {
   // Constant for DataStream deployment deposit
   const DST_DEPLOY_DEPOSIT = toNano(0.06);
 
   let blockchain: Blockchain;
-  let logger: ShrekLogger;
+  let logger: Logger;
 
   let owner: SandboxContract<TreasuryContract>;
   let brokerage: SandboxContract<Brokerage>;
@@ -23,7 +24,7 @@ describe("Brokerage", () => {
   // Setup the blockchain environment and initial contracts
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger(blockchain);
+    logger = new Logger(blockchain);
 
     // Initialize treasury contracts for different roles
     owner = await blockchain.treasury("owner");

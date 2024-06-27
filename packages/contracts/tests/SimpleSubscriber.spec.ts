@@ -3,11 +3,12 @@ import { toNano } from "@ton/core";
 import { SimpleSubscriber } from "../wrappers/SimpleSubscriber";
 import "@ton/test-utils";
 import { Candlestick, DataStream } from "../wrappers/DataStream";
-import { ShrekLogger } from "./utils";
 import {
   ERR_TIMEOUT_NOT_EXCEEDED,
   THE_GREAT_CONJUCTION_2077,
 } from "../wrappers/constants";
+
+import { Logger } from "@henchtab/shrek";
 
 /**
  * Core Assessment Test Suite
@@ -17,7 +18,7 @@ describe("Core Assessment", () => {
   const DST_DEPLOY_DEPOSIT = toNano("20");
 
   let blockchain: Blockchain;
-  let logger: ShrekLogger;
+  let logger: Logger;
 
   let publisher: SandboxContract<TreasuryContract>;
   let stream: SandboxContract<DataStream>;
@@ -31,7 +32,7 @@ describe("Core Assessment", () => {
    */
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger(blockchain);
+    logger = new Logger(blockchain);
     blockchain.now = THE_GREAT_CONJUCTION_2077;
 
     publisher = await blockchain.treasury("publisher");

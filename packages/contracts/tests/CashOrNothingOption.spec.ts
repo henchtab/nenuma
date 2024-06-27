@@ -2,7 +2,6 @@ import { Blockchain, SandboxContract, TreasuryContract } from "@ton/sandbox";
 import { toNano } from "@ton/core";
 import "@ton/test-utils";
 import { Candlestick, DataStream } from "../wrappers/DataStream";
-import { ShrekLogger } from "./utils";
 import {
   DAY,
   ERR_TIMEOUT_NOT_EXCEEDED,
@@ -15,6 +14,8 @@ import {
 } from "../wrappers/CashOrNothingOption";
 import { SUBSCRIBER_TIMEOUT } from "../wrappers/SimpleSubscriber.compile";
 
+import { Logger } from "@henchtab/shrek";
+
 /**
  * Tests related to Core Assessment using Cash-or-Nothing options and DataStream contracts.
  */
@@ -23,7 +24,7 @@ describe("Core Assessment", () => {
   const DST_DEPLOY_DEPOSIT = toNano("20");
 
   let blockchain: Blockchain;
-  let logger: ShrekLogger;
+  let logger: Logger;
 
   let publisher: SandboxContract<TreasuryContract>;
   let stream: SandboxContract<DataStream>;
@@ -39,7 +40,7 @@ describe("Core Assessment", () => {
    */
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger(blockchain);
+    logger = new Logger(blockchain);
 
     blockchain.now = THE_GREAT_CONJUCTION_2077;
 

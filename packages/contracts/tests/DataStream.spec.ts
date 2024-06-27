@@ -15,8 +15,9 @@ import {
   storeSESUnsubscribedNotification,
 } from "../wrappers/Session";
 
-import { formatCoins, ShrekLogger } from "./utils";
 import { randomAddress } from "@ton/test-utils";
+
+import { Logger } from "@henchtab/shrek";
 
 const BATCH_LIMIT = 10; // FIXME: BATCH_LIMIT = 10;
 const ERR_BATCH_LIMIT_EXCEEDED = 402;
@@ -26,7 +27,7 @@ describe("Core Assesment", () => {
   const DST_DEPLOY_DEPOSIT = toNano("50");
 
   let blockchain: Blockchain;
-  let logger: ShrekLogger;
+  let logger: Logger;
 
   let publisher: SandboxContract<TreasuryContract>;
   let stream: SandboxContract<DataStream>;
@@ -37,7 +38,7 @@ describe("Core Assesment", () => {
 
   beforeAll(async () => {
     blockchain = await Blockchain.create();
-    logger = new ShrekLogger(blockchain);
+    logger = new Logger(blockchain);
 
     publisher = await blockchain.treasury("publisher");
     logger.addContract(publisher, "Publisher");
