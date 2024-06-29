@@ -36,4 +36,14 @@
   </div>
 </div>
 
-<Toaster position={$isDesktop ? 'bottom-right' : 'top-center'} richColors />
+<Toaster
+  position={$isDesktop ? 'bottom-right' : 'top-center'}
+  richColors
+  theme="dark"
+  toastOptions={{
+    classes: {
+      default: '',
+      error: '!bg-ds-red-100 !text-ds-red-900'
+    }
+  }}
+/>
