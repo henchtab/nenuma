@@ -1,13 +1,13 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { page } from '$app/stores';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { mainButton } from '$lib/stores/tma';
+  import { hapticFeedback, mainButton } from '$lib/stores/tma';
   import { randomize } from '$lib/utils';
   import { createDataStream } from '$lib/wrappers';
   import { onDestroy } from 'svelte';
+  import { toast } from 'svelte-sonner';
 
   const stream = createDataStream();
 
@@ -19,7 +19,10 @@
     if ($mainButton && form) {
       $mainButton.setText('Deploy Stream').enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => form?.requestSubmit());
+      const unsubscribe = $mainButton.on('click', () => {
+        $hapticFeedback.impactOccurred('heavy');
+        form?.requestSubmit();
+      });
 
       return unsubscribe;
     } else {
@@ -47,7 +50,13 @@
       queryId: BigInt(formData.get('queryId') as string)
     };
 
-    await $stream.deploy(args);
+    try {
+      await $stream.deploy(args);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
   }
 </script>
 
