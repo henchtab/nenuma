@@ -4,13 +4,12 @@ import "./constants";
 import "./messages";
 
 contract Broker {
-  storageReserve: Int;
+  override const storageReserve: Int = 10_000_000;
 
   brokerage: Address;
   stream: Address;
 
   init(brokerage: Address, stream: Address) {
-    self.storageReserve = BRK_STORAGE_RESERVE;
     self.brokerage = brokerage;
     self.stream = stream;
   }
@@ -55,9 +54,14 @@ contract Broker {
 
     let owner: Address = ctx.sender;
 
-    self.storageReserve = myBalance() - BRK_DEPOSIT_DEPOSIT;
+    nativeReserve(ctx.value - BRK_DEPOSIT_DEPOSIT, ReserveExact | ReserveAddOriginalBalance);
 
-    self.forward(owner, (BRKDepositSuccess { queryId: request.queryId }).toCell(), true, null);
+    send(SendParameters {
+      to: owner,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: (BRKDepositSuccess { queryId: request.queryId }).toCell()
+    });
   }
 
   receive(request: BRKWithdraw) {
@@ -72,7 +76,6 @@ contract Broker {
 
     let owner: Address = ctx.sender;
 
-    self.storageReserve = BRK_STORAGE_RESERVE;
     nativeReserve(BRK_STORAGE_RESERVE, ReserveExact);
 
     send(SendParameters {

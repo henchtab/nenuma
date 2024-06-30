@@ -10,7 +10,7 @@ struct SBInfo {
 
 // Contract representing a data stream
 contract DataStream {
-  storageReserve: Int; // Reserve amount for storage
+  override const storageReserve: Int = 50_000_000; // Reserve amount for storage
   publisher: Address; // Address of the publisher
   topic: String; // Topic of the data stream
 
@@ -20,7 +20,6 @@ contract DataStream {
 
   // Initialize the contract with the publisher and topic
   init(publisher: Address, topic: String) {
-    self.storageReserve = DST_STORAGE_RESERVE;
     self.publisher = publisher;
     self.topic = topic;
     self.nextBatchId = 0;

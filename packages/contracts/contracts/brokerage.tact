@@ -5,12 +5,11 @@ import "./broker";
 import "./brokerage_account";
 
 contract Brokerage {
-  storageReserve: Int;
+  override const storageReserve: Int = 10_000_000;
   owner: Address;
 
   // Constructor to initialize the contract with the owner's address
   init(owner: Address) {
-    self.storageReserve = BRG_STORAGE_RESERVE;
     self.owner = owner;
   }
 

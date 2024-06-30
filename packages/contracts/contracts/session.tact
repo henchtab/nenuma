@@ -3,14 +3,13 @@ import "./messages";
 
 // Contract representing a session in the subscription system
 contract Session {
-  storageReserve: Int; // Reserve amount for storage
+  override const storageReserve: Int = 50_000_000; // Reserve amount for storage
   stream: Address; // Address of the stream
   subscriber: Address; // Address of the subscriber
   batch: Address?; // Address of the subscription batch
 
   // Initialize the contract with the stream and subscriber addresses
   init(stream: Address, subscriber: Address) {
-    self.storageReserve = SES_STORAGE_RESERVE;
     self.stream = stream;
     self.subscriber = subscriber;
   }
