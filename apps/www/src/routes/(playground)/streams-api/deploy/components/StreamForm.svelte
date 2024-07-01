@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { hapticFeedback, mainButton } from '$lib/stores/tma';
   import { randomize } from '$lib/utils';
   import { createDataStream } from '$lib/wrappers';
-  import { onDestroy, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
 
   const stream = createDataStream();
@@ -14,8 +13,6 @@
   let form = $state<HTMLFormElement>();
 
   let queryId = $state<number>();
-
-  $effect(() => {});
 
   onMount(() => {
     let unsubscribe: (() => void) | undefined;
@@ -31,8 +28,7 @@
 
     return () => {
       unsubscribe?.();
-      $mainButton.disable().hide().setText('D');
-      console.log('unsubscribed');
+      $mainButton.hide().disable();
     };
   });
 
