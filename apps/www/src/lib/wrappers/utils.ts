@@ -1,6 +1,9 @@
 import type { Contract, OpenedContract } from '@ton/core';
 
-export function saveAddress<C extends Contract>(contract: string | OpenedContract<C>, key: Symbol) {
+export function saveContractAddress<C extends Contract>(
+  contract: string | C,
+  key: string
+) {
   try {
     let address: string;
 
@@ -11,7 +14,7 @@ export function saveAddress<C extends Contract>(contract: string | OpenedContrac
     }
 
     localStorage.setItem(
-      key.toString(),
+      key,
       JSON.stringify({
         address,
         timestamp: Date.now()
@@ -24,8 +27,13 @@ export function saveAddress<C extends Contract>(contract: string | OpenedContrac
   }
 }
 
-export function loadAddress(key: Symbol): { address: string; timestamp: number } | null {
-  const item = localStorage.getItem(key.toString());
+export type AddressData = {
+  address: string;
+  timestamp: number;
+};
+
+export function loadData<T = any>(key: string): T | null {
+  const item = localStorage.getItem(key);
   return item ? JSON.parse(item) : null;
 }
 

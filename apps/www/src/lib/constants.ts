@@ -15,7 +15,7 @@ export const DST_DEPLOY_SESSION_DEPOSIT = toNano('0.2');
 export const DST_PUBLISH_CANDLESTICK_DEPOSIT = toNano('5');
 
 export const SES_STORAGE_RESERVE = toNano('0.01');
-export const SES_SUBSCRIBE_DEPOSIT = toNano('0.2');
+export const SES_SUBSCRIBE_DEPOSIT = toNano('0.05');
 export const SES_UNSUBSCRIBE_DEPOSIT = toNano('0.2');
 export const SES_DESTROY_DEPOSIT = toNano('0.2');
 
@@ -34,8 +34,13 @@ export const TON_VALID_UNTIL = Math.floor(Date.now() / 1000) + 360;
 
 // BEGIN: Storage keys
 
-export const DATA_STREAM_STORAGE_KEY = Symbol('dataStream');
+export const DATA_STREAM_STORAGE_KEY = 'data-stream';
+export const LATEST_SUBSCRIPTION_BATCH_STORAGE_KEY = 'latest-subscription-batch';
+export const SUBSCRIPTION_BATCHES_STORAGE_KEY = 'subscription-batches';
+export const SESSION_STORAGE_KEY = 'session';
+export const SIMPLE_SUBSCRIBER_STORAGE_KEY = 'simple-subscriber';
 
+// TODO: Remove symbols
 export const LATEST_OPTION_STORAGE_KEY = Symbol('latestOption');
 export const OPTIONS_STORAGE_KEY = Symbol('options');
 

@@ -49,7 +49,7 @@
       queryId: BigInt(formData.get('queryId') as string)
     };
 
-    await $stream.deployBatch(args);
+    await $stream.deploySubscriptionBatch(args);
   }
 </script>
 

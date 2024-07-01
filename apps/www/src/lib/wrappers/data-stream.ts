@@ -18,7 +18,7 @@ import {
   DST_PUBLISH_CANDLESTICK_DEPOSIT,
   TON_VALID_UNTIL
 } from '../constants';
-import { loadAddress, saveAddress } from './utils';
+import { loadData, saveContractAddress } from './utils';
 
 export default class DataStreamWrapper implements OpenContract<DataStream> {
   private readonly publicClient: TonClient4;
@@ -32,7 +32,7 @@ export default class DataStreamWrapper implements OpenContract<DataStream> {
 
     if (streamAddress) {
       this.streamAddress = streamAddress;
-      saveAddress(streamAddress, DATA_STREAM_STORAGE_KEY);
+      saveContractAddress(streamAddress, DATA_STREAM_STORAGE_KEY);
     }
   }
 
@@ -40,7 +40,7 @@ export default class DataStreamWrapper implements OpenContract<DataStream> {
     let contractAddress = this.streamAddress;
 
     if (!contractAddress) {
-      contractAddress = loadAddress(DATA_STREAM_STORAGE_KEY)?.address;
+      contractAddress = loadData(DATA_STREAM_STORAGE_KEY)?.address;
 
       if (!contractAddress) {
         throw new Error('No stream address found. Did you deploy the data stream?');
@@ -94,7 +94,7 @@ export default class DataStreamWrapper implements OpenContract<DataStream> {
     });
 
     this.streamAddress = stream.address.toString();
-    saveAddress(stream, DATA_STREAM_STORAGE_KEY);
+    saveContractAddress(stream, DATA_STREAM_STORAGE_KEY);
 
     return this;
   }

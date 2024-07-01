@@ -1,54 +1,27 @@
-import { browser } from '$app/environment';
-import { PUBLIC_RPC_PROVIDER_API_KEY } from '$env/static/public';
+import { Address, OpenedContract, TonClient, TonClient4, beginCell, toNano } from '@ton/ton';
 import {
-  Address,
-  Contract,
-  Dictionary,
-  OpenedContract,
-  TonClient,
-  TonClient4,
-  TupleBuilder,
-  beginCell,
-  toNano
-} from '@ton/ton';
-import { toast } from 'svelte-sonner';
-import { derived, readable, writable, type Readable, type Writable } from 'svelte/store';
+  Broker,
+  Brokerage,
+  BrokerageAccount,
+  CashOrNothingOption,
+  CashOrNothingOptionAgreement,
+  storeBRGDeploy,
+  storeCashOrNothingOptionDeploy,
+  storeStateInit,
+  type Candlestick
+} from 'nenuma-contracts';
+import { derived, readable, type Readable, type Writable } from 'svelte/store';
 import {
   BRG_DEPLOY_ACCOUNT_DEPOSIT,
   BRG_DEPLOY_BROKER_DEPOSIT,
-  DST_DEPLOY_BATCH_DEPOSIT,
-  DST_DEPLOY_DEPOSIT,
-  DST_DEPLOY_SESSION_DEPOSIT,
-  DST_PUBLISH_CANDLESTICK_DEPOSIT,
   LATEST_OPTION_STORAGE_KEY,
-  NOTIFICATION_DEPOSIT,
-  NOTIFICATION_PREMIUM,
-  OPTIONS_STORAGE_KEY,
-  SES_DESTROY_DEPOSIT,
-  SES_SUBSCRIBE_DEPOSIT,
-  SES_UNSUBSCRIBE_DEPOSIT
+  OPTIONS_STORAGE_KEY
 } from '../constants';
 import { sender, tonConnectUI } from '../stores/ton-connect';
-import {
-  SubscriptionBatch,
-  type SBInfo,
-  type SubscriptionInfo,
-  DataStream,
-  storeDSTDeploy,
-  storeStateInit,
-  type Candlestick,
-  SimpleSubscriber,
-  storeSimpleSubscriberDeploy,
-  Session,
-  BrokerageAccount,
-  Brokerage,
-  Broker,
-  storeBRGDeploy,
-  CashOrNothingOption,
-  CashOrNothingOptionAgreement,
-  storeCashOrNothingOptionDeploy
-} from 'nenuma-contracts';
 import DataStreamWrapper from './data-stream';
+import SessionWrapper from './session';
+import SimpleSubscriberWrapper from './simple-subscriber';
+import SubscriptionBatchWrapper from './subscription-batch';
 
 export const publicClient = readable<TonClient4>(undefined, (set) => {
   set(
@@ -59,7 +32,7 @@ export const publicClient = readable<TonClient4>(undefined, (set) => {
 });
 
 export interface OpenContract<C> {
-  getOpenedContract: () => OpenedContract<C>;
+  getOpenedContract: () => OpenedContract<C> | Promise<OpenedContract<C>>;
 }
 
 export type TDataStream = ReturnType<typeof createDataStream>;
@@ -74,269 +47,38 @@ export const createDataStream = (streamAddress?: Writable<string>): Readable<Dat
   );
 };
 
-type SubscriptionBatchMethods = {
-  getBalance: () => Promise<bigint>;
-  getStreamAddress: () => Promise<Address>;
-  getBatchId: () => Promise<bigint>;
-  getSubscriptions: () => Promise<Dictionary<Address, SubscriptionInfo>>;
-  getSubscriptionsCount: () => Promise<bigint>;
-};
-
 export const useSubscriptioBatch = (
   batchId: Writable<number | bigint>
-): Readable<SubscriptionBatchMethods> => {
-  const provider = new TonClient({
-    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
-  });
+): Readable<SubscriptionBatchWrapper> => {
+  return derived([publicClient, batchId], ([$publicClient, $batchId], set) => {
+    const wrapper = new SubscriptionBatchWrapper($publicClient, BigInt($batchId));
 
-  return derived(batchId, ($batchId, set) => {
-    $batchId = BigInt($batchId);
-
-    const getBalance = async () => {
-      console.log('getBalance', $batchId);
-
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const batch = provider.open(
-        await SubscriptionBatch.fromInit(Address.parse(streamAddress), BigInt($batchId))
-      );
-
-      console.log(batch.address.toString({ testOnly: true, bounceable: false }));
-
-      return await batch.getBalance();
-    };
-
-    const getStreamAddress = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const batch = provider.open(
-        await SubscriptionBatch.fromInit(Address.parse(streamAddress), $batchId)
-      );
-
-      return await batch.getStreamAddress();
-    };
-
-    const getBatchId = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const batch = provider.open(
-        await SubscriptionBatch.fromInit(Address.parse(streamAddress), $batchId)
-      );
-
-      return await batch.getBatchId();
-    };
-
-    const getSubscriptions = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const batch = provider.open(
-        await SubscriptionBatch.fromInit(Address.parse(streamAddress), $batchId)
-      );
-
-      return await batch.getSubscriptions();
-    };
-
-    const getSubscriptionsCount = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const batch = provider.open(
-        await SubscriptionBatch.fromInit(Address.parse(streamAddress), $batchId)
-      );
-
-      return await batch.getSubscriptionsCount();
-    };
-
-    set({
-      getBalance,
-      getStreamAddress,
-      getBatchId,
-      getSubscriptions,
-      getSubscriptionsCount
-    });
+    set(wrapper);
   });
 };
 
-type SessionMethods = {
-  getBalance: () => Promise<bigint>;
-  getStreamAddress: () => Promise<Address>;
-  getSubscriberAddress: () => Promise<Address>;
-  getBatchAddress: () => Promise<Address | null>;
-  subscribe: (args: { queryId: bigint; notificationsCount: bigint }) => Promise<void>;
-  unsubscribe: (args: { queryId: bigint }) => Promise<void>;
-  destroy: (args: { queryId: bigint }) => Promise<void>;
-};
+export const useSession = (subscriberAddress: Writable<string>): Readable<SessionWrapper> => {
+  return derived(
+    [publicClient, tonConnectUI, subscriberAddress],
+    ([$publicClient, $tonConnectUI, $subscriberAddress], set) => {
+      const wrapper = new SessionWrapper($publicClient, $tonConnectUI, $subscriberAddress);
 
-export const useSession = (subscriberAddress: Writable<string>): Readable<SessionMethods> => {
-  const provider = new TonClient({
-    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
-  });
-
-  return derived([subscriberAddress, sender], ([$subscriberAddress, $sender], set) => {
-    if (!$subscriberAddress) {
-      toast.error('No subscriber address found. Did you forget to fill in the subscriber address?');
+      set(wrapper);
     }
+  );
+};
 
-    const getBalance = async () => {
-      const streamAddress = localStorage.getItem('stream');
+export const createSimpleSubscriber = (
+  subscriberAddress?: Writable<string>
+): Readable<SimpleSubscriberWrapper> => {
+  return derived(
+    [publicClient, tonConnectUI, subscriberAddress ? subscriberAddress : readable('')],
+    ([$publicClient, $tonConnectUI, $subscriberAddress], set) => {
+      const wrapper = new SimpleSubscriberWrapper($publicClient, $tonConnectUI, $subscriberAddress);
 
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      return await session.getBalance();
-    };
-
-    const getStreamAddress = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      return await session.getStreamAddress();
-    };
-
-    const getSubscriberAddress = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      return await session.getSubscriberAddress();
-    };
-
-    const getBatchAddress = async () => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      return await session.getBatchAddress();
-    };
-
-    const subscribe = async (args: { queryId: bigint; notificationsCount: bigint }) => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      await session.send(
-        $sender,
-        {
-          value:
-            SES_SUBSCRIBE_DEPOSIT +
-            NOTIFICATION_DEPOSIT * args.notificationsCount +
-            NOTIFICATION_PREMIUM * args.notificationsCount
-        },
-        {
-          $$type: 'SESSubscribe',
-          queryId: args.queryId,
-          notificationsCount: args.notificationsCount
-        }
-      );
-    };
-
-    const unsubscribe = async (args: { queryId: bigint }) => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      await session.send(
-        $sender,
-        {
-          value: SES_UNSUBSCRIBE_DEPOSIT
-        },
-        {
-          $$type: 'SESUnsubscribe',
-          queryId: args.queryId
-        }
-      );
-    };
-
-    const destroy = async (args: { queryId: bigint }) => {
-      const streamAddress = localStorage.getItem('stream');
-
-      if (!streamAddress) {
-        throw new Error('No stream found. Did you deploy a stream?');
-      }
-
-      const session = provider.open(
-        await Session.fromInit(Address.parse(streamAddress!), Address.parse($subscriberAddress))
-      );
-
-      await session.send(
-        $sender,
-        {
-          value: SES_DESTROY_DEPOSIT
-        },
-        {
-          $$type: 'SESDestroy',
-          queryId: args.queryId
-        }
-      );
-    };
-
-    set({
-      getBalance,
-      getStreamAddress,
-      getSubscriberAddress,
-      getBatchAddress,
-      subscribe,
-      unsubscribe,
-      destroy
-    });
-  });
+      set(wrapper);
+    }
+  );
 };
 
 type BrokerageMethods = {
@@ -720,238 +462,6 @@ export const useBrokerageAccount = (
       getBrokerage
     });
   });
-};
-
-type SimpleSubscriberMethods = {
-  deploy: (args: {
-    subscriberId: bigint;
-    notificationsCount: bigint;
-    stream: string;
-    expiresAt: bigint;
-  }) => Promise<void>;
-  checkTimeout: (args: { queryId: bigint }) => Promise<void>;
-  getBalance: () => Promise<bigint>;
-  getOwnerAddress: () => Promise<Address>;
-  getNotificationsCount: () => Promise<bigint | null>;
-  getExpiresAt: () => Promise<bigint | null>;
-  getStreamAddress: () => Promise<Address | null>;
-  getSessionAddress: () => Promise<Address | null>;
-  getLatestCandlestick: () => Promise<Candlestick | null>;
-};
-
-export const createSimpleSubscriber = (
-  subscriberAddress?: Writable<string>
-): Readable<SimpleSubscriberMethods> => {
-  const provider = new TonClient({
-    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
-  });
-
-  return derived(
-    [tonConnectUI, sender, subscriberAddress ? subscriberAddress : readable('')],
-    ([$tonConnectUI, $sender, subscriberAddress], set) => {
-      if (subscriberAddress && browser) {
-        localStorage.setItem(
-          'subscriber',
-          Address.parse(subscriberAddress).toString({ testOnly: true })
-        );
-      }
-
-      const deploy = async (args: {
-        subscriberId: bigint;
-        notificationsCount: bigint;
-        stream: string;
-        expiresAt: bigint;
-      }) => {
-        const owner = $tonConnectUI.account?.address;
-
-        if (!owner) {
-          throw new Error('No account connected. Did you connect to the wallet?');
-        }
-
-        const subscriber = provider.open(
-          await SimpleSubscriber.fromInit(Address.parse(owner), args.subscriberId)
-        );
-        localStorage.setItem('subscriber', subscriber.address.toString({ testOnly: true }));
-
-        await $tonConnectUI?.sendTransaction({
-          validUntil: Math.floor(Date.now() / 1000) + 360,
-          messages: [
-            {
-              address: subscriber.address.toString(),
-              amount: (
-                toNano('2.05') +
-                NOTIFICATION_DEPOSIT * args.notificationsCount +
-                NOTIFICATION_PREMIUM * args.notificationsCount
-              ).toString(),
-              payload: beginCell()
-                .store(
-                  storeSimpleSubscriberDeploy({
-                    $$type: 'SimpleSubscriberDeploy',
-                    queryId: args.subscriberId,
-                    stream: Address.parse(args.stream),
-                    notificationsCount: args.notificationsCount,
-                    expiration: args.expiresAt
-                  })
-                )
-                .endCell()
-                .toBoc()
-                .toString('base64'),
-              stateInit: beginCell()
-                .store(
-                  storeStateInit({
-                    $$type: 'StateInit',
-                    ...subscriber.init!
-                  })
-                )
-                .endCell()
-                .toBoc()
-                .toString('base64')
-            }
-          ]
-        });
-      };
-
-      const checkTimeout = async (args: { queryId: bigint }) => {
-        const owner = $tonConnectUI.account?.address;
-
-        if (!owner) {
-          throw new Error('No account connected. Did you connect to the wallet?');
-        }
-
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        await subscriber.send(
-          $sender,
-          {
-            value: toNano('0.2')
-          },
-          {
-            $$type: 'SubscriberCheckTimeout',
-            queryId: args.queryId
-          }
-        );
-      };
-
-      const getBalance = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getBalance();
-      };
-
-      const getOwnerAddress = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getDeployerAddress();
-      };
-
-      const getNotificationsCount = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getNotificationsCount();
-      };
-
-      const getExpiresAt = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getExpiration();
-      };
-
-      const getStreamAddress = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getStreamAddress();
-      };
-
-      const getSessionAddress = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getSessionAddress();
-      };
-
-      const getLatestCandlestick = async () => {
-        const subscriberAddress = localStorage.getItem('subscriber');
-
-        if (!subscriberAddress) {
-          throw new Error('No subscriber found. Did you deploy a subscriber?');
-        }
-
-        const subscriber = provider.open(
-          SimpleSubscriber.fromAddress(Address.parse(subscriberAddress))
-        );
-
-        return await subscriber.getLatestCandlestick();
-      };
-
-      set({
-        deploy,
-        getBalance,
-        getOwnerAddress,
-        checkTimeout,
-        getNotificationsCount,
-        getExpiresAt,
-        getStreamAddress,
-        getSessionAddress,
-        getLatestCandlestick
-      });
-    }
-  );
 };
 
 function saveOptionAddress(option: OpenedContract<CashOrNothingOption> | string) {
