@@ -25,7 +25,7 @@ contract Brokerage {
 
   // Function to get the address of the broker contract associated with a given stream
   get fun broker(stream: Address): Address {
-    let brokerStateInit: StateInit = initOf Broker(myAddress(), stream);
+    let brokerStateInit: StateInit = initOf Broker(self.owner, stream);
     let broker: Address = contractAddress(brokerStateInit);
     return broker;
   }
@@ -56,7 +56,7 @@ contract Brokerage {
     nativeThrowUnless(ERR_INSUFFICIENT_DEPOSIT, ctx.value >= BRG_DEPLOY_BROKER_DEPOSIT);
 
     // Initialize and deploy the broker contract
-    let brokerStateInit: StateInit = initOf Broker(myAddress(), request.stream);
+    let brokerStateInit: StateInit = initOf Broker(self.owner, request.stream);
     let broker: Address = contractAddress(brokerStateInit);
 
     self.forward(broker, (BRKDeploy { queryId: request.queryId }).toCell(), true, brokerStateInit);
@@ -68,7 +68,7 @@ contract Brokerage {
   receive(response: BRKDeploySuccess) {
     let ctx: Context = context();
 
-    let brokerStateInit: StateInit = initOf Broker(myAddress(), response.stream);
+    let brokerStateInit: StateInit = initOf Broker(self.owner, response.stream);
     let broker: Address = contractAddress(brokerStateInit);
 
     // Ensure the sender is the deployed broker contract
