@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import { PUBLIC_RPC_PROVIDER_API_KEY } from '$env/static/public';
 import {
   Address,
+  Contract,
   Dictionary,
   OpenedContract,
   TonClient,
@@ -47,257 +48,28 @@ import {
   CashOrNothingOptionAgreement,
   storeCashOrNothingOptionDeploy
 } from 'nenuma-contracts';
+import DataStreamWrapper from './data-stream';
 
 export const publicClient = readable<TonClient4>(undefined, (set) => {
   set(
     new TonClient4({
       endpoint: 'https://testnet-v4.tonhubapi.com/'
-      // apiKey: PUBLIC_RPC_PROVIDER_API_KEY
     })
   );
 });
 
-type DataStreamMethods = {
-  deploy: (args: { topic: string; queryId: bigint }) => Promise<void>;
-  deployBatch: (args: { queryId: bigint }) => Promise<void>;
-  deploySession: (args: { queryId: bigint }) => Promise<void>;
-  publishCandlestick: (args: {
-    queryId: bigint;
-    candlestick: Omit<Candlestick, '$$type'>;
-  }) => Promise<void>;
-  getBalance: () => Promise<bigint>;
-  getPublisherAddress: () => Promise<Address>;
-  getTopic: () => Promise<string>;
-  getBatches: () => Promise<Dictionary<Address, SBInfo>>;
-  getNextBatchId: () => Promise<bigint>;
-  getBatchAddress: (batchId: bigint) => Promise<Address>;
-  getSessionAddress: (subscriberAddress: Address) => Promise<Address>;
-};
+export interface OpenContract<C> {
+  getOpenedContract: () => OpenedContract<C>;
+}
 
 export type TDataStream = ReturnType<typeof createDataStream>;
-export const createDataStream = (streamAddress?: Writable<string>): Readable<DataStreamMethods> => {
-  const provider = new TonClient({
-    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c'
-  });
-
+export const createDataStream = (streamAddress?: Writable<string>): Readable<DataStreamWrapper> => {
   return derived(
-    [tonConnectUI, sender, streamAddress ? streamAddress : readable('')],
-    ([$tonConnectUI, $sender, streamAddress], set) => {
-      if (streamAddress && browser) {
-        localStorage.setItem('stream', Address.parse(streamAddress).toString({ testOnly: true }));
-      }
+    [publicClient, tonConnectUI, streamAddress ? streamAddress : readable('')],
+    ([$publicClient, $tonConnectUI, $streamAddress], set) => {
+      const wrapper = new DataStreamWrapper($publicClient, $tonConnectUI, $streamAddress);
 
-      const deploy = async (args: { topic: string; queryId: bigint }) => {
-        const publisher = $tonConnectUI.account?.address;
-
-        if (!publisher) {
-          throw new Error('No account connected. Did you connect to the wallet?');
-        }
-
-        const stream = provider.open(
-          await DataStream.fromInit(Address.parse(publisher), args.topic)
-        );
-        localStorage.setItem('stream', stream.address.toString({ testOnly: true }));
-
-        await $tonConnectUI?.sendTransaction({
-          validUntil: Math.floor(Date.now() / 1000) + 360,
-          messages: [
-            {
-              address: stream.address.toString(),
-              amount: DST_DEPLOY_DEPOSIT.toString(),
-              payload: beginCell()
-                .store(
-                  storeDSTDeploy({
-                    $$type: 'DSTDeploy',
-                    queryId: args.queryId
-                  })
-                )
-                .endCell()
-                .toBoc()
-                .toString('base64'),
-              stateInit: beginCell()
-                .store(
-                  storeStateInit({
-                    $$type: 'StateInit',
-                    ...stream.init!
-                  })
-                )
-                .endCell()
-                .toBoc()
-                .toString('base64')
-            }
-          ]
-        });
-      };
-
-      const deployBatch = async (args: { queryId: bigint }) => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        await stream.send(
-          $sender,
-          {
-            value: DST_DEPLOY_BATCH_DEPOSIT
-          },
-          {
-            $$type: 'DSTDeployBatch',
-            queryId: args.queryId
-          }
-        );
-      };
-
-      const deploySession = async (args: { queryId: bigint }) => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        await stream.send(
-          $sender,
-          {
-            value: DST_DEPLOY_SESSION_DEPOSIT
-          },
-          {
-            $$type: 'DSTDeploySession',
-            queryId: args.queryId
-          }
-        );
-      };
-
-      const publishCandlestick = async (args: {
-        queryId: bigint;
-        candlestick: Omit<Candlestick, '$$type'>;
-      }) => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        await stream.send(
-          $sender,
-          {
-            value: DST_PUBLISH_CANDLESTICK_DEPOSIT
-          },
-          {
-            $$type: 'DSTPublishCandlestick',
-            queryId: args.queryId,
-            candlestick: {
-              ...args.candlestick,
-              $$type: 'Candlestick'
-            }
-          }
-        );
-      };
-
-      const getBalance = async () => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getBalance();
-      };
-
-      const getPublisherAddress = async () => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getPublisherAddress();
-      };
-
-      const getTopic = async () => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getTopic();
-      };
-
-      const getBatches = async () => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getBatches();
-      };
-
-      const getNextBatchId = async () => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getNextBatchId();
-      };
-
-      const getBatchAddress = async (batchId: bigint) => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getBatchAddress(batchId);
-      };
-
-      const getSessionAddress = async (subscriberAddress: Address) => {
-        const streamAddress = localStorage.getItem('stream');
-
-        if (!streamAddress) {
-          throw new Error('No stream found. Did you deploy a stream?');
-        }
-
-        const stream = provider.open(DataStream.fromAddress(Address.parse(streamAddress)));
-
-        return await stream.getSessionAddress(subscriberAddress);
-      };
-
-      set({
-        deploy,
-        deployBatch,
-        deploySession,
-        publishCandlestick,
-        getBalance,
-        getPublisherAddress,
-        getTopic,
-        getBatches,
-        getNextBatchId,
-        getBatchAddress,
-        getSessionAddress
-      });
+      set(wrapper);
     }
   );
 };
@@ -1316,7 +1088,8 @@ export const createCashOrNothingOption = (
 
       const getStrikePrice = async () => await getOptionContract($publicClient).getStrikePrice();
 
-      const getLatestCandlestick = async () => await getOptionContract($publicClient).getLatestCandlestick();
+      const getLatestCandlestick = async () =>
+        await getOptionContract($publicClient).getLatestCandlestick();
 
       const getDeployerAddress = async () =>
         await getOptionContract($publicClient).getDeployerAddress();

@@ -6,7 +6,7 @@
   import { hapticFeedback, mainButton } from '$lib/stores/tma';
   import { randomize } from '$lib/utils';
   import { createDataStream } from '$lib/wrappers';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
 
   const stream = createDataStream();
@@ -15,25 +15,25 @@
 
   let queryId = $state<number>();
 
-  $effect(() => {
+  $effect(() => {});
+
+  onMount(() => {
+    let unsubscribe: (() => void) | undefined;
+
     if ($mainButton && form) {
       $mainButton.setText('Deploy Stream').enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => {
+      unsubscribe = $mainButton.on('click', () => {
         $hapticFeedback.impactOccurred('heavy');
         form?.requestSubmit();
       });
-
-      return unsubscribe;
-    } else {
-      $mainButton.hide().disable();
     }
-  });
 
-  onDestroy(() => {
-    if (browser) {
-      $mainButton.hide().disable();
-    }
+    return () => {
+      unsubscribe?.();
+      $mainButton.disable().hide().setText('D');
+      console.log('unsubscribed');
+    };
   });
 
   async function handleDeploySubmit(
@@ -52,6 +52,7 @@
 
     try {
       await $stream.deploy(args);
+      toast.success('The stream deployment transaction is on its way');
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

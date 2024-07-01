@@ -30,7 +30,7 @@
     const result = await $stream.getSessionAddress(Address.parse(subscriberAddress));
     output.unshift({
       date: formatOutputDate(new Date()),
-      message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+      message: JSON.stringify(result, null, 2)
     });
   }
 
@@ -47,7 +47,7 @@
     const result = await $stream.getBatchAddress(BigInt(batchId));
     output.unshift({
       date: formatOutputDate(new Date()),
-      message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+      message: JSON.stringify(result, null, 2)
     });
   }
 </script>

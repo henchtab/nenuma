@@ -10,7 +10,7 @@ export const DST_DEPLOY_DEPOSIT = toNano('0.2');
 export const NOTIFICATION_PREMIUM = toNano('0.01');
 export const NOTIFICATION_DEPOSIT = toNano('0.03');
 
-export const DST_DEPLOY_BATCH_DEPOSIT = toNano('0.2');
+export const DST_DEPLOY_BATCH_DEPOSIT = toNano('0.10');
 export const DST_DEPLOY_SESSION_DEPOSIT = toNano('0.2');
 export const DST_PUBLISH_CANDLESTICK_DEPOSIT = toNano('5');
 
@@ -25,7 +25,18 @@ export const BRG_DEPLOY_ACCOUNT_DEPOSIT = toNano('0.2');
 export const BRK_DEPOSIT_DEPOSIT = toNano('0.2');
 export const BRK_WITHDRAW_DEPOSIT = toNano('0.2');
 
+// BEIGN: TON Connect UI
+
 export const TON_CONNECT_UI_KEY = 'tonConnectUI';
+export const TON_VALID_UNTIL = Math.floor(Date.now() / 1000) + 360;
+
+// END: TON Connect UI
+
+// BEGIN: Storage keys
+
+export const DATA_STREAM_STORAGE_KEY = Symbol('dataStream');
 
 export const LATEST_OPTION_STORAGE_KEY = Symbol('latestOption');
 export const OPTIONS_STORAGE_KEY = Symbol('options');
+
+// END: Storage keys
