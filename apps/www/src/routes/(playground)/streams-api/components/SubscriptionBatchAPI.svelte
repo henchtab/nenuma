@@ -8,6 +8,7 @@
   import { writable } from 'svelte/store';
   import Output from '../../components/Output.svelte';
   import Section from './Section.svelte';
+  import { toast } from 'svelte-sonner';
 
   const batchId = writable(0);
   const batch = useSubscriptioBatch(batchId);
@@ -38,71 +39,110 @@
     <Button
       class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
-        const result = await $batch.getBalance();
-        output.unshift({
-          date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
-        });
+        try {
+          const result = await $batch.getBalance();
+          output.unshift({
+            date: formatOutputDate(new Date()),
+            message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes('-256')) {
+              toast.error(`Subscription Batch with id ${$batchId} not found. Did you deploy it?`);
+            }
+          }
+        }
       }}>Get Balance</Button
     >
 
     <Button
       class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
-        const result = await $batch.getBatchId();
-        output.unshift({
-          date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString(), null, 2)
-        });
+        try {
+          const result = await $batch.getBatchId();
+          output.unshift({
+            date: formatOutputDate(new Date()),
+            message: JSON.stringify(result.toString(), null, 2)
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes('-256')) {
+              toast.error(`Subscription Batch with id ${$batchId} not found. Did you deploy it?`);
+            }
+          }
+        }
       }}>Get Batch ID</Button
     >
 
     <Button
       class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
-        const result = await $batch.getStreamAddress();
-        output.unshift({
-          date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
-        });
+        try {
+          const result = await $batch.getStreamAddress();
+          output.unshift({
+            date: formatOutputDate(new Date()),
+            message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes('-256')) {
+              toast.error(`Subscription Batch with id ${$batchId} not found. Did you deploy it?`);
+            }
+          }
+        }
       }}>Get Stream Address</Button
     >
 
     <Button
       class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
-      const result = await $batch.getSubscriptions();
+        try {
+          const result = await $batch.getSubscriptions();
 
-      const subscriptions: {
-        [key: string]: {
-          remainingNotificationsCount: string;
-        }
-      }[] = [];
-      for (const [address, info] of result) {
-        subscriptions.push({
-          [address.toString({ testOnly: true, bounceable: false })]: {
-            remainingNotificationsCount: info.remainingNotificationsCount.toString(),
+          const subscriptions: {
+            [key: string]: {
+              remainingNotificationsCount: string;
+            };
+          }[] = [];
+          for (const [address, info] of result) {
+            subscriptions.push({
+              [address.toString({ testOnly: true, bounceable: false })]: {
+                remainingNotificationsCount: info.remainingNotificationsCount.toString()
+              }
+            });
           }
-        });
-      }
 
-      output.unshift({
-        date: formatOutputDate(new Date()),
-        message: JSON.stringify(subscriptions, null, 2)
-      });
-    }}
-      >Get Subscriptions</Button
+          output.unshift({
+            date: formatOutputDate(new Date()),
+            message: JSON.stringify(subscriptions, null, 2)
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes('-256')) {
+              toast.error(`Subscription Batch with id ${$batchId} not found. Did you deploy it?`);
+            }
+          }
+        }
+      }}>Get Subscriptions</Button
     >
 
     <Button
       class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
-        const result = await $batch.getSubscriptionsCount();
+        try {
+          const result = await $batch.getSubscriptionsCount();
 
-        output.unshift({
-          date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString(), null, 2)
-        });
+          output.unshift({
+            date: formatOutputDate(new Date()),
+            message: JSON.stringify(result.toString(), null, 2)
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes('-256')) {
+              toast.error(`Subscription Batch with id ${$batchId} not found. Did you deploy it?`);
+            }
+          }
+        }
       }}>Get Subscriptions Count</Button
     >
   </div>
