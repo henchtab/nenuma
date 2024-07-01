@@ -5,13 +5,14 @@
   import { Button } from '$lib/components/ui/button';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
-  import { hapticFeedback } from '$lib/stores/tma';
+  import { hapticFeedback, mainButton } from '$lib/stores/tma';
   import { tonConnectUI } from '$lib/stores/ton-connect';
   import { Address } from '@ton/core';
   import Bookmark from 'lucide-svelte/icons/bookmark';
   import Menu from 'lucide-svelte/icons/menu';
   import { onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
+  import Saved from './components/Saved.svelte';
 
   let { children } = $props();
 
@@ -20,7 +21,15 @@
     isReconnecting: true
   });
 
+  let isSavedOpen = $state(false);
+
   onMount(() => {
+    // Hack to prevent the button from being shown after Saved is opened and closed
+    // E.g. open deploy form -> go back -> reload app -> open Saved -> close Saved
+    if ($mainButton.isEnabled) {
+      $mainButton.disable();
+    }
+
     window.onunhandledrejection = (e) =>
       toast.error(`An unhandled promise rejection occurred - ${e.reason}`);
 
@@ -137,32 +146,39 @@
         {/if}
       </Button>
     </Skeleton>
-    <div class="border-l py-4 flex gap-2 pl-4 md:hidden">
-      <Drawer.Root snapPoints={[0.5, 1]} activeSnapPoint={0.5} fadeFromIndex={0}>
+    <div class="border-l py-4 flex pl-4 md:hidden">
+      <Drawer.Root
+        onOpenChange={(v) => (isSavedOpen = v)}
+        snapPoints={[0.5, 1]}
+        activeSnapPoint={0.5}
+        fadeFromIndex={0}
+      >
         <Drawer.Trigger
           class="w-8 h-8 border border-ds-gray-400 rounded-full"
           onclick={() => $hapticFeedback.impactOccurred('light')}
         >
-          <Bookmark class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
-        >
+          <Bookmark class="overflow-visible m-auto" size="16" strokeWidth={1.5} />
+        </Drawer.Trigger>
         <Drawer.Content class="top-[5%]">
           <Drawer.Header>
             <Drawer.Title>Saved</Drawer.Title>
             <Drawer.Description>View your saved items</Drawer.Description>
           </Drawer.Header>
+
+          <Saved isOpened={isSavedOpen} />
         </Drawer.Content>
       </Drawer.Root>
 
       <Drawer.Root>
+        <!-- To avoid excessive gap while drawer content being portalled, we need to add ml-2 here -->
         <Drawer.Trigger
-          class="w-8 h-8 border border-ds-gray-400 rounded-full"
+          class="w-8 h-8 border border-ds-gray-400 rounded-full ml-2" 
           onclick={() => $hapticFeedback.impactOccurred('light')}
         >
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
         <Drawer.Content>
           <div class="container py-4 overflow-y-scroll">
-            <!-- Prevent autofocus on the first input field as it breaks scroll after closing the drawer -->
             <input class="sr-only" aria-hidden="true" type="checkbox" />
 
             <div class="pb-6">
