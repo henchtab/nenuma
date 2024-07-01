@@ -28,12 +28,13 @@
     "postcss": "^8.4.38",
     "prettier": "^3.3.2",
     "prettier-plugin-svelte": "^3.2.5",
-    "svelte": "^5.0.0-next.1",
+    "svelte": "^5.0.0-next.167",
     "svelte-check": "^3.8.4",
     "tailwindcss": "^3.4.4",
     "tslib": "^2.6.3",
     "typescript": "^5.5.2",
     "vite": "^5.3.2",
+    "vite-plugin-mkcert": "^1.17.5",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
   "type": "module",
@@ -50,10 +51,10 @@
     "js-cookie": "^3.0.5",
     "lightweight-charts": "^4.1.6",
     "lucide-svelte": "^0.399.0",
+    "nenuma-contracts": "workspace:*",
     "svelte-sonner": "^0.3.24",
     "tailwind-merge": "^2.3.0",
     "tailwind-variants": "^0.2.1",
-    "vaul-svelte": "^0.3.2",
-    "nenuma-contracts": "workspace:*"
+    "vaul-svelte": "^0.3.2"
   }
 }
