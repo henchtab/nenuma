@@ -521,6 +521,11 @@ describe("Core Assessment", () => {
 
     await logger.logContracts();
 
+    console.warn(
+      await option.getExpiration(),
+      await option.getNotificationsCount(),
+    );
+
     for (let index = 0; index < 12; index++) {
       blockchain.now = THE_GREAT_CONJUCTION_2077 + 4 * DAY + 60 * index;
 
@@ -550,12 +555,18 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
-      console.warn(
-        "strikePrice=",
-        await option.getStrikePrice(),
-        "latestCandlestick=",
-        await option.getLatestCandlestick(),
-      );
+      // console.warn(
+      //   "index=",
+      //   index,
+      //   "strikePrice=",
+      //   await option.getStrikePrice(),
+      //   "expiration=",
+      //   await option.getExpiration(),
+      //   "latestCandlestick=",
+      //   await option.getLatestCandlestick(),
+      // );
+
+      await logger.logContracts();
 
       // Check settlement transactions after 12th candlestick
       if (index === 11) {
@@ -652,15 +663,6 @@ describe("Core Assessment", () => {
 
       await logger.logTransactions(DSTPublishCandlestickResult.transactions);
 
-      if (index < 11) {
-        console.warn(
-          "strikePrice=",
-          await option.getStrikePrice(),
-          "latestCandlestick=",
-          await option.getLatestCandlestick(),
-        );
-      }
-
       // Check settlement transactions after 7th candlestick
       if (index === 11) {
         expect(DSTPublishCandlestickResult.transactions).toHaveTransaction({
@@ -676,6 +678,8 @@ describe("Core Assessment", () => {
           value: toNano("2.02"),
           success: true,
         });
+
+        await logger.logContracts();
       }
     }
   });

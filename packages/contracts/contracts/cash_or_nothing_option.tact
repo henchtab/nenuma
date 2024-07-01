@@ -235,7 +235,6 @@ contract CashOrNothingOption with Subscriber {
         dump("Case #2");
 
         self.settleAtMoney(queryId);
-        self.unsubscribeSession(queryId);
       } else if (self.agreement!!.optionType == CASH_OR_NOTHING_OPTION_TYPE_CALL && candlestick.close >= self.strikePrice!!) {
         dump("Case #3");
         
@@ -251,6 +250,7 @@ contract CashOrNothingOption with Subscriber {
       }
 
       self.isSettled = true;
+      self.unsubscribeSession(queryId);
     }
   }
 
