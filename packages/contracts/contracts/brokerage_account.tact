@@ -1,14 +1,16 @@
 import "./constants";
 import "./messages";
 
+import "./broker";
+import "./cash_or_nothing_option";
+
 contract BrokerageAccount {
-  storageReserve: Int;
+  override const storageReserve: Int = 10_000_000;
   brokerage: Address;
   trader: Address;
 
   // Constructor to initialize the contract with the brokerage and trader's addresses
   init(brokerage: Address, trader: Address) {
-    self.storageReserve = BRA_STORAGE_RESERVE;
     self.brokerage = brokerage;
     self.trader = trader;
   }
@@ -38,4 +40,55 @@ contract BrokerageAccount {
     // Notify success of the deployment
     self.notify((BRADeploySuccess { queryId: request.queryId, trader: self.trader }).toCell());
   }
+
+
+  // receive(request: BrokerageAccountDeployCashOrNothingOption) {
+  //   let ctx: Context = context();
+
+  //   nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.trader);
+
+  //   self.forward(request.broker, (BrokerDeployCashOrNothingOption { queryId: request.queryId, draft: request.draft }).toCell(), false, null);
+  // }
+
+  // bounced(request: BrokerageAccountDeployCashOrNothingOption) {
+  //   // FIXME: Provide custom message
+  //   self.forward(self.trader, request.toCell(), false, null);
+  // }
+
+  // receive(response: BrokerDeployCashOrNothingOptionSuccess) {
+  //   let ctx: Context = context();
+
+  //   nativeThrowUnless(ERR_ACCESS_DENIED, ctx.sender == self.trader);
+  // }
+
+
+  // // FIXME: implement something like OptionStatusUpdatedNotification
+  // receive(notification: CashOrNothingOptionSettledInMoneyNotification) {
+  //   // TODO:
+  // }
+
+  // receive(notification: CashOrNothingOptionSettledOutMoneyNotification) {
+  //   // TODO:
+  // }
+
+  // receive(notification: CashOrNothingOptionSettledAtMoneyNotification) {
+  //   // TODO:
+  // }
 }
+
+// message BrokerageAccountDeployCashOrNothingOption {
+//   queryId: Int as uint64;
+//   broker: Address;
+//   draft: CashOrNothingOptionDraftAgreement;
+// }
+
+
+// message BrokerageAccountDeployCashOrNothingOptionSuccess {
+//   queryId: Int as uint64;
+//   option: Address;
+// }
+
+// message BrokerageAccountOptionSettleOutMoneyNotification {
+//   queryId: Int as uint64;
+//   option: Address;
+// }

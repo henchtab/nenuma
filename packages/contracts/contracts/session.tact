@@ -3,7 +3,7 @@ import "./messages";
 
 // Contract representing a session in the subscription system
 contract Session {
-  override const storageReserve: Int = 50_000_000; // Reserve amount for storage
+  override const storageReserve: Int = 10_000_000; // Reserve amount for storage
   stream: Address; // Address of the stream
   subscriber: Address; // Address of the subscriber
   batch: Address?; // Address of the subscription batch
