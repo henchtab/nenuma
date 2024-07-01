@@ -44,10 +44,10 @@ const SB_PUBLISH_CANDLESTICK_DEPOSIT: Int = ton("0.05"); // Deposit for publishi
 // BEGIN Session
 
 // Constants related to session storage and deposits
-const SES_STORAGE_RESERVE: Int = ton("0.05"); // Storage reserve for session
-const SES_SUBSCRIBE_DEPOSIT: Int = ton("0.10"); // Deposit for subscribing
-const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("0.10"); // Deposit for unsubscribing
-const SES_DESTROY_DEPOSIT: Int = ton("0.10"); // Deposit for destroying a session
+const SES_STORAGE_RESERVE: Int = ton("0.01"); // Storage reserve for session
+const SES_SUBSCRIBE_DEPOSIT: Int = ton("0.05"); // Deposit for subscribing
+const SES_UNSUBSCRIBE_DEPOSIT: Int = ton("0.05"); // Deposit for unsubscribing
+const SES_DESTROY_DEPOSIT: Int = ton("0.05"); // Deposit for destroying a session
 
 // END Session
 
