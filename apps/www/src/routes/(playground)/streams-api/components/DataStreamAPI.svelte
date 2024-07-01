@@ -2,7 +2,7 @@
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate } from '$lib/utils';
+  import { cn, formatOutputDate } from '$lib/utils';
   import { createDataStream } from '$lib/wrappers';
   import { Address, fromNano } from '@ton/core';
   import { toast } from 'svelte-sonner';
@@ -81,14 +81,14 @@
     class="flex gap-4 pb-6 items-end overflow-x-auto snap-x snap-mandatory [-webkit-overflow-scrolling:_touch] scroll-smooth"
   >
     <a
-      class="snap-start cursor-pointer"
+      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
       href={`/streams-api/deploy?contract=stream&title=${encodeURIComponent('Data Stream')}&subtitle=stream`}
     >
       <Button class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white">Deploy Stream</Button>
     </a>
 
     <a
-      class="snap-start cursor-pointer"
+      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
       href={$shouldDisableActions
         ? undefined
         : `/streams-api/deploy?contract=batch&title=${encodeURIComponent('Subscription Batch')}&subtitle=batch&streamAddress=${$streamAddress}`}
@@ -100,8 +100,10 @@
     </a>
 
     <a
-      class="snap-start cursor-pointer"
-      href={`/streams-api/deploy?contract=session&title=${encodeURIComponent('Session')}&subtitle=session&streamAddress=${$streamAddress}`}
+      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
+      href={$shouldDisableActions
+        ? undefined
+        : `/streams-api/deploy?contract=session&title=${encodeURIComponent('Session')}&subtitle=session&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -110,8 +112,10 @@
     </a>
 
     <a
-      class="snap-start cursor-pointer"
-      href={`/streams-api/deploy?contract=candlestick&title=${encodeURIComponent('Candlestick')}&subtitle=candlestick&streamAddress=${$streamAddress}`}
+      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
+      href={$shouldDisableActions
+        ? undefined
+        : `/streams-api/deploy?contract=candlestick&title=${encodeURIComponent('Candlestick')}&subtitle=candlestick&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -194,23 +198,23 @@
       disabled={$shouldDisableActions}
       class="bg-ds-blue-800 snap-start text-white hover:bg-ds-blue-700"
       onclick={async () => {
-      const result = await $stream.getBatches();
+        const result = await $stream.getBatches();
 
-      const batches: {
-        [key: string]: string;
-      }[] = [];
-      for (const [address, info] of result) {
-        batches.push({
-          [address.toString({ testOnly: true, bounceable: false })]: info.subscriptionsCount.toString()
+        const batches: {
+          [key: string]: string;
+        }[] = [];
+        for (const [address, info] of result) {
+          batches.push({
+            [address.toString({ testOnly: true, bounceable: false })]:
+              info.subscriptionsCount.toString()
+          });
+        }
+
+        output.unshift({
+          date: formatOutputDate(new Date()),
+          message: JSON.stringify(batches, null, 2)
         });
-      }
-
-      output.unshift({
-        date: formatOutputDate(new Date()),
-        message: JSON.stringify(batches, null, 2)
-      });
-    }}
-      >Get Batches</Button
+      }}>Get Batches</Button
     >
   </div>
 
