@@ -6,8 +6,19 @@ export {
   type CashOrNothingOptionAgreement,
   storeCashOrNothingOptionDeploy,
 } from './CashOrNothingOption';
-export { DataStream, storeDSTDeploy, storeStateInit, type Candlestick, storeDSTPublishCandlestick } from './DataStream';
+export {
+  DataStream,
+  storeDSTDeploy,
+  storeDSTDeployBatch,
+  storeDSTDeploySession,
+  storeStateInit,
+  storeSESSubscribe,
+  storeSESUnsubscribe,
+  storeSESDestroy,
+  type Candlestick,
+  storeDSTPublishCandlestick,
+} from './DataStream';
 export { Session } from './Session';
-export { SimpleSubscriber, storeSimpleSubscriberDeploy } from './SimpleSubscriber';
+export { SimpleSubscriber, storeSimpleSubscriberDeploy, storeSubscriberCheckTimeout } from './SimpleSubscriber';
 export { SubscriptionBatch, type SBInfo, type SubscriptionInfo } from './SubscriptionBatch';
 export * from './constants';
