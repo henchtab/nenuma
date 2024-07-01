@@ -5,8 +5,6 @@
   type OutputMessage = { date: string; message: string };
 
   let { output = $bindable() }: { output: OutputMessage[] } = $props();
-
-  $inspect(output);
 </script>
 
 <div class="flex flex-col gap-4 mt-6">
