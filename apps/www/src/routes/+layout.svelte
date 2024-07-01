@@ -11,17 +11,19 @@
   const isDesktop = mediaQuery('(min-width: 768px)');
 
   onMount(async () => {
-    const lp = retrieveLaunchParams();
+    try {
+      const lp = retrieveLaunchParams();
 
-    // Some versions of Telegram don't need the classes above.
-    if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(lp.platform)) {
-      return;
-    }
+      // Some versions of Telegram don't need the classes above.
+      if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(lp.platform)) {
+        return;
+      }
 
-    postEvent('web_app_expand');
+      postEvent('web_app_expand');
 
-    document.body.setAttribute('data-sticky-app', 'true');
-    wrapper?.setAttribute('data-sticky-app', 'true');
+      document.body.setAttribute('data-sticky-app', 'true');
+      wrapper?.setAttribute('data-sticky-app', 'true');
+    } catch {}
   });
 </script>
 
