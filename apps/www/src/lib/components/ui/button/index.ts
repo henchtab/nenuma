@@ -3,12 +3,13 @@ import { type VariantProps, tv } from 'tailwind-variants';
 import Root from './button.svelte';
 
 const buttonVariants = tv({
-  base: 'inline-flex items-center justify-center whitespace-nowrap select-none [transform:translateZ(0)] relative rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  base: 'inline-flex items-center justify-center whitespace-nowrap select-none [transform:translateZ(0)] relative rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
   variants: {
     variant: {
       default: 'bg-ds-gray-1000 text-ds-background-100 hover:bg-[#cacaca]',
-      secondary: 'bg-ds-background-100 ring-1 ring-ds-gray-400 text-ds-gray-1000 hover:bg-ds-gray-200 hover:text-ds-gray-1000',
-      destructive: 'bg-ds-red-800 text-white hover:bg-ds-red-700',
+      secondary:
+        'bg-ds-background-100 ring-1 ring-ds-gray-400 text-ds-gray-1000 hover:bg-ds-gray-200 hover:text-ds-gray-1000',
+      destructive: 'bg-ds-red-800 text-white hover:bg-ds-red-700'
     },
     size: {
       default: 'h-9 px-4 py-2',
