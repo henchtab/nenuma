@@ -4,10 +4,8 @@
   "scripts": {
     "start": "blueprint run",
     "build": "blueprint build",
-    "build:all": "blueprint build --all",
     "test": "jest --verbose",
-    "build:prod": "tsup",
-    "postinstall": "pnpm run build:all && tsup"
+    "postinstall": "tsup"
   },
   "main": "dist/index.mjs",
   "module": "dist/index.mjs",
