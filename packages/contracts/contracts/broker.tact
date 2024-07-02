@@ -75,6 +75,10 @@ contract Broker {
     return self.payout;
   }
 
+  get fun nextOptionId(): Int {
+    return self.nextOptionId;
+  }
+
   get fun optionAddress(optionId: Int): Address {
     let optionStateInit: StateInit = initOf CashOrNothingOption(myAddress(), optionId);
     let option: Address = contractAddress(optionStateInit);
