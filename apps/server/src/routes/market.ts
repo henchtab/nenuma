@@ -33,7 +33,7 @@ const routes: FastifyPluginAsync = async (server) => {
 
               const stream = client.open(
                 DataStream.fromAddress(
-                  Address.parse('kQDZnFY0yew3AcB0pk0H0CL5L2kclQXH0VHO_cWyfdOQ0SEp'),
+                  Address.parse('kQCvKztqJAXd6hNVN48-9_b1atquZf9s1WTPsp6xtHQ1nr-D'),
                 ),
               );
 
