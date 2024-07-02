@@ -40,8 +40,7 @@ export const SUBSCRIPTION_BATCHES_STORAGE_KEY = 'subscription-batches';
 export const SESSION_STORAGE_KEY = 'session';
 export const SIMPLE_SUBSCRIBER_STORAGE_KEY = 'simple-subscriber';
 
-// TODO: Remove symbols
-export const LATEST_OPTION_STORAGE_KEY = Symbol('latestOption');
-export const OPTIONS_STORAGE_KEY = Symbol('options');
+export const LATEST_OPTION_STORAGE_KEY = 'latest-cash-or-nothing-option';
+export const OPTIONS_STORAGE_KEY = 'cash-or-nothing-options';
 
 // END: Storage keys

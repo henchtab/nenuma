@@ -1,6 +1,6 @@
 {
   "name": "nenuma-website",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "dev": "export NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem && vite dev",
