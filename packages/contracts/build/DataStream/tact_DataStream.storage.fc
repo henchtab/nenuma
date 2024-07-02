@@ -1,0 +1,593 @@
+;;
+;; Type: StateInit
+;; TLB: _ code:^cell data:^cell = StateInit
+;;
+
+((cell, cell)) $StateInit$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (cell vvv'code, cell vvv'data) = __tact_tuple_destroy_2(v);
+    return (vvv'code, vvv'data);
+}
+
+tuple $StateInit$_as_optional((cell, cell) v) inline {
+    var (v'code, v'data) = v;
+    return __tact_tuple_create_2(v'code, v'data);
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ bounce:bool to:address value:int257 mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell = SendParameters
+;;
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_bounce_to_value_mode_body_code_data(int bounce, slice to, int value, int mode, cell body, cell code, cell data) inline {
+    return (bounce, to, value, mode, body, code, data);
+}
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body(slice to, int value, int mode, cell body) inline {
+    return (true, to, value, mode, body, null(), null());
+}
+
+;;
+;; Type: DSTDeploy
+;; Header: 0x123f3826
+;; TLB: dst_deploy#123f3826 queryId:uint64 = DSTDeploy
+;;
+
+(slice, ((int))) $DSTDeploy$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 306133030);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: DSTDeploySuccess
+;; Header: 0xebe9211f
+;; TLB: dst_deploy_success#ebe9211f queryId:uint64 = DSTDeploySuccess
+;;
+
+builder $DSTDeploySuccess$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 3957924127, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DSTDeploySuccess$_store_cell((int) v) inline {
+    return $DSTDeploySuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $DSTDeploySuccess$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: DSTDeployBatch
+;; Header: 0xb38ec08a
+;; TLB: dst_deploy_batch#b38ec08a queryId:uint64 = DSTDeployBatch
+;;
+
+(slice, ((int))) $DSTDeployBatch$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 3012477066);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: DSTDeployBatchSuccess
+;; Header: 0x4b2b72ce
+;; TLB: dst_deploy_batch_success#4b2b72ce queryId:uint64 batch:address = DSTDeployBatchSuccess
+;;
+
+builder $DSTDeployBatchSuccess$_store(builder build_0, (int, slice) v) inline {
+    var (v'queryId, v'batch) = v;
+    build_0 = store_uint(build_0, 1261138638, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'batch);
+    return build_0;
+}
+
+cell $DSTDeployBatchSuccess$_store_cell((int, slice) v) inline {
+    return $DSTDeployBatchSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice)) $DSTDeployBatchSuccess$_constructor_queryId_batch(int queryId, slice batch) inline {
+    return (queryId, batch);
+}
+
+;;
+;; Type: DSTDeploySession
+;; Header: 0x62d58591
+;; TLB: dst_deploy_session#62d58591 queryId:uint64 = DSTDeploySession
+;;
+
+(slice, ((int))) $DSTDeploySession$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1658160529);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: DSTDeploySessionSuccess
+;; Header: 0xcdc93f86
+;; TLB: dst_deploy_session_success#cdc93f86 queryId:uint64 session:address = DSTDeploySessionSuccess
+;;
+
+builder $DSTDeploySessionSuccess$_store(builder build_0, (int, slice) v) inline {
+    var (v'queryId, v'session) = v;
+    build_0 = store_uint(build_0, 3452518278, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'session);
+    return build_0;
+}
+
+cell $DSTDeploySessionSuccess$_store_cell((int, slice) v) inline {
+    return $DSTDeploySessionSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice)) $DSTDeploySessionSuccess$_constructor_queryId_session(int queryId, slice session) inline {
+    return (queryId, session);
+}
+
+;;
+;; Type: DSTSubscribe
+;; Header: 0xbfb56652
+;; TLB: dst_subscribe#bfb56652 queryId:uint64 subscriber:address notificationsCount:int257 = DSTSubscribe
+;;
+
+(slice, ((int, slice, int))) $DSTSubscribe$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 3216336466);
+    var v'queryId = sc_0~load_uint(64);
+    var v'subscriber = sc_0~__tact_load_address();
+    var v'notificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'subscriber, v'notificationsCount));
+}
+
+;;
+;; Type: DSTSubscribeSuccess
+;; Header: 0xe0b74758
+;; TLB: dst_subscribe_success#e0b74758 queryId:uint64 batch:address remainingNotificationsCount:int257 = DSTSubscribeSuccess
+;;
+
+builder $DSTSubscribeSuccess$_store(builder build_0, (int, slice, int) v) inline {
+    var (v'queryId, v'batch, v'remainingNotificationsCount) = v;
+    build_0 = store_uint(build_0, 3770107736, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'batch);
+    build_0 = build_0.store_int(v'remainingNotificationsCount, 257);
+    return build_0;
+}
+
+cell $DSTSubscribeSuccess$_store_cell((int, slice, int) v) inline {
+    return $DSTSubscribeSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, int)) $DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount(int queryId, slice batch, int remainingNotificationsCount) inline {
+    return (queryId, batch, remainingNotificationsCount);
+}
+
+;;
+;; Type: Candlestick
+;; TLB: _ start:int257 end:int257 open:int257 close:int257 high:int257 low:int257 = Candlestick
+;;
+
+builder $Candlestick$_store(builder build_0, (int, int, int, int, int, int) v) inline_ref {
+    var (v'start, v'end, v'open, v'close, v'high, v'low) = v;
+    build_0 = build_0.store_int(v'start, 257);
+    build_0 = build_0.store_int(v'end, 257);
+    build_0 = build_0.store_int(v'open, 257);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_int(v'close, 257);
+    build_1 = build_1.store_int(v'high, 257);
+    build_1 = build_1.store_int(v'low, 257);
+    build_0 = store_ref(build_0, build_1.end_cell());
+    return build_0;
+}
+
+(slice, ((int, int, int, int, int, int))) $Candlestick$_load(slice sc_0) inline_ref {
+    var v'start = sc_0~load_int(257);
+    var v'end = sc_0~load_int(257);
+    var v'open = sc_0~load_int(257);
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'close = sc_1~load_int(257);
+    var v'high = sc_1~load_int(257);
+    var v'low = sc_1~load_int(257);
+    return (sc_0, (v'start, v'end, v'open, v'close, v'high, v'low));
+}
+
+;;
+;; Type: DSTPublishCandlestick
+;; Header: 0x3b0b3d3d
+;; TLB: dst_publish_candlestick#3b0b3d3d queryId:uint64 candlestick:Candlestick{start:int257,end:int257,open:int257,close:int257,high:int257,low:int257} = DSTPublishCandlestick
+;;
+
+(slice, ((int, (int, int, int, int, int, int)))) $DSTPublishCandlestick$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 990592317);
+    var v'queryId = sc_0~load_uint(64);
+    var v'candlestick = sc_0~$Candlestick$_load();
+    return (sc_0, (v'queryId, v'candlestick));
+}
+
+;;
+;; Type: DSTPublishCandlestickSuccess
+;; Header: 0x0cd28645
+;; TLB: dst_publish_candlestick_success#0cd28645 queryId:uint64 = DSTPublishCandlestickSuccess
+;;
+
+builder $DSTPublishCandlestickSuccess$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 215123525, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $DSTPublishCandlestickSuccess$_store_cell((int) v) inline {
+    return $DSTPublishCandlestickSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $DSTPublishCandlestickSuccess$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: DSTUnsubscribedNotification
+;; Header: 0x4cb7a0c4
+;; TLB: dst_unsubscribed_notification#4cb7a0c4 queryId:uint64 remainingNotificationsCount:int257 = DSTUnsubscribedNotification
+;;
+
+builder $DSTUnsubscribedNotification$_store(builder build_0, (int, int) v) inline {
+    var (v'queryId, v'remainingNotificationsCount) = v;
+    build_0 = store_uint(build_0, 1287102660, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = build_0.store_int(v'remainingNotificationsCount, 257);
+    return build_0;
+}
+
+cell $DSTUnsubscribedNotification$_store_cell((int, int) v) inline {
+    return $DSTUnsubscribedNotification$_store(begin_cell(), v).end_cell();
+}
+
+((int, int)) $DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount(int queryId, int remainingNotificationsCount) inline {
+    return (queryId, remainingNotificationsCount);
+}
+
+;;
+;; Type: SBDeploy
+;; Header: 0xfe5e9e45
+;; TLB: sb_deploy#fe5e9e45 queryId:uint64 = SBDeploy
+;;
+
+builder $SBDeploy$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 4267613765, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $SBDeploy$_store_cell((int) v) inline {
+    return $SBDeploy$_store(begin_cell(), v).end_cell();
+}
+
+(slice, ((int))) $SBDeploy$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 4267613765);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+((int)) $SBDeploy$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: SBDeploySuccess
+;; Header: 0x3d788f0e
+;; TLB: sb_deploy_success#3d788f0e queryId:uint64 batchId:int257 = SBDeploySuccess
+;;
+
+(slice, ((int, int))) $SBDeploySuccess$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1031311118);
+    var v'queryId = sc_0~load_uint(64);
+    var v'batchId = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'batchId));
+}
+
+;;
+;; Type: SBSubscribe
+;; Header: 0x774d40a2
+;; TLB: sb_subscribe#774d40a2 queryId:uint64 session:address notificationsCount:int257 = SBSubscribe
+;;
+
+builder $SBSubscribe$_store(builder build_0, (int, slice, int) v) inline {
+    var (v'queryId, v'session, v'notificationsCount) = v;
+    build_0 = store_uint(build_0, 2001551522, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'session);
+    build_0 = build_0.store_int(v'notificationsCount, 257);
+    return build_0;
+}
+
+cell $SBSubscribe$_store_cell((int, slice, int) v) inline {
+    return $SBSubscribe$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, int)) $SBSubscribe$_constructor_queryId_session_notificationsCount(int queryId, slice session, int notificationsCount) inline {
+    return (queryId, session, notificationsCount);
+}
+
+;;
+;; Type: SBSubscribeSuccess
+;; Header: 0xf3563547
+;; TLB: sb_subscribe_success#f3563547 queryId:uint64 session:address remainingNotificationsCount:int257 = SBSubscribeSuccess
+;;
+
+(slice, ((int, slice, int))) $SBSubscribeSuccess$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 4082513223);
+    var v'queryId = sc_0~load_uint(64);
+    var v'session = sc_0~__tact_load_address();
+    var v'remainingNotificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'session, v'remainingNotificationsCount));
+}
+
+;;
+;; Type: SBPublishCandlestick
+;; Header: 0xf1762622
+;; TLB: sb_publish_candlestick#f1762622 queryId:uint64 candlestick:Candlestick{start:int257,end:int257,open:int257,close:int257,high:int257,low:int257} publisher:address = SBPublishCandlestick
+;;
+
+builder $SBPublishCandlestick$_store(builder build_0, (int, (int, int, int, int, int, int), slice) v) inline {
+    var (v'queryId, (v'candlestick'start, v'candlestick'end, v'candlestick'open, v'candlestick'close, v'candlestick'high, v'candlestick'low), v'publisher) = v;
+    build_0 = store_uint(build_0, 4051052066, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = $Candlestick$_store(build_0, (v'candlestick'start, v'candlestick'end, v'candlestick'open, v'candlestick'close, v'candlestick'high, v'candlestick'low));
+    var build_1 = begin_cell();
+    build_1 = __tact_store_address(build_1, v'publisher);
+    build_0 = store_ref(build_0, build_1.end_cell());
+    return build_0;
+}
+
+cell $SBPublishCandlestick$_store_cell((int, (int, int, int, int, int, int), slice) v) inline {
+    return $SBPublishCandlestick$_store(begin_cell(), v).end_cell();
+}
+
+((int, (int, int, int, int, int, int), slice)) $SBPublishCandlestick$_constructor_queryId_candlestick_publisher(int queryId, (int, int, int, int, int, int) candlestick, slice publisher) inline {
+    return (queryId, candlestick, publisher);
+}
+
+;;
+;; Type: SBUnsubscribedNotification
+;; Header: 0x3bcab824
+;; TLB: sb_unsubscribed_notification#3bcab824 queryId:uint64 session:address remainingNotificationsCount:int257 = SBUnsubscribedNotification
+;;
+
+(slice, ((int, slice, int))) $SBUnsubscribedNotification$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1003141156);
+    var v'queryId = sc_0~load_uint(64);
+    var v'session = sc_0~__tact_load_address();
+    var v'remainingNotificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'session, v'remainingNotificationsCount));
+}
+
+;;
+;; Type: SESDeploy
+;; Header: 0x51d18c4c
+;; TLB: ses_deploy#51d18c4c queryId:uint64 = SESDeploy
+;;
+
+builder $SESDeploy$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 1372687436, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $SESDeploy$_store_cell((int) v) inline {
+    return $SESDeploy$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $SESDeploy$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: SESDeploySuccess
+;; Header: 0x1016fdca
+;; TLB: ses_deploy_success#1016fdca queryId:uint64 subscriber:address = SESDeploySuccess
+;;
+
+(slice, ((int, slice))) $SESDeploySuccess$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 269942218);
+    var v'queryId = sc_0~load_uint(64);
+    var v'subscriber = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'subscriber));
+}
+
+;;
+;; Type: DSTTopUpSubscription
+;; Header: 0x1d8fed1e
+;; TLB: dst_top_up_subscription#1d8fed1e queryId:uint64 subscriber:address batch:address notificationsCount:int257 = DSTTopUpSubscription
+;;
+
+(slice, ((int, slice, slice, int))) $DSTTopUpSubscription$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 495971614);
+    var v'queryId = sc_0~load_uint(64);
+    var v'subscriber = sc_0~__tact_load_address();
+    var v'batch = sc_0~__tact_load_address();
+    var v'notificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'subscriber, v'batch, v'notificationsCount));
+}
+
+;;
+;; Type: SBTopUpSubscription
+;; Header: 0x0ff79718
+;; TLB: sb_top_up_subscription#0ff79718 queryId:uint64 session:address notificationsCount:int257 = SBTopUpSubscription
+;;
+
+builder $SBTopUpSubscription$_store(builder build_0, (int, slice, int) v) inline {
+    var (v'queryId, v'session, v'notificationsCount) = v;
+    build_0 = store_uint(build_0, 267884312, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'session);
+    build_0 = build_0.store_int(v'notificationsCount, 257);
+    return build_0;
+}
+
+cell $SBTopUpSubscription$_store_cell((int, slice, int) v) inline {
+    return $SBTopUpSubscription$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, int)) $SBTopUpSubscription$_constructor_queryId_session_notificationsCount(int queryId, slice session, int notificationsCount) inline {
+    return (queryId, session, notificationsCount);
+}
+
+;;
+;; Type: SBInfo
+;; TLB: _ subscriptionsCount:int257 = SBInfo
+;;
+
+builder $SBInfo$_store(builder build_0, (int) v) inline {
+    var (v'subscriptionsCount) = v;
+    build_0 = build_0.store_int(v'subscriptionsCount, 257);
+    return build_0;
+}
+
+cell $SBInfo$_store_cell((int) v) inline {
+    return $SBInfo$_store(begin_cell(), v).end_cell();
+}
+
+(slice, ((int))) $SBInfo$_load(slice sc_0) inline {
+    var v'subscriptionsCount = sc_0~load_int(257);
+    return (sc_0, (v'subscriptionsCount));
+}
+
+tuple $SBInfo$_as_optional((int) v) inline {
+    var (v'subscriptionsCount) = v;
+    return __tact_tuple_create_1(v'subscriptionsCount);
+}
+
+tuple $SBInfo$_load_opt(cell cl) inline {
+    if (null?(cl)) {
+        return null();
+    }
+    var sc = cl.begin_parse();
+    return $SBInfo$_as_optional(sc~$SBInfo$_load());
+}
+
+_ $SBInfo$_get_subscriptionsCount((int) v) inline {
+    var (v'subscriptionsCount) = v;
+    return v'subscriptionsCount;
+}
+
+((int)) $SBInfo$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (int vvv'subscriptionsCount) = __tact_tuple_destroy_1(v);
+    return (vvv'subscriptionsCount);
+}
+
+((int)) $SBInfo$_constructor_subscriptionsCount(int subscriptionsCount) inline {
+    return (subscriptionsCount);
+}
+
+;;
+;; Type: SubscriptionBatch
+;;
+
+builder $SubscriptionBatch$init$_store(builder build_0, (slice, int) v) inline {
+    var (v'stream, v'batchId) = v;
+    build_0 = __tact_store_address(build_0, v'stream);
+    build_0 = build_0.store_int(v'batchId, 257);
+    return build_0;
+}
+
+(cell, cell) $SubscriptionBatch$_init_child(cell sys', slice $stream, int $batchId) inline_ref {
+    slice sc' = sys'.begin_parse();
+    cell source = sc'~load_dict();
+    cell contracts = new_dict();
+    
+    ;; Contract Code: SubscriptionBatch
+    cell mine = __tact_dict_get_code(source, 10482);
+    contracts = __tact_dict_set_code(contracts, 10482, mine);
+    
+    ;; Build cell
+    builder b = begin_cell();
+    b = b.store_ref(begin_cell().store_dict(contracts).end_cell());
+    b = b.store_int(false, 1);
+    b = $SubscriptionBatch$init$_store(b, ($stream, $batchId));
+    return (mine, b.end_cell());
+}
+
+;;
+;; Type: Session
+;;
+
+builder $Session$init$_store(builder build_0, (slice, slice) v) inline {
+    var (v'stream, v'subscriber) = v;
+    build_0 = __tact_store_address(build_0, v'stream);
+    build_0 = __tact_store_address(build_0, v'subscriber);
+    return build_0;
+}
+
+(cell, cell) $Session$_init_child(cell sys', slice $stream, slice $subscriber) inline_ref {
+    slice sc' = sys'.begin_parse();
+    cell source = sc'~load_dict();
+    cell contracts = new_dict();
+    
+    ;; Contract Code: Session
+    cell mine = __tact_dict_get_code(source, 38775);
+    contracts = __tact_dict_set_code(contracts, 38775, mine);
+    
+    ;; Build cell
+    builder b = begin_cell();
+    b = b.store_ref(begin_cell().store_dict(contracts).end_cell());
+    b = b.store_int(false, 1);
+    b = $Session$init$_store(b, ($stream, $subscriber));
+    return (mine, b.end_cell());
+}
+
+;;
+;; Type: DataStream
+;;
+
+builder $DataStream$_store(builder build_0, (slice, slice, cell, int) v) inline {
+    var (v'publisher, v'topic, v'batches, v'nextBatchId) = v;
+    build_0 = __tact_store_address(build_0, v'publisher);
+    build_0 = build_0.store_ref(begin_cell().store_slice(v'topic).end_cell());
+    build_0 = build_0.store_dict(v'batches);
+    build_0 = build_0.store_int(v'nextBatchId, 257);
+    return build_0;
+}
+
+(slice, ((slice, slice, cell, int))) $DataStream$_load(slice sc_0) inline {
+    var v'publisher = sc_0~__tact_load_address();
+    var v'topic = sc_0~load_ref().begin_parse();
+    var v'batches = sc_0~load_dict();
+    var v'nextBatchId = sc_0~load_int(257);
+    return (sc_0, (v'publisher, v'topic, v'batches, v'nextBatchId));
+}
+
+(slice, ((slice, slice))) $DataStream$init$_load(slice sc_0) inline {
+    var v'publisher = sc_0~__tact_load_address();
+    var v'topic = sc_0~load_ref().begin_parse();
+    return (sc_0, (v'publisher, v'topic));
+}
+
+(slice, slice, cell, int) $DataStream$_contract_load() impure inline_ref {
+    slice $sc = get_data().begin_parse();
+    __tact_context_sys = $sc~load_ref();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$DataStream$_load();
+    } else {
+        ;; Allow only workchain deployments
+        throw_unless(137, my_address().preload_uint(11) == 1024);
+        (slice publisher, slice topic) = $sc~$DataStream$init$_load();
+        $sc.end_parse();
+        return $DataStream$_contract_init(publisher, topic);
+    }
+}
+
+() $DataStream$_contract_store((slice, slice, cell, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_ref(__tact_context_sys);
+    b = b.store_int(true, 1);
+    b = $DataStream$_store(b, v);
+    set_data(b.end_cell());
+}

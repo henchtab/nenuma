@@ -1,0 +1,310 @@
+;;
+;; Header files for DataStream
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_verify_address
+slice __tact_verify_address(slice address) inline;
+
+;; __tact_load_address
+(slice, slice) __tact_load_address(slice cs) inline;
+
+;; __tact_store_address
+builder __tact_store_address(builder b, slice address) inline;
+
+;; __tact_create_address
+slice __tact_create_address(int chain, int hash) inline;
+
+;; __tact_compute_contract_address
+slice __tact_compute_contract_address(int chain, cell code, cell data) inline;
+
+;; __tact_my_balance
+int __tact_my_balance() inline;
+
+;; __tact_not_null
+forall X -> X __tact_not_null(X x) inline;
+
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
+;; __tact_context_get_sender
+slice __tact_context_get_sender() inline;
+
+;; __tact_store_bool
+builder __tact_store_bool(builder b, int v) inline;
+
+;; __tact_dict_set_slice_cell
+(cell, ()) __tact_dict_set_slice_cell(cell d, int kl, slice k, cell v) inline;
+
+;; __tact_dict_get_slice_cell
+cell __tact_dict_get_slice_cell(cell d, int kl, slice k) inline;
+
+;; __tact_dict_min_slice_cell
+(slice, cell, int) __tact_dict_min_slice_cell(cell d, int kl) inline;
+
+;; __tact_dict_next_slice_cell
+(slice, cell, int) __tact_dict_next_slice_cell(cell d, int kl, slice pivot) inline;
+
+;; __tact_slice_eq_bits
+int __tact_slice_eq_bits(slice a, slice b) inline;
+
+;; __tact_dict_set_code
+cell __tact_dict_set_code(cell dict, int id, cell code) inline;
+
+;; __tact_dict_get_code
+cell __tact_dict_get_code(cell dict, int id) inline;
+
+;; $DSTDeploy$_load
+(slice, ((int))) $DSTDeploy$_load(slice sc_0) inline;
+
+;; $DSTDeploySuccess$_store
+builder $DSTDeploySuccess$_store(builder build_0, (int) v) inline;
+
+;; $DSTDeploySuccess$_store_cell
+cell $DSTDeploySuccess$_store_cell((int) v) inline;
+
+;; $DSTDeployBatch$_load
+(slice, ((int))) $DSTDeployBatch$_load(slice sc_0) inline;
+
+;; $DSTDeployBatchSuccess$_store
+builder $DSTDeployBatchSuccess$_store(builder build_0, (int, slice) v) inline;
+
+;; $DSTDeployBatchSuccess$_store_cell
+cell $DSTDeployBatchSuccess$_store_cell((int, slice) v) inline;
+
+;; $DSTDeploySession$_load
+(slice, ((int))) $DSTDeploySession$_load(slice sc_0) inline;
+
+;; $DSTDeploySessionSuccess$_store
+builder $DSTDeploySessionSuccess$_store(builder build_0, (int, slice) v) inline;
+
+;; $DSTDeploySessionSuccess$_store_cell
+cell $DSTDeploySessionSuccess$_store_cell((int, slice) v) inline;
+
+;; $DSTSubscribe$_load
+(slice, ((int, slice, int))) $DSTSubscribe$_load(slice sc_0) inline;
+
+;; $DSTSubscribeSuccess$_store
+builder $DSTSubscribeSuccess$_store(builder build_0, (int, slice, int) v) inline;
+
+;; $DSTSubscribeSuccess$_store_cell
+cell $DSTSubscribeSuccess$_store_cell((int, slice, int) v) inline;
+
+;; $Candlestick$_store
+builder $Candlestick$_store(builder build_0, (int, int, int, int, int, int) v) inline_ref;
+
+;; $Candlestick$_load
+(slice, ((int, int, int, int, int, int))) $Candlestick$_load(slice sc_0) inline_ref;
+
+;; $DSTPublishCandlestick$_load
+(slice, ((int, (int, int, int, int, int, int)))) $DSTPublishCandlestick$_load(slice sc_0) inline;
+
+;; $DSTPublishCandlestickSuccess$_store
+builder $DSTPublishCandlestickSuccess$_store(builder build_0, (int) v) inline;
+
+;; $DSTPublishCandlestickSuccess$_store_cell
+cell $DSTPublishCandlestickSuccess$_store_cell((int) v) inline;
+
+;; $DSTUnsubscribedNotification$_store
+builder $DSTUnsubscribedNotification$_store(builder build_0, (int, int) v) inline;
+
+;; $DSTUnsubscribedNotification$_store_cell
+cell $DSTUnsubscribedNotification$_store_cell((int, int) v) inline;
+
+;; $SBDeploy$_store
+builder $SBDeploy$_store(builder build_0, (int) v) inline;
+
+;; $SBDeploy$_store_cell
+cell $SBDeploy$_store_cell((int) v) inline;
+
+;; $SBDeploy$_load
+(slice, ((int))) $SBDeploy$_load(slice sc_0) inline;
+
+;; $SBDeploySuccess$_load
+(slice, ((int, int))) $SBDeploySuccess$_load(slice sc_0) inline;
+
+;; $SBSubscribe$_store
+builder $SBSubscribe$_store(builder build_0, (int, slice, int) v) inline;
+
+;; $SBSubscribe$_store_cell
+cell $SBSubscribe$_store_cell((int, slice, int) v) inline;
+
+;; $SBSubscribeSuccess$_load
+(slice, ((int, slice, int))) $SBSubscribeSuccess$_load(slice sc_0) inline;
+
+;; $SBPublishCandlestick$_store
+builder $SBPublishCandlestick$_store(builder build_0, (int, (int, int, int, int, int, int), slice) v) inline;
+
+;; $SBPublishCandlestick$_store_cell
+cell $SBPublishCandlestick$_store_cell((int, (int, int, int, int, int, int), slice) v) inline;
+
+;; $SBUnsubscribedNotification$_load
+(slice, ((int, slice, int))) $SBUnsubscribedNotification$_load(slice sc_0) inline;
+
+;; $SESDeploy$_store
+builder $SESDeploy$_store(builder build_0, (int) v) inline;
+
+;; $SESDeploy$_store_cell
+cell $SESDeploy$_store_cell((int) v) inline;
+
+;; $SESDeploySuccess$_load
+(slice, ((int, slice))) $SESDeploySuccess$_load(slice sc_0) inline;
+
+;; $DSTTopUpSubscription$_load
+(slice, ((int, slice, slice, int))) $DSTTopUpSubscription$_load(slice sc_0) inline;
+
+;; $SBTopUpSubscription$_store
+builder $SBTopUpSubscription$_store(builder build_0, (int, slice, int) v) inline;
+
+;; $SBTopUpSubscription$_store_cell
+cell $SBTopUpSubscription$_store_cell((int, slice, int) v) inline;
+
+;; $SBInfo$_store
+builder $SBInfo$_store(builder build_0, (int) v) inline;
+
+;; $SBInfo$_store_cell
+cell $SBInfo$_store_cell((int) v) inline;
+
+;; $SBInfo$_load
+(slice, ((int))) $SBInfo$_load(slice sc_0) inline;
+
+;; $SBInfo$_as_optional
+tuple $SBInfo$_as_optional((int) v) inline;
+
+;; $SBInfo$_load_opt
+tuple $SBInfo$_load_opt(cell cl) inline;
+
+;; $DataStream$_store
+builder $DataStream$_store(builder build_0, (slice, slice, cell, int) v) inline;
+
+;; $DataStream$_load
+(slice, ((slice, slice, cell, int))) $DataStream$_load(slice sc_0) inline;
+
+;; $StateInit$_not_null
+((cell, cell)) $StateInit$_not_null(tuple v) inline;
+
+;; $StateInit$_as_optional
+tuple $StateInit$_as_optional((cell, cell) v) inline;
+
+;; $SBInfo$_get_subscriptionsCount
+_ $SBInfo$_get_subscriptionsCount((int) v) inline;
+
+;; $SBInfo$_not_null
+((int)) $SBInfo$_not_null(tuple v) inline;
+
+;; $SubscriptionBatch$init$_store
+builder $SubscriptionBatch$init$_store(builder build_0, (slice, int) v) inline;
+
+;; $Session$init$_store
+builder $Session$init$_store(builder build_0, (slice, slice) v) inline;
+
+;; $DataStream$init$_load
+(slice, ((slice, slice))) $DataStream$init$_load(slice sc_0) inline;
+
+;; $DataStream$_contract_init
+(slice, slice, cell, int) $DataStream$_contract_init(slice $publisher, slice $topic) impure inline_ref;
+
+;; $DataStream$_contract_load
+(slice, slice, cell, int) $DataStream$_contract_load() impure inline_ref;
+
+;; $DataStream$_contract_store
+() $DataStream$_contract_store((slice, slice, cell, int) v) impure inline;
+
+;; $global_contractAddress
+slice $global_contractAddress((cell, cell) $s) impure inline;
+
+;; $global_send
+() $global_send((int, slice, int, int, cell, cell, cell) $params) impure inline_ref;
+
+;; $SubscriptionBatch$_init_child
+(cell, cell) $SubscriptionBatch$_init_child(cell sys', slice $stream, int $batchId) inline_ref;
+
+;; $SendParameters$_constructor_bounce_to_value_mode_body_code_data
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_bounce_to_value_mode_body_code_data(int bounce, slice to, int value, int mode, cell body, cell code, cell data) inline;
+
+;; $Session$_init_child
+(cell, cell) $Session$_init_child(cell sys', slice $stream, slice $subscriber) inline_ref;
+
+;; $DataStream$_fun_balance
+((slice, slice, cell, int), int) $DataStream$_fun_balance((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_storageReserve
+((slice, slice, cell, int), int) $DataStream$_fun_storageReserve((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_deployBatchDeposit
+((slice, slice, cell, int), int) $DataStream$_fun_deployBatchDeposit((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_deploySessionDeposit
+((slice, slice, cell, int), int) $DataStream$_fun_deploySessionDeposit((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_publishCandlestickDeposit
+((slice, slice, cell, int), int) $DataStream$_fun_publishCandlestickDeposit((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_notificationDeposit
+((slice, slice, cell, int), int) $DataStream$_fun_notificationDeposit((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_notificationPremium
+((slice, slice, cell, int), int) $DataStream$_fun_notificationPremium((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_publisherAddress
+((slice, slice, cell, int), slice) $DataStream$_fun_publisherAddress((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_topic
+((slice, slice, cell, int), slice) $DataStream$_fun_topic((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_batches
+((slice, slice, cell, int), cell) $DataStream$_fun_batches((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_nextBatchId
+((slice, slice, cell, int), int) $DataStream$_fun_nextBatchId((slice, slice, cell, int) $self) impure inline_ref;
+
+;; $DataStream$_fun_batchAddress
+((slice, slice, cell, int), slice) $DataStream$_fun_batchAddress((slice, slice, cell, int) $self, int $batchId) impure inline_ref;
+
+;; $DataStream$_fun_sessionAddress
+((slice, slice, cell, int), slice) $DataStream$_fun_sessionAddress((slice, slice, cell, int) $self, slice $subscriber) impure inline_ref;
+
+;; $DataStream$_fun_forward
+((slice, slice, cell, int), ()) $DataStream$_fun_forward((slice, slice, cell, int) $self, slice $to, cell $body, int $bounce, tuple $init) impure inline_ref;
+
+;; $DataStream$_fun_notify
+((slice, slice, cell, int), ()) $DataStream$_fun_notify((slice, slice, cell, int) $self, cell $body) impure inline;
+
+;; $DSTDeploySuccess$_constructor_queryId
+((int)) $DSTDeploySuccess$_constructor_queryId(int queryId) inline;
+
+;; $SBDeploy$_constructor_queryId
+((int)) $SBDeploy$_constructor_queryId(int queryId) inline;
+
+;; $SBInfo$_constructor_subscriptionsCount
+((int)) $SBInfo$_constructor_subscriptionsCount(int subscriptionsCount) inline;
+
+;; $DSTDeployBatchSuccess$_constructor_queryId_batch
+((int, slice)) $DSTDeployBatchSuccess$_constructor_queryId_batch(int queryId, slice batch) inline;
+
+;; $SESDeploy$_constructor_queryId
+((int)) $SESDeploy$_constructor_queryId(int queryId) inline;
+
+;; $DSTDeploySessionSuccess$_constructor_queryId_session
+((int, slice)) $DSTDeploySessionSuccess$_constructor_queryId_session(int queryId, slice session) inline;
+
+;; $SendParameters$_constructor_to_value_mode_body
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body(slice to, int value, int mode, cell body) inline;
+
+;; $SBSubscribe$_constructor_queryId_session_notificationsCount
+((int, slice, int)) $SBSubscribe$_constructor_queryId_session_notificationsCount(int queryId, slice session, int notificationsCount) inline;
+
+;; $SBTopUpSubscription$_constructor_queryId_session_notificationsCount
+((int, slice, int)) $SBTopUpSubscription$_constructor_queryId_session_notificationsCount(int queryId, slice session, int notificationsCount) inline;
+
+;; $DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount
+((int, slice, int)) $DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount(int queryId, slice batch, int remainingNotificationsCount) inline;
+
+;; $SBPublishCandlestick$_constructor_queryId_candlestick_publisher
+((int, (int, int, int, int, int, int), slice)) $SBPublishCandlestick$_constructor_queryId_candlestick_publisher(int queryId, (int, int, int, int, int, int) candlestick, slice publisher) inline;
+
+;; $DSTPublishCandlestickSuccess$_constructor_queryId
+((int)) $DSTPublishCandlestickSuccess$_constructor_queryId(int queryId) inline;
+
+;; $DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount
+((int, int)) $DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount(int queryId, int remainingNotificationsCount) inline;

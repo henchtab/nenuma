@@ -1,0 +1,307 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_Session.headers.fc";
+#include "tact_Session.stdlib.fc";
+#include "tact_Session.storage.fc";
+
+;;
+;; Contract Session functions
+;;
+
+(slice, slice, slice) $Session$_contract_init(slice $stream, slice $subscriber) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = (null(), null(), null());
+    $self'stream = $stream;
+    $self'subscriber = $subscriber;
+    return ($self'stream, $self'subscriber, $self'batch);
+}
+
+((slice, slice, slice), int) $Session$_fun_balance((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), __tact_my_balance());
+}
+
+((slice, slice, slice), int) $Session$_fun_storageReserve((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), 10000000);
+}
+
+((slice, slice, slice), int) $Session$_fun_subscribeDeposit((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), 50000000);
+}
+
+((slice, slice, slice), int) $Session$_fun_unsubscribeDeposit((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), 50000000);
+}
+
+((slice, slice, slice), int) $Session$_fun_destroyDeposit((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), 50000000);
+}
+
+((slice, slice, slice), slice) $Session$_fun_streamAddress((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), $self'stream);
+}
+
+((slice, slice, slice), slice) $Session$_fun_subscriberAddress((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), $self'subscriber);
+}
+
+((slice, slice, slice), slice) $Session$_fun_batchAddress((slice, slice, slice) $self) impure inline_ref {
+    var (($self'stream, $self'subscriber, $self'batch)) = $self;
+    return (($self'stream, $self'subscriber, $self'batch), $self'batch);
+}
+
+;;
+;; Receivers of a Contract Session
+;;
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_SESDeploy((slice, slice, slice) $self, (int) $request) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_notify($SESDeploySuccess$_store_cell($SESDeploySuccess$_constructor_queryId_subscriber($request'queryId, $self'subscriber)));
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_SESSubscribe((slice, slice, slice) $self, (int, int) $request) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($request'queryId, $request'notificationsCount) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'subscriber, $ctx'sender) ));
+    if (null?($self'batch)) {
+        throw_unless(404, ($request'notificationsCount >= 2));
+        throw_unless(401, ($ctx'value >= ((50000000 + (20000000 * $request'notificationsCount)) + (10000000 * ($request'notificationsCount - 1)))));
+        ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_forward($self'stream, $DSTSubscribe$_store_cell($DSTSubscribe$_constructor_queryId_subscriber_notificationsCount($request'queryId, $self'subscriber, $request'notificationsCount)), true, null());
+    } else {
+        throw_unless(404, ($request'notificationsCount >= 1));
+        throw_unless(401, ($ctx'value >= ((50000000 + (20000000 * $request'notificationsCount)) + (10000000 * $request'notificationsCount))));
+        ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_forward($self'stream, $DSTTopUpSubscription$_store_cell($DSTTopUpSubscription$_constructor_queryId_subscriber_batch_notificationsCount($request'queryId, $self'subscriber, __tact_not_null($self'batch), $request'notificationsCount)), true, null());
+    }
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_DSTSubscribeSuccess((slice, slice, slice) $self, (int, slice, int) $response) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($response'queryId, $response'batch, $response'remainingNotificationsCount) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'stream, $ctx'sender) ));
+    $self'batch = $response'batch;
+    ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_forward($self'subscriber, $SESSubscribeSuccess$_store_cell($SESSubscribeSuccess$_constructor_queryId_remainingNotificationsCount($response'queryId, $response'remainingNotificationsCount)), false, null());
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_SBCandlestickPublishedNotification((slice, slice, slice) $self, (int, (int, int, int, int, int, int), int) $notification) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($notification'queryId, ($notification'candlestick'start, $notification'candlestick'end, $notification'candlestick'open, $notification'candlestick'close, $notification'candlestick'high, $notification'candlestick'low), $notification'remainingNotificationsCount) = $notification;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits_nullable_one($self'batch, $ctx'sender) ));
+    ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_forward($self'subscriber, $SESCandlestickPublishedNotification$_store_cell($SESCandlestickPublishedNotification$_constructor_queryId_candlestick_remainingNotificationsCount($notification'queryId, ($notification'candlestick'start, $notification'candlestick'end, $notification'candlestick'open, $notification'candlestick'close, $notification'candlestick'high, $notification'candlestick'low), $notification'remainingNotificationsCount)), false, null());
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_DSTUnsubscribedNotification((slice, slice, slice) $self, (int, int) $notification) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($notification'queryId, $notification'remainingNotificationsCount) = $notification;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'stream, $ctx'sender) ));
+    $self'batch = null();
+    ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_forward($self'subscriber, $SESUnsubscribedNotification$_store_cell($SESUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount($notification'queryId, $notification'remainingNotificationsCount)), false, null());
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_SESUnsubscribe((slice, slice, slice) $self, (int) $request) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'subscriber, $ctx'sender) ));
+    throw_unless(405, (~ null?($self'batch)));
+    throw_unless(401, ($ctx'value >= 50000000));
+    __tact_nop();
+    __tact_nop();
+    ($self'stream, $self'subscriber, $self'batch)~$Session$_fun_forward(__tact_not_null($self'batch), $SBUnsubscribe$_store_cell($SBUnsubscribe$_constructor_queryId($request'queryId)), true, null());
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+(((slice, slice, slice)), ()) $Session$_internal_binary_SESDestroy((slice, slice, slice) $self, (int) $request) impure inline {
+    var ($self'stream, $self'subscriber, $self'batch) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'subscriber, $ctx'sender) ));
+    throw_unless(406, null?($self'batch));
+    $global_send($SendParameters$_constructor_to_value_mode_body($self'subscriber, 0, 160, $SESDestroySuccess$_store_cell($SESDestroySuccess$_constructor_queryId($request'queryId))));
+    return (($self'stream, $self'subscriber, $self'batch), ());
+}
+
+;;
+;; Get methods of a Contract Session
+;;
+
+_ %balance() method_id(104128) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_balance();
+    return res;
+}
+
+_ %storageReserve() method_id(74311) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_storageReserve();
+    return res;
+}
+
+_ %subscribeDeposit() method_id(99786) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_subscribeDeposit();
+    return res;
+}
+
+_ %unsubscribeDeposit() method_id(121017) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_unsubscribeDeposit();
+    return res;
+}
+
+_ %destroyDeposit() method_id(65878) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_destroyDeposit();
+    return res;
+}
+
+_ %streamAddress() method_id(73159) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_streamAddress();
+    return res;
+}
+
+_ %subscriberAddress() method_id(83558) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_subscriberAddress();
+    return res;
+}
+
+_ %batchAddress() method_id(120781) {
+    var self = $Session$_contract_load();
+    var res = self~$Session$_fun_batchAddress();
+    return res;
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmZjuzfWkJWLJEsFghngcqkLtP142tXFcCv1EzA814zoEG";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract Session
+;;
+
+((slice, slice, slice), int) $Session$_contract_router_internal((slice, slice, slice) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive SESDeploy message
+    if (op == 1372687436) {
+        var msg = in_msg~$SESDeploy$_load();
+        self~$Session$_internal_binary_SESDeploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESSubscribe message
+    if (op == 1533823831) {
+        var msg = in_msg~$SESSubscribe$_load();
+        self~$Session$_internal_binary_SESSubscribe(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTSubscribeSuccess message
+    if (op == 3770107736) {
+        var msg = in_msg~$DSTSubscribeSuccess$_load();
+        self~$Session$_internal_binary_DSTSubscribeSuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SBCandlestickPublishedNotification message
+    if (op == 4175431181) {
+        var msg = in_msg~$SBCandlestickPublishedNotification$_load();
+        self~$Session$_internal_binary_SBCandlestickPublishedNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTUnsubscribedNotification message
+    if (op == 1287102660) {
+        var msg = in_msg~$DSTUnsubscribedNotification$_load();
+        self~$Session$_internal_binary_DSTUnsubscribedNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESUnsubscribe message
+    if (op == 2668625285) {
+        var msg = in_msg~$SESUnsubscribe$_load();
+        self~$Session$_internal_binary_SESUnsubscribe(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESDestroy message
+    if (op == 2226780297) {
+        var msg = in_msg~$SESDestroy$_load();
+        self~$Session$_internal_binary_SESDestroy(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $Session$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$Session$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $Session$_contract_store(self);
+}

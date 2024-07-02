@@ -1,0 +1,1625 @@
+PROGRAM{
+  DECLPROC __tact_verify_address
+  DECLPROC __tact_load_address
+  DECLPROC __tact_store_address
+  DECLPROC __tact_create_address
+  DECLPROC __tact_compute_contract_address
+  DECLPROC __tact_my_balance
+  DECLPROC __tact_not_null
+  DECLPROC __tact_context_get
+  DECLPROC __tact_context_get_sender
+  DECLPROC __tact_store_bool
+  DECLPROC __tact_dict_set_slice_cell
+  DECLPROC __tact_dict_get_slice_cell
+  DECLPROC __tact_dict_min_slice_cell
+  DECLPROC __tact_dict_next_slice_cell
+  DECLPROC __tact_slice_eq_bits
+  DECLPROC __tact_dict_set_code
+  DECLPROC __tact_dict_get_code
+  DECLPROC $DSTDeploy$_load
+  DECLPROC $DSTDeploySuccess$_store
+  DECLPROC $DSTDeploySuccess$_store_cell
+  DECLPROC $DSTDeployBatch$_load
+  DECLPROC $DSTDeployBatchSuccess$_store
+  DECLPROC $DSTDeployBatchSuccess$_store_cell
+  DECLPROC $DSTDeploySession$_load
+  DECLPROC $DSTDeploySessionSuccess$_store
+  DECLPROC $DSTDeploySessionSuccess$_store_cell
+  DECLPROC $DSTSubscribe$_load
+  DECLPROC $DSTSubscribeSuccess$_store
+  DECLPROC $DSTSubscribeSuccess$_store_cell
+  DECLPROC $Candlestick$_store
+  DECLPROC $Candlestick$_load
+  DECLPROC $DSTPublishCandlestick$_load
+  DECLPROC $DSTPublishCandlestickSuccess$_store
+  DECLPROC $DSTPublishCandlestickSuccess$_store_cell
+  DECLPROC $DSTUnsubscribedNotification$_store
+  DECLPROC $DSTUnsubscribedNotification$_store_cell
+  DECLPROC $SBDeploy$_store
+  DECLPROC $SBDeploy$_store_cell
+  DECLPROC $SBDeploy$_load
+  DECLPROC $SBDeploySuccess$_load
+  DECLPROC $SBSubscribe$_store
+  DECLPROC $SBSubscribe$_store_cell
+  DECLPROC $SBSubscribeSuccess$_load
+  DECLPROC $SBPublishCandlestick$_store
+  DECLPROC $SBPublishCandlestick$_store_cell
+  DECLPROC $SBUnsubscribedNotification$_load
+  DECLPROC $SESDeploy$_store
+  DECLPROC $SESDeploy$_store_cell
+  DECLPROC $SESDeploySuccess$_load
+  DECLPROC $DSTTopUpSubscription$_load
+  DECLPROC $SBTopUpSubscription$_store
+  DECLPROC $SBTopUpSubscription$_store_cell
+  DECLPROC $SBInfo$_store
+  DECLPROC $SBInfo$_store_cell
+  DECLPROC $SBInfo$_load
+  DECLPROC $SBInfo$_as_optional
+  DECLPROC $SBInfo$_load_opt
+  DECLPROC $DataStream$_store
+  DECLPROC $DataStream$_load
+  DECLPROC $StateInit$_not_null
+  DECLPROC $StateInit$_as_optional
+  DECLPROC $SBInfo$_get_subscriptionsCount
+  DECLPROC $SBInfo$_not_null
+  DECLPROC $SubscriptionBatch$init$_store
+  DECLPROC $Session$init$_store
+  DECLPROC $DataStream$init$_load
+  DECLPROC $DataStream$_contract_init
+  DECLPROC $DataStream$_contract_load
+  DECLPROC $DataStream$_contract_store
+  DECLPROC $global_contractAddress
+  DECLPROC $global_send
+  DECLPROC $SubscriptionBatch$_init_child
+  DECLPROC $SendParameters$_constructor_bounce_to_value_mode_body_code_data
+  DECLPROC $Session$_init_child
+  DECLPROC $DataStream$_fun_balance
+  DECLPROC $DataStream$_fun_storageReserve
+  DECLPROC $DataStream$_fun_deployBatchDeposit
+  DECLPROC $DataStream$_fun_deploySessionDeposit
+  DECLPROC $DataStream$_fun_publishCandlestickDeposit
+  DECLPROC $DataStream$_fun_notificationDeposit
+  DECLPROC $DataStream$_fun_notificationPremium
+  DECLPROC $DataStream$_fun_publisherAddress
+  DECLPROC $DataStream$_fun_topic
+  DECLPROC $DataStream$_fun_batches
+  DECLPROC $DataStream$_fun_nextBatchId
+  DECLPROC $DataStream$_fun_batchAddress
+  DECLPROC $DataStream$_fun_sessionAddress
+  DECLPROC $DataStream$_fun_forward
+  DECLPROC $DataStream$_fun_notify
+  DECLPROC $DSTDeploySuccess$_constructor_queryId
+  DECLPROC $SBDeploy$_constructor_queryId
+  DECLPROC $SBInfo$_constructor_subscriptionsCount
+  DECLPROC $DSTDeployBatchSuccess$_constructor_queryId_batch
+  DECLPROC $SESDeploy$_constructor_queryId
+  DECLPROC $DSTDeploySessionSuccess$_constructor_queryId_session
+  DECLPROC $SendParameters$_constructor_to_value_mode_body
+  DECLPROC $SBSubscribe$_constructor_queryId_session_notificationsCount
+  DECLPROC $SBTopUpSubscription$_constructor_queryId_session_notificationsCount
+  DECLPROC $DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount
+  DECLPROC $SBPublishCandlestick$_constructor_queryId_candlestick_publisher
+  DECLPROC $DSTPublishCandlestickSuccess$_constructor_queryId
+  DECLPROC $DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount
+  DECLPROC $DataStream$_internal_binary_DSTDeploy
+  DECLPROC $DataStream$_internal_binary_DSTDeployBatch
+  DECLPROC $DataStream$_receive_binary_bounce_SBDeploy
+  DECLPROC $DataStream$_internal_binary_SBDeploySuccess
+  DECLPROC $DataStream$_internal_binary_DSTDeploySession
+  DECLPROC $DataStream$_internal_binary_SESDeploySuccess
+  DECLPROC $DataStream$_internal_binary_DSTSubscribe
+  DECLPROC $DataStream$_internal_binary_DSTTopUpSubscription
+  DECLPROC $DataStream$_internal_binary_SBSubscribeSuccess
+  DECLPROC $DataStream$_internal_binary_DSTPublishCandlestick
+  DECLPROC $DataStream$_internal_binary_SBUnsubscribedNotification
+  104128 DECLMETHOD %balance
+  74311 DECLMETHOD %storageReserve
+  85748 DECLMETHOD %deployBatchDeposit
+  107403 DECLMETHOD %deploySessionDeposit
+  77189 DECLMETHOD %publishCandlestickDeposit
+  104184 DECLMETHOD %notificationDeposit
+  80193 DECLMETHOD %notificationPremium
+  107982 DECLMETHOD %publisherAddress
+  76995 DECLMETHOD %topic
+  71470 DECLMETHOD %batches
+  86386 DECLMETHOD %nextBatchId
+  120781 DECLMETHOD %batchAddress
+  128322 DECLMETHOD %sessionAddress
+  113617 DECLMETHOD supported_interfaces
+  121275 DECLMETHOD get_abi_ipfs
+  115390 DECLMETHOD lazy_deployment_completed
+  DECLPROC $DataStream$_contract_router_internal
+  DECLPROC recv_internal
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_context_sys
+  DECLGLOBVAR __tact_randomized
+  __tact_verify_address PROCINLINE:<{
+    DUP
+    SBITS
+    267 PUSHINT
+    EQUAL
+    136 THROWIFNOT
+    DUP
+    11 PLDU
+    DUP
+    1279 PUSHINT
+    EQUAL
+    137 THROWIF
+    10 PUSHPOW2
+    EQUAL
+    136 THROWIFNOT
+  }>
+  __tact_load_address PROCINLINE:<{
+    LDMSGADDR
+    SWAP
+    __tact_verify_address INLINECALLDICT
+  }>
+  __tact_store_address PROCINLINE:<{
+    __tact_verify_address INLINECALLDICT
+    STSLICER
+  }>
+  __tact_create_address PROCINLINE:<{
+    NEWC
+    2 PUSHINT
+    SWAP
+    2 STU
+    0 PUSHINT
+    SWAP
+    1 STU
+    s1 s2 XCHG
+    8 STI
+    256 STU
+    ENDC
+    CTOS
+    __tact_verify_address INLINECALLDICT
+  }>
+  __tact_compute_contract_address PROCINLINE:<{
+    NEWC
+    0 PUSHINT
+    SWAP
+    2 STU
+    3 PUSHINT
+    SWAP
+    2 STU
+    0 PUSHINT
+    SWAP
+    1 STU
+    s1 s2 XCHG
+    STREF
+    STREF
+    ENDC
+    HASHCU
+    __tact_create_address INLINECALLDICT
+  }>
+  __tact_my_balance PROCINLINE:<{
+    BALANCE
+    FIRST
+  }>
+  __tact_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+  }>
+  __tact_context_get PROCINLINE:<{
+    __tact_context GETGLOB
+    4 UNTUPLE
+  }>
+  __tact_context_get_sender PROCINLINE:<{
+    __tact_context_sender GETGLOB
+  }>
+  __tact_store_bool PROCINLINE:<{
+    SWAP
+    1 STI
+  }>
+  __tact_dict_set_slice_cell PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      -ROT
+      DICTDEL
+      DROP
+    }>ELSE<{
+      s1 s3 s3 XCHG3
+      DICTSETREF
+    }>
+  }>
+  __tact_dict_get_slice_cell PROCINLINE:<{
+    -ROT
+    DICTGETREF
+    NULLSWAPIFNOT
+    IF:<{
+    }>ELSE<{
+      DROP
+      PUSHNULL
+    }>
+  }>
+  __tact_dict_min_slice_cell PROCINLINE:<{
+    DICTMINREF
+    NULLSWAPIFNOT2
+    DUP
+    IF:<{
+      s1 s2 XCHG
+    }>ELSE<{
+      NIP
+      PUSHNULL
+      s2 POP
+      PUSHNULL
+      SWAP
+    }>
+  }>
+  __tact_dict_next_slice_cell PROCINLINE:<{
+    -ROT
+    DICTGETNEXT
+    NULLSWAPIFNOT2
+    DUP
+    IF:<{
+      s0 s2 XCHG
+      LDREF
+      DROP
+      ROT
+    }>ELSE<{
+      NIP
+      PUSHNULL
+      s2 POP
+      PUSHNULL
+      SWAP
+    }>
+  }>
+  __tact_slice_eq_bits PROCINLINE:<{
+    SDEQ
+  }>
+  __tact_dict_set_code PROCINLINE:<{
+    s0 s2 XCHG
+    16 PUSHINT
+    DICTUSETREF
+  }>
+  __tact_dict_get_code PROCINLINE:<{
+    SWAP
+    16 PUSHINT
+    DICTUGETREF
+    NULLSWAPIFNOT
+    135 THROWIFNOT
+  }>
+  $DSTDeploy$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    306133030 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $DSTDeploySuccess$_store PROCINLINE:<{
+    3957924127 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $DSTDeploySuccess$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $DSTDeploySuccess$_store INLINECALLDICT
+    ENDC
+  }>
+  $DSTDeployBatch$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    3012477066 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $DSTDeployBatchSuccess$_store PROCINLINE:<{
+    1261138638 PUSHINT
+    s0 s3 XCHG2
+    32 STU
+    64 STU
+    SWAP
+    __tact_store_address INLINECALLDICT
+  }>
+  $DSTDeployBatchSuccess$_store_cell PROCINLINE:<{
+    NEWC
+    -ROT
+    $DSTDeployBatchSuccess$_store INLINECALLDICT
+    ENDC
+  }>
+  $DSTDeploySession$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    1658160529 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $DSTDeploySessionSuccess$_store PROCINLINE:<{
+    3452518278 PUSHINT
+    s0 s3 XCHG2
+    32 STU
+    64 STU
+    SWAP
+    __tact_store_address INLINECALLDICT
+  }>
+  $DSTDeploySessionSuccess$_store_cell PROCINLINE:<{
+    NEWC
+    -ROT
+    $DSTDeploySessionSuccess$_store INLINECALLDICT
+    ENDC
+  }>
+  $DSTSubscribe$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    3216336466 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    SWAP
+    257 PUSHINT
+    LDIX
+    3 -ROLL
+  }>
+  $DSTSubscribeSuccess$_store PROCINLINE:<{
+    3770107736 PUSHINT
+    s0 s4 XCHG2
+    32 STU
+    s1 s2 XCHG
+    64 STU
+    SWAP
+    __tact_store_address INLINECALLDICT
+    257 PUSHINT
+    STIX
+  }>
+  $DSTSubscribeSuccess$_store_cell PROCINLINE:<{
+    NEWC
+    3 -ROLL
+    $DSTSubscribeSuccess$_store INLINECALLDICT
+    ENDC
+  }>
+  $Candlestick$_store PROCREF:<{
+    s5 s6 XCHG2
+    257 PUSHINT
+    STIX
+    s1 s3 XCHG
+    257 PUSHINT
+    STIX
+    257 PUSHINT
+    STIX
+    SWAP
+    NEWC
+    257 PUSHINT
+    STIX
+    s1 s2 XCHG
+    257 PUSHINT
+    STIX
+    s1 s2 XCHG
+    257 PUSHINT
+    STIX
+    ENDC
+    SWAP
+    STREF
+  }>
+  $Candlestick$_load PROCREF:<{
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    LDREF
+    SWAP
+    CTOS
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    DROP
+    s3 s6 XCHG
+    s3 s5 XCHG
+    s3 s4 XCHG
+  }>
+  $DSTPublishCandlestick$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    990592317 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    $Candlestick$_load INLINECALLDICT
+    s6 s7 XCHG
+  }>
+  $DSTPublishCandlestickSuccess$_store PROCINLINE:<{
+    215123525 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $DSTPublishCandlestickSuccess$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $DSTPublishCandlestickSuccess$_store INLINECALLDICT
+    ENDC
+  }>
+  $DSTUnsubscribedNotification$_store PROCINLINE:<{
+    1287102660 PUSHINT
+    s0 s3 XCHG2
+    32 STU
+    64 STU
+    257 PUSHINT
+    STIX
+  }>
+  $DSTUnsubscribedNotification$_store_cell PROCINLINE:<{
+    NEWC
+    -ROT
+    $DSTUnsubscribedNotification$_store INLINECALLDICT
+    ENDC
+  }>
+  $SBDeploy$_store PROCINLINE:<{
+    4267613765 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $SBDeploy$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SBDeploy$_store INLINECALLDICT
+    ENDC
+  }>
+  $SBDeploy$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    4267613765 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $SBDeploySuccess$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    1031311118 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    257 PUSHINT
+    LDIX
+    -ROT
+  }>
+  $SBSubscribe$_store PROCINLINE:<{
+    2001551522 PUSHINT
+    s0 s4 XCHG2
+    32 STU
+    s1 s2 XCHG
+    64 STU
+    SWAP
+    __tact_store_address INLINECALLDICT
+    257 PUSHINT
+    STIX
+  }>
+  $SBSubscribe$_store_cell PROCINLINE:<{
+    NEWC
+    3 -ROLL
+    $SBSubscribe$_store INLINECALLDICT
+    ENDC
+  }>
+  $SBSubscribeSuccess$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    4082513223 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    SWAP
+    257 PUSHINT
+    LDIX
+    3 -ROLL
+  }>
+  $SBPublishCandlestick$_store PROCINLINE:<{
+    4051052066 PUSHINT
+    s0 s9 XCHG2
+    32 STU
+    s1 s7 XCHG
+    64 STU
+    s0 s6 XCHG
+    $Candlestick$_store INLINECALLDICT
+    NEWC
+    ROT
+    __tact_store_address INLINECALLDICT
+    ENDC
+    SWAP
+    STREF
+  }>
+  $SBPublishCandlestick$_store_cell PROCINLINE:<{
+    NEWC
+    8 -ROLL
+    $SBPublishCandlestick$_store INLINECALLDICT
+    ENDC
+  }>
+  $SBUnsubscribedNotification$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    1003141156 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    SWAP
+    257 PUSHINT
+    LDIX
+    3 -ROLL
+  }>
+  $SESDeploy$_store PROCINLINE:<{
+    1372687436 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $SESDeploy$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SESDeploy$_store INLINECALLDICT
+    ENDC
+  }>
+  $SESDeploySuccess$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    269942218 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    s1 s2 XCHG
+  }>
+  $DSTTopUpSubscription$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    495971614 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    SWAP
+    __tact_load_address INLINECALLDICT
+    SWAP
+    257 PUSHINT
+    LDIX
+    4 -ROLL
+  }>
+  $SBTopUpSubscription$_store PROCINLINE:<{
+    267884312 PUSHINT
+    s0 s4 XCHG2
+    32 STU
+    s1 s2 XCHG
+    64 STU
+    SWAP
+    __tact_store_address INLINECALLDICT
+    257 PUSHINT
+    STIX
+  }>
+  $SBTopUpSubscription$_store_cell PROCINLINE:<{
+    NEWC
+    3 -ROLL
+    $SBTopUpSubscription$_store INLINECALLDICT
+    ENDC
+  }>
+  $SBInfo$_store PROCINLINE:<{
+    SWAP
+    257 PUSHINT
+    STIX
+  }>
+  $SBInfo$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SBInfo$_store INLINECALLDICT
+    ENDC
+  }>
+  $SBInfo$_load PROCINLINE:<{
+    257 PUSHINT
+    LDIX
+    SWAP
+  }>
+  $SBInfo$_as_optional PROCINLINE:<{
+    1 TUPLE
+  }>
+  $SBInfo$_load_opt PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      PUSHNULL
+    }>ELSE<{
+      CTOS
+      $SBInfo$_load INLINECALLDICT
+      NIP
+      $SBInfo$_as_optional INLINECALLDICT
+    }>
+  }>
+  $DataStream$_store PROCINLINE:<{
+    s4 s3 XCHG2
+    __tact_store_address INLINECALLDICT
+    NEWC
+    ROT
+    STSLICER
+    ENDC
+    SWAP
+    STREF
+    s1 s2 XCHG
+    STDICT
+    257 PUSHINT
+    STIX
+  }>
+  $DataStream$_load PROCINLINE:<{
+    __tact_load_address INLINECALLDICT
+    SWAP
+    LDREF
+    SWAP
+    CTOS
+    SWAP
+    LDDICT
+    257 PUSHINT
+    LDIX
+    4 -ROLL
+  }>
+  $StateInit$_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+    2 UNTUPLE
+  }>
+  $StateInit$_as_optional PROCINLINE:<{
+    2 TUPLE
+  }>
+  $SBInfo$_get_subscriptionsCount PROCINLINE:<{
+  }>
+  $SBInfo$_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+    1 UNTUPLE
+  }>
+  $SubscriptionBatch$init$_store PROCINLINE:<{
+    -ROT
+    __tact_store_address INLINECALLDICT
+    257 PUSHINT
+    STIX
+  }>
+  $Session$init$_store PROCINLINE:<{
+    -ROT
+    __tact_store_address INLINECALLDICT
+    SWAP
+    __tact_store_address INLINECALLDICT
+  }>
+  $DataStream$init$_load PROCINLINE:<{
+    __tact_load_address INLINECALLDICT
+    SWAP
+    LDREF
+    SWAP
+    CTOS
+    s1 s2 XCHG
+  }>
+  $DataStream$_contract_init PROCREF:<{
+    PUSHNULL
+    0 PUSHINT
+  }>
+  $DataStream$_contract_load PROCREF:<{
+    c4 PUSH
+    CTOS
+    LDREF
+    SWAP
+    __tact_context_sys SETGLOB
+    1 LDI
+    SWAP
+    IFJMP:<{
+      $DataStream$_load INLINECALLDICT
+      1 4 BLKDROP2
+    }>
+    MYADDR
+    11 PLDU
+    10 PUSHPOW2
+    EQUAL
+    137 THROWIFNOT
+    $DataStream$init$_load INLINECALLDICT
+    s0 s2 XCHG
+    ENDS
+    SWAP
+    $DataStream$_contract_init INLINECALLDICT
+  }>
+  $DataStream$_contract_store PROCINLINE:<{
+    NEWC
+    __tact_context_sys GETGLOB
+    SWAP
+    STREF
+    TRUE
+    SWAP
+    1 STI
+    4 -ROLL
+    $DataStream$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $global_contractAddress PROCINLINE:<{
+    0 PUSHINT
+    -ROT
+    __tact_compute_contract_address INLINECALLDICT
+  }>
+  $global_send PROCREF:<{
+    NEWC
+    1 PUSHINT
+    SWAP
+    2 STI
+    s0 s7 XCHG2
+    __tact_store_bool INLINECALLDICT
+    0 PUSHINT
+    SWAP
+    3 STI
+    s0 s5 XCHG2
+    __tact_store_address INLINECALLDICT
+    s0 s3 XCHG2
+    STGRAMS
+    0 PUSHINT
+    SWAP
+    105 STI
+    s3 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+    }>ELSE<{
+      s4 PUSH
+      ISNULL
+      NOT
+    }>
+    IF:<{
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      NEWC
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      s4 PUSH
+      ISNULL
+      NOT
+      IF:<{
+        TRUE
+        __tact_store_bool INLINECALLDICT
+        s0 s4 XCHG
+        __tact_not_null INLINECALLDICT
+        s0 s4 XCHG2
+        STREF
+      }>ELSE<{
+        s4 POP
+        s0 s3 XCHG
+        FALSE
+        __tact_store_bool INLINECALLDICT
+      }>
+      s4 PUSH
+      ISNULL
+      NOT
+      IF:<{
+        TRUE
+        __tact_store_bool INLINECALLDICT
+        s0 s4 XCHG
+        __tact_not_null INLINECALLDICT
+        s0 s4 XCHG2
+        STREF
+      }>ELSE<{
+        s4 POP
+        s0 s3 XCHG
+        FALSE
+        __tact_store_bool INLINECALLDICT
+      }>
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      s0 s2 XCHG
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      s0 s2 XCHG
+      ENDC
+      ROT
+      STREF
+    }>ELSE<{
+      s3 POP
+      s3 POP
+      SWAP
+      FALSE
+      __tact_store_bool INLINECALLDICT
+    }>
+    OVER
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      SWAP
+      __tact_not_null INLINECALLDICT
+      SWAP
+      STREF
+    }>ELSE<{
+      NIP
+      FALSE
+      __tact_store_bool INLINECALLDICT
+    }>
+    ENDC
+    SWAP
+    SENDRAWMSG
+  }>
+  $SubscriptionBatch$_init_child PROCREF:<{
+    s0 s2 XCHG
+    CTOS
+    LDDICT
+    DROP
+    NEWDICT
+    SWAP
+    10482 PUSHINT
+    __tact_dict_get_code INLINECALLDICT
+    SWAP
+    10482 PUSHINT
+    s2 PUSH
+    __tact_dict_set_code INLINECALLDICT
+    NEWC
+    SWAP
+    NEWC
+    STDICT
+    ENDC
+    SWAP
+    STREF
+    FALSE
+    SWAP
+    1 STI
+    s0 s0 s3 XCHG3
+    $SubscriptionBatch$init$_store INLINECALLDICT
+    ENDC
+  }>
+  $SendParameters$_constructor_bounce_to_value_mode_body_code_data PROCINLINE:<{
+  }>
+  $Session$_init_child PROCREF:<{
+    s0 s2 XCHG
+    CTOS
+    LDDICT
+    DROP
+    NEWDICT
+    SWAP
+    38775 PUSHINT
+    __tact_dict_get_code INLINECALLDICT
+    SWAP
+    38775 PUSHINT
+    s2 PUSH
+    __tact_dict_set_code INLINECALLDICT
+    NEWC
+    SWAP
+    NEWC
+    STDICT
+    ENDC
+    SWAP
+    STREF
+    FALSE
+    SWAP
+    1 STI
+    s0 s0 s3 XCHG3
+    $Session$init$_store INLINECALLDICT
+    ENDC
+  }>
+  $DataStream$_fun_balance PROCREF:<{
+    __tact_my_balance INLINECALLDICT
+  }>
+  $DataStream$_fun_storageReserve PROCREF:<{
+    50000000 PUSHINT
+  }>
+  $DataStream$_fun_deployBatchDeposit PROCREF:<{
+    100000000 PUSHINT
+  }>
+  $DataStream$_fun_deploySessionDeposit PROCREF:<{
+    100000000 PUSHINT
+  }>
+  $DataStream$_fun_publishCandlestickDeposit PROCREF:<{
+    5000000000 PUSHINT
+  }>
+  $DataStream$_fun_notificationDeposit PROCREF:<{
+    20000000 PUSHINT
+  }>
+  $DataStream$_fun_notificationPremium PROCREF:<{
+    10000000 PUSHINT
+  }>
+  $DataStream$_fun_publisherAddress PROCREF:<{
+    s3 PUSH
+  }>
+  $DataStream$_fun_topic PROCREF:<{
+    s2 PUSH
+  }>
+  $DataStream$_fun_batches PROCREF:<{
+    OVER
+  }>
+  $DataStream$_fun_nextBatchId PROCREF:<{
+    DUP
+  }>
+  $DataStream$_fun_batchAddress PROCREF:<{
+    __tact_context_sys GETGLOB
+    MYADDR
+    ROT
+    $SubscriptionBatch$_init_child INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+  }>
+  $DataStream$_fun_sessionAddress PROCREF:<{
+    __tact_context_sys GETGLOB
+    MYADDR
+    ROT
+    $Session$_init_child INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+  }>
+  $DataStream$_fun_forward PROCREF:<{
+    PUSHNULL
+    PUSHNULL
+    s2 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      2DROP
+      $StateInit$_not_null INLINECALLDICT
+      SWAP
+    }>ELSE<{
+      s2 POP
+    }>
+    __tact_context_get INLINECALLDICT
+    s1 s3 XCHG
+    3 BLKDROP
+    __tact_my_balance INLINECALLDICT
+    SWAP
+    SUB
+    50000000 PUSHINT
+    LESS
+    IFJMP:<{
+      50000000 PUSHINT
+      0 PUSHINT
+      RAWRESERVE
+      s2 s4 XCHG
+      0 PUSHINT
+      s0 s3 XCHG
+      s0 s4 XCHG
+      130 PUSHINT
+      s2 s3 XCHG2
+      $SendParameters$_constructor_bounce_to_value_mode_body_code_data INLINECALLDICT
+      $global_send INLINECALLDICT
+    }>
+    s2 s4 XCHG
+    0 PUSHINT
+    s0 s3 XCHG
+    s0 s4 XCHG
+    66 PUSHINT
+    s2 s3 XCHG2
+    $SendParameters$_constructor_bounce_to_value_mode_body_code_data INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $DataStream$_fun_notify PROCINLINE:<{
+    __tact_context_get_sender INLINECALLDICT
+    SWAP
+    FALSE
+    PUSHNULL
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DSTDeploySuccess$_constructor_queryId PROCINLINE:<{
+  }>
+  $SBDeploy$_constructor_queryId PROCINLINE:<{
+  }>
+  $SBInfo$_constructor_subscriptionsCount PROCINLINE:<{
+  }>
+  $DSTDeployBatchSuccess$_constructor_queryId_batch PROCINLINE:<{
+  }>
+  $SESDeploy$_constructor_queryId PROCINLINE:<{
+  }>
+  $DSTDeploySessionSuccess$_constructor_queryId_session PROCINLINE:<{
+  }>
+  $SendParameters$_constructor_to_value_mode_body PROCINLINE:<{
+    TRUE
+    4 -ROLL
+    PUSHNULL
+    PUSHNULL
+  }>
+  $SBSubscribe$_constructor_queryId_session_notificationsCount PROCINLINE:<{
+  }>
+  $SBTopUpSubscription$_constructor_queryId_session_notificationsCount PROCINLINE:<{
+  }>
+  $DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount PROCINLINE:<{
+  }>
+  $SBPublishCandlestick$_constructor_queryId_candlestick_publisher PROCINLINE:<{
+  }>
+  $DSTPublishCandlestickSuccess$_constructor_queryId PROCINLINE:<{
+  }>
+  $DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount PROCINLINE:<{
+  }>
+  $DataStream$_internal_binary_DSTDeploy PROCINLINE:<{
+    $DSTDeploySuccess$_constructor_queryId INLINECALLDICT
+    $DSTDeploySuccess$_store_cell INLINECALLDICT
+    $DataStream$_fun_notify INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_DSTDeployBatch PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    DROP
+    s2 POP
+    s6 s(-1) PUXC
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    100000000 PUSHINT
+    GEQ
+    401 THROWIFNOT
+    OVER
+    10 LESSINT
+    402 THROWIFNOT
+    __tact_context_sys GETGLOB
+    MYADDR
+    s3 PUSH
+    $SubscriptionBatch$_init_child INLINECALLDICT
+    2DUP
+    $global_contractAddress INLINECALLDICT
+    s0 s3 XCHG
+    $SBDeploy$_constructor_queryId INLINECALLDICT
+    $SBDeploy$_store_cell INLINECALLDICT
+    s0 s2 XCHG
+    TRUE
+    s0 s2 XCHG
+    $StateInit$_as_optional INLINECALLDICT
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DataStream$_receive_binary_bounce_SBDeploy PROCINLINE:<{
+    DROP
+    B{b5ee9c724101010100130000220000000053424465706c6f794572726f72247cf5cb} B>boc PUSHREF
+    s4 s(-1) PUXC
+    FALSE
+    PUSHNULL
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_SBDeploySuccess PROCINLINE:<{
+    DROP
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    __tact_context_sys GETGLOB
+    MYADDR
+    s4 PUSH
+    $SubscriptionBatch$_init_child INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+    s0 s1 PUXC
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    267 PUSHINT
+    0 PUSHINT
+    $SBInfo$_constructor_subscriptionsCount INLINECALLDICT
+    $SBInfo$_store_cell INLINECALLDICT
+    s2 PUSH
+    s3 s6 XCHG
+    SWAP
+    __tact_dict_set_slice_cell INLINECALLDICT
+    s0 s2 XCHG
+    INC
+    s0 s3 XCHG
+    $DSTDeployBatchSuccess$_constructor_queryId_batch INLINECALLDICT
+    $DSTDeployBatchSuccess$_store_cell INLINECALLDICT
+    s2 s4 s(-1) XCPUXC
+    FALSE
+    PUSHNULL
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_DSTDeploySession PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    DROP
+    1 2 BLKDROP2
+    100000000 PUSHINT
+    GEQ
+    401 THROWIFNOT
+    __tact_context_sys GETGLOB
+    MYADDR
+    ROT
+    $Session$_init_child INLINECALLDICT
+    2DUP
+    $global_contractAddress INLINECALLDICT
+    s0 s3 XCHG
+    $SESDeploy$_constructor_queryId INLINECALLDICT
+    $SESDeploy$_store_cell INLINECALLDICT
+    s0 s2 XCHG
+    TRUE
+    s0 s2 XCHG
+    $StateInit$_as_optional INLINECALLDICT
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_SESDeploySuccess PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    __tact_context_sys GETGLOB
+    MYADDR
+    s3 PUSH
+    $Session$_init_child INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+    s0 s1 PUXC
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    s1 s2 XCHG
+    $DSTDeploySessionSuccess$_constructor_queryId_session INLINECALLDICT
+    $DSTDeploySessionSuccess$_store_cell INLINECALLDICT
+    FALSE
+    PUSHNULL
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_DSTSubscribe PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    __tact_context_sys GETGLOB
+    MYADDR
+    s1 s0 s4 XCHG3
+    $Session$_init_child INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+    s0 s2 PUXC
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    DUP
+    1 GTINT
+    404 THROWIFNOT
+    10000000 PUSHINT
+    OVER
+    DEC
+    MUL
+    4 PUSHINT
+    RAWRESERVE
+    PUSHNULL
+    s5 s5 PUSH2
+    267 PUSHINT
+    __tact_dict_min_slice_cell INLINECALLDICT
+    WHILE:<{
+    }>DO<{
+      $SBInfo$_load_opt INLINECALLDICT
+      $SBInfo$_not_null INLINECALLDICT
+      20 LESSINT
+      IF:<{
+        s2 POP
+        OVER
+      }>
+      267 PUSHINT
+      s2 PUSH
+      s0 s2 XCHG
+      __tact_dict_next_slice_cell INLINECALLDICT
+    }>
+    3 BLKDROP
+    DUP
+    ISNULL
+    NOT
+    403 THROWIFNOT
+    267 PUSHINT
+    OVER
+    __tact_not_null INLINECALLDICT
+    s7 PUSH
+    -ROT
+    __tact_dict_get_slice_cell INLINECALLDICT
+    $SBInfo$_load_opt INLINECALLDICT
+    267 PUSHINT
+    s2 PUSH
+    __tact_not_null INLINECALLDICT
+    s0 s2 XCHG
+    $SBInfo$_not_null INLINECALLDICT
+    $SBInfo$_get_subscriptionsCount INLINECALLDICT
+    INC
+    $SBInfo$_constructor_subscriptionsCount INLINECALLDICT
+    $SBInfo$_store_cell INLINECALLDICT
+    s3 s8 XCHG
+    s1 s2 XCHG
+    __tact_dict_set_slice_cell INLINECALLDICT
+    s0 s5 XCHG
+    __tact_not_null INLINECALLDICT
+    0 PUSHINT
+    s4 s3 XCHG2
+    7 PUSHPOW2
+    s0 s3 XCHG
+    $SBSubscribe$_constructor_queryId_session_notificationsCount INLINECALLDICT
+    $SBSubscribe$_store_cell INLINECALLDICT
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_DSTTopUpSubscription PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    __tact_context_sys GETGLOB
+    MYADDR
+    s1 s0 s5 XCHG3
+    $Session$_init_child INLINECALLDICT
+    $global_contractAddress INLINECALLDICT
+    s0 s3 PUXC
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    DUP
+    0 GTINT
+    404 THROWIFNOT
+    10000000 PUSHINT
+    OVER
+    MUL
+    4 PUSHINT
+    RAWRESERVE
+    0 PUSHINT
+    s4 s3 XCHG2
+    7 PUSHPOW2
+    s0 s5 XCHG
+    $SBTopUpSubscription$_constructor_queryId_session_notificationsCount INLINECALLDICT
+    $SBTopUpSubscription$_store_cell INLINECALLDICT
+    s1 s3 XCHG
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_SBSubscribeSuccess PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s5 PUSH
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_get_slice_cell INLINECALLDICT
+    $SBInfo$_load_opt INLINECALLDICT
+    ISNULL
+    NOT
+    400 THROWIFNOT
+    s3 s0 s0 XCHG3
+    $DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount INLINECALLDICT
+    $DSTSubscribeSuccess$_store_cell INLINECALLDICT
+    FALSE
+    PUSHNULL
+    $DataStream$_fun_forward INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_DSTPublishCandlestick PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    DROP
+    s2 POP
+    s12 s(-1) PUXC
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    DUP
+    5000000000 PUSHINT
+    GEQ
+    401 THROWIFNOT
+    s9 PUSH
+    0 PUSHINT
+    OVER
+    267 PUSHINT
+    __tact_dict_min_slice_cell INLINECALLDICT
+    WHILE:<{
+    }>DO<{
+      $SBInfo$_load_opt INLINECALLDICT
+      $SBInfo$_not_null INLINECALLDICT
+      DUP
+      0 GTINT
+      IF:<{
+        50000000 PUSHINT
+        1 PUSHINT
+        s13 s12 s11 PUSH3
+        s13 s12 s11 PUSH3
+        s13 PUSH
+        24 s() PUSH
+        $SBPublishCandlestick$_constructor_queryId_candlestick_publisher INLINECALLDICT
+        $SBPublishCandlestick$_store_cell INLINECALLDICT
+        s4 PUSH
+        3 -ROLL
+        $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+        $global_send INLINECALLDICT
+        s1 s2 XCHG
+        ADD
+        SWAP
+      }>ELSE<{
+        DROP
+      }>
+      267 PUSHINT
+      s3 PUSH
+      s0 s2 XCHG
+      __tact_dict_next_slice_cell INLINECALLDICT
+    }>
+    s2 s3 XCHG
+    3 BLKDROP
+    6 2 BLKDROP2
+    10000000 PUSHINT
+    SWAP
+    MUL
+    __tact_my_balance INLINECALLDICT
+    ROT
+    SUB
+    OVER
+    SUB
+    0 PUSHINT
+    RAWRESERVE
+    7 PUSHPOW2
+    s0 s2 XCHG
+    $DSTPublishCandlestickSuccess$_constructor_queryId INLINECALLDICT
+    $DSTPublishCandlestickSuccess$_store_cell INLINECALLDICT
+    s6 PUSH
+    s3 s3 XCHG2
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $DataStream$_internal_binary_SBUnsubscribedNotification PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s5 PUSH
+    267 PUSHINT
+    s2 PUSH
+    __tact_dict_get_slice_cell INLINECALLDICT
+    $SBInfo$_load_opt INLINECALLDICT
+    DUP
+    ISNULL
+    NOT
+    400 THROWIFNOT
+    267 PUSHINT
+    SWAP
+    $SBInfo$_not_null INLINECALLDICT
+    $SBInfo$_get_subscriptionsCount INLINECALLDICT
+    DEC
+    $SBInfo$_constructor_subscriptionsCount INLINECALLDICT
+    $SBInfo$_store_cell INLINECALLDICT
+    s3 s7 XCHG
+    s1 s2 XCHG
+    __tact_dict_set_slice_cell INLINECALLDICT
+    0 PUSHINT
+    s5 PUSH
+    1 GTINT
+    IF:<{
+      DROP
+      10000000 PUSHINT
+      s5 PUSH
+      DEC
+      MUL
+    }>
+    s0 s3 XCHG
+    64 PUSHINT
+    s0 s6 XCHG
+    $DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount INLINECALLDICT
+    $DSTUnsubscribedNotification$_store_cell INLINECALLDICT
+    s3 s5 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  %balance PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_balance INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %storageReserve PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_storageReserve INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %deployBatchDeposit PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_deployBatchDeposit INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %deploySessionDeposit PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_deploySessionDeposit INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %publishCandlestickDeposit PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_publishCandlestickDeposit INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %notificationDeposit PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_notificationDeposit INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %notificationPremium PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_notificationPremium INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %publisherAddress PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_publisherAddress INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %topic PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_topic INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %batches PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_batches INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %nextBatchId PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    $DataStream$_fun_nextBatchId INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %batchAddress PROC:<{
+    $DataStream$_contract_load INLINECALLDICT
+    4 ROLL
+    $DataStream$_fun_batchAddress INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  %sessionAddress PROC:<{
+    __tact_verify_address INLINECALLDICT
+    $DataStream$_contract_load INLINECALLDICT
+    4 ROLL
+    $DataStream$_fun_sessionAddress INLINECALLDICT
+    4 1 BLKDROP2
+  }>
+  supported_interfaces PROC:<{
+    123515602279859691144772641439386770278 PUSHINT
+    209801025412363888721030803524359905849 PUSHINT
+    42980537499636128163026532310500881091 PUSHINT
+    209474421377847335869795010607481022628 PUSHINT
+  }>
+  get_abi_ipfs PROC:<{
+    x{697066733a2f2f516d5132327a427a5a376e67676d3871415031794e526a756a7a51583936324762325a4873736d5348685a526774} PUSHSLICE
+  }>
+  lazy_deployment_completed PROC:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+  }>
+  $DataStream$_contract_router_internal PROCREF:<{
+    SWAP
+    IFJMP:<{
+      32 PUSHINT
+      SDSKIPFIRST
+      0 PUSHINT
+      OVER
+      SBITS
+      31 GTINT
+      IF:<{
+        DROP
+        DUP
+        32 PLDU
+      }>
+      4267613765 PUSHINT
+      EQUAL
+      IFJMP:<{
+        $SBDeploy$_load INLINECALLDICT
+        NIP
+        $DataStream$_receive_binary_bounce_SBDeploy INLINECALLDICT
+        TRUE
+      }>
+      DROP
+      TRUE
+    }>
+    0 PUSHINT
+    OVER
+    SBITS
+    31 GTINT
+    IF:<{
+      DROP
+      DUP
+      32 PLDU
+    }>
+    DUP
+    306133030 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTDeploy$_load INLINECALLDICT
+      NIP
+      $DataStream$_internal_binary_DSTDeploy INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    3012477066 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTDeployBatch$_load INLINECALLDICT
+      NIP
+      $DataStream$_internal_binary_DSTDeployBatch INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    1031311118 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SBDeploySuccess$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $DataStream$_internal_binary_SBDeploySuccess INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    1658160529 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTDeploySession$_load INLINECALLDICT
+      NIP
+      $DataStream$_internal_binary_DSTDeploySession INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    269942218 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SESDeploySuccess$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $DataStream$_internal_binary_SESDeploySuccess INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    3216336466 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTSubscribe$_load INLINECALLDICT
+      1 3 BLKDROP2
+      $DataStream$_internal_binary_DSTSubscribe INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    495971614 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTTopUpSubscription$_load INLINECALLDICT
+      1 4 BLKDROP2
+      $DataStream$_internal_binary_DSTTopUpSubscription INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    4082513223 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SBSubscribeSuccess$_load INLINECALLDICT
+      1 3 BLKDROP2
+      $DataStream$_internal_binary_SBSubscribeSuccess INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    990592317 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTPublishCandlestick$_load INLINECALLDICT
+      1 7 BLKDROP2
+      $DataStream$_internal_binary_DSTPublishCandlestick INLINECALLDICT
+      TRUE
+    }>
+    1003141156 PUSHINT
+    EQUAL
+    IFJMP:<{
+      $SBUnsubscribedNotification$_load INLINECALLDICT
+      1 3 BLKDROP2
+      $DataStream$_internal_binary_SBUnsubscribedNotification INLINECALLDICT
+      TRUE
+    }>
+    DROP
+    FALSE
+  }>
+  recv_internal PROC:<{
+    SWAP
+    CTOS
+    4 LDU
+    SWAP
+    1 PUSHINT
+    AND
+    NEGATE
+    SWAP
+    LDMSGADDR
+    SWAP
+    __tact_verify_address INLINECALLDICT
+    s0 s4 s2 PUXCPU
+    s0 s3 XCHG
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $DataStream$_contract_load INLINECALLDICT
+    2 4 BLKSWAP
+    $DataStream$_contract_router_internal INLINECALLDICT
+    130 THROWIFNOT
+    $DataStream$_contract_store INLINECALLDICT
+  }>
+}END>c

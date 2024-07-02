@@ -1,0 +1,489 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_DataStream.headers.fc";
+#include "tact_DataStream.stdlib.fc";
+#include "tact_DataStream.constants.fc";
+#include "tact_DataStream.storage.fc";
+
+;;
+;; Contract DataStream functions
+;;
+
+(slice, slice, cell, int) $DataStream$_contract_init(slice $publisher, slice $topic) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = (null(), null(), null(), null());
+    $self'publisher = $publisher;
+    $self'topic = $topic;
+    $self'nextBatchId = 0;
+    return ($self'publisher, $self'topic, $self'batches, $self'nextBatchId);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_balance((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), __tact_my_balance());
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_storageReserve((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), 50000000);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_deployBatchDeposit((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), 100000000);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_deploySessionDeposit((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), 100000000);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_publishCandlestickDeposit((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), 5000000000);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_notificationDeposit((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), 20000000);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_notificationPremium((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), 10000000);
+}
+
+((slice, slice, cell, int), slice) $DataStream$_fun_publisherAddress((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), $self'publisher);
+}
+
+((slice, slice, cell, int), slice) $DataStream$_fun_topic((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), $self'topic);
+}
+
+((slice, slice, cell, int), cell) $DataStream$_fun_batches((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), $self'batches);
+}
+
+((slice, slice, cell, int), int) $DataStream$_fun_nextBatchId((slice, slice, cell, int) $self) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), $self'nextBatchId);
+}
+
+((slice, slice, cell, int), slice) $DataStream$_fun_batchAddress((slice, slice, cell, int) $self, int $batchId) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    var ($batchStateInit'code, $batchStateInit'data) = $SubscriptionBatch$_init_child(__tact_context_sys, my_address(), $batchId);
+    slice $batch = $global_contractAddress(($batchStateInit'code, $batchStateInit'data));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), $batch);
+}
+
+((slice, slice, cell, int), slice) $DataStream$_fun_sessionAddress((slice, slice, cell, int) $self, slice $subscriber) impure inline_ref {
+    var (($self'publisher, $self'topic, $self'batches, $self'nextBatchId)) = $self;
+    var ($sessionStateInit'code, $sessionStateInit'data) = $Session$_init_child(__tact_context_sys, my_address(), $subscriber);
+    slice $session = $global_contractAddress(($sessionStateInit'code, $sessionStateInit'data));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), $session);
+}
+
+;;
+;; Receivers of a Contract DataStream
+;;
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_DSTDeploy((slice, slice, cell, int) $self, (int) $request) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_notify($DSTDeploySuccess$_store_cell($DSTDeploySuccess$_constructor_queryId($request'queryId)));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_DSTDeployBatch((slice, slice, cell, int) $self, (int) $request) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'publisher, $ctx'sender) ));
+    throw_unless(401, ($ctx'value >= 100000000));
+    throw_unless(402, ($self'nextBatchId < 10));
+    var ($batchStateInit'code, $batchStateInit'data) = $SubscriptionBatch$_init_child(__tact_context_sys, my_address(), $self'nextBatchId);
+    slice $batch = $global_contractAddress(($batchStateInit'code, $batchStateInit'data));
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_forward($batch, $SBDeploy$_store_cell($SBDeploy$_constructor_queryId($request'queryId)), true, $StateInit$_as_optional(($batchStateInit'code, $batchStateInit'data)));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_receive_binary_bounce_SBDeploy((slice, slice, cell, int) $self, (int) $deploy) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($deploy'queryId) = $deploy;
+    __tact_nop();
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_forward($self'publisher, __gen_cell_comment_ce05042af9590bb16bce78c6576e3b78ef998482bcf54d7460051c4228746c69(), false, null());
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_SBDeploySuccess((slice, slice, cell, int) $self, (int, int) $response) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($response'queryId, $response'batchId) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($batchStateInit'code, $batchStateInit'data) = $SubscriptionBatch$_init_child(__tact_context_sys, my_address(), $self'nextBatchId);
+    slice $batch = $global_contractAddress(($batchStateInit'code, $batchStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($batch, $ctx'sender) ));
+    $self'batches~__tact_dict_set_slice_cell(267, $batch, $SBInfo$_store_cell($SBInfo$_constructor_subscriptionsCount(0)));
+    $self'nextBatchId = $self'nextBatchId + 1;
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_forward($self'publisher, $DSTDeployBatchSuccess$_store_cell($DSTDeployBatchSuccess$_constructor_queryId_batch($response'queryId, $batch)), false, null());
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_DSTDeploySession((slice, slice, cell, int) $self, (int) $request) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(401, ($ctx'value >= 100000000));
+    var ($sessionStateInit'code, $sessionStateInit'data) = $Session$_init_child(__tact_context_sys, my_address(), $ctx'sender);
+    slice $session = $global_contractAddress(($sessionStateInit'code, $sessionStateInit'data));
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_forward($session, $SESDeploy$_store_cell($SESDeploy$_constructor_queryId($request'queryId)), true, $StateInit$_as_optional(($sessionStateInit'code, $sessionStateInit'data)));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_SESDeploySuccess((slice, slice, cell, int) $self, (int, slice) $response) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($response'queryId, $response'subscriber) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($sessionStateInit'code, $sessionStateInit'data) = $Session$_init_child(__tact_context_sys, my_address(), $response'subscriber);
+    slice $session = $global_contractAddress(($sessionStateInit'code, $sessionStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($session, $ctx'sender) ));
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_forward($response'subscriber, $DSTDeploySessionSuccess$_store_cell($DSTDeploySessionSuccess$_constructor_queryId_session($response'queryId, $session)), false, null());
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_DSTSubscribe((slice, slice, cell, int) $self, (int, slice, int) $request) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($request'queryId, $request'subscriber, $request'notificationsCount) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($sessionStateInit'code, $sessionStateInit'data) = $Session$_init_child(__tact_context_sys, my_address(), $request'subscriber);
+    slice $session = $global_contractAddress(($sessionStateInit'code, $sessionStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($session, $ctx'sender) ));
+    throw_unless(404, ($request'notificationsCount >= 2));
+    raw_reserve((10000000 * ($request'notificationsCount - 1)), 4);
+    slice $batch = null();
+    cell $batches = $self'batches;
+    var ($address, $info, $fresh$flag_1) = __tact_dict_min_slice_cell($batches, 267);
+    while ($fresh$flag_1) {
+        var ($info'subscriptionsCount) = $SBInfo$_not_null($SBInfo$_load_opt($info));
+        if (($info'subscriptionsCount < 20)) {
+            $batch = $address;
+        }
+        ($address, $info, $fresh$flag_1) = __tact_dict_next_slice_cell($batches, 267, $address);
+    }
+    throw_unless(403, (~ null?($batch)));
+    tuple $info = $SBInfo$_load_opt(__tact_dict_get_slice_cell($self'batches, 267, __tact_not_null($batch)));
+    $self'batches~__tact_dict_set_slice_cell(267, __tact_not_null($batch), $SBInfo$_store_cell($SBInfo$_constructor_subscriptionsCount(($SBInfo$_get_subscriptionsCount($SBInfo$_not_null($info)) + 1))));
+    $global_send($SendParameters$_constructor_to_value_mode_body(__tact_not_null($batch), 0, 128, $SBSubscribe$_store_cell($SBSubscribe$_constructor_queryId_session_notificationsCount($request'queryId, $session, $request'notificationsCount))));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_DSTTopUpSubscription((slice, slice, cell, int) $self, (int, slice, slice, int) $request) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($request'queryId, $request'subscriber, $request'batch, $request'notificationsCount) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($sessionStateInit'code, $sessionStateInit'data) = $Session$_init_child(__tact_context_sys, my_address(), $request'subscriber);
+    slice $session = $global_contractAddress(($sessionStateInit'code, $sessionStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($session, $ctx'sender) ));
+    throw_unless(404, ($request'notificationsCount >= 1));
+    raw_reserve((10000000 * $request'notificationsCount), 4);
+    $global_send($SendParameters$_constructor_to_value_mode_body($request'batch, 0, 128, $SBTopUpSubscription$_store_cell($SBTopUpSubscription$_constructor_queryId_session_notificationsCount($request'queryId, $session, $request'notificationsCount))));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_SBSubscribeSuccess((slice, slice, cell, int) $self, (int, slice, int) $response) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($response'queryId, $response'session, $response'remainingNotificationsCount) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    slice $batch = $ctx'sender;
+    tuple $info = $SBInfo$_load_opt(__tact_dict_get_slice_cell($self'batches, 267, $batch));
+    throw_unless(400, (~ null?($info)));
+    ($self'publisher, $self'topic, $self'batches, $self'nextBatchId)~$DataStream$_fun_forward($response'session, $DSTSubscribeSuccess$_store_cell($DSTSubscribeSuccess$_constructor_queryId_batch_remainingNotificationsCount($response'queryId, $batch, $response'remainingNotificationsCount)), false, null());
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_DSTPublishCandlestick((slice, slice, cell, int) $self, (int, (int, int, int, int, int, int)) $request) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($request'queryId, ($request'candlestick'start, $request'candlestick'end, $request'candlestick'open, $request'candlestick'close, $request'candlestick'high, $request'candlestick'low)) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'publisher, $ctx'sender) ));
+    throw_unless(401, ($ctx'value >= 5000000000));
+    cell $batches = $self'batches;
+    int $subscriptionsCount = 0;
+    var ($address, $info, $fresh$flag_2) = __tact_dict_min_slice_cell($batches, 267);
+    while ($fresh$flag_2) {
+        var ($info'subscriptionsCount) = $SBInfo$_not_null($SBInfo$_load_opt($info));
+        if (($info'subscriptionsCount > 0)) {
+            __tact_nop();
+            __tact_nop();
+            $global_send($SendParameters$_constructor_to_value_mode_body($address, 50000000, 1, $SBPublishCandlestick$_store_cell($SBPublishCandlestick$_constructor_queryId_candlestick_publisher($request'queryId, ($request'candlestick'start, $request'candlestick'end, $request'candlestick'open, $request'candlestick'close, $request'candlestick'high, $request'candlestick'low), $self'publisher))));
+            $subscriptionsCount = $subscriptionsCount + $info'subscriptionsCount;
+        }
+        ($address, $info, $fresh$flag_2) = __tact_dict_next_slice_cell($batches, 267, $address);
+    }
+    int $premium = (10000000 * $subscriptionsCount);
+    raw_reserve(((__tact_my_balance() - $ctx'value) - $premium), 0);
+    $global_send($SendParameters$_constructor_to_value_mode_body($self'publisher, $premium, 128, $DSTPublishCandlestickSuccess$_store_cell($DSTPublishCandlestickSuccess$_constructor_queryId($request'queryId))));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+(((slice, slice, cell, int)), ()) $DataStream$_internal_binary_SBUnsubscribedNotification((slice, slice, cell, int) $self, (int, slice, int) $notification) impure inline {
+    var ($self'publisher, $self'topic, $self'batches, $self'nextBatchId) = $self;
+    var ($notification'queryId, $notification'session, $notification'remainingNotificationsCount) = $notification;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    slice $batch = $ctx'sender;
+    tuple $info = $SBInfo$_load_opt(__tact_dict_get_slice_cell($self'batches, 267, $batch));
+    throw_unless(400, (~ null?($info)));
+    $self'batches~__tact_dict_set_slice_cell(267, $batch, $SBInfo$_store_cell($SBInfo$_constructor_subscriptionsCount(($SBInfo$_get_subscriptionsCount($SBInfo$_not_null($info)) - 1))));
+    int $reimbursement = 0;
+    if (($notification'remainingNotificationsCount > 1)) {
+        $reimbursement = (10000000 * ($notification'remainingNotificationsCount - 1));
+    }
+    $global_send($SendParameters$_constructor_to_value_mode_body($notification'session, $reimbursement, 64, $DSTUnsubscribedNotification$_store_cell($DSTUnsubscribedNotification$_constructor_queryId_remainingNotificationsCount($notification'queryId, $notification'remainingNotificationsCount))));
+    return (($self'publisher, $self'topic, $self'batches, $self'nextBatchId), ());
+}
+
+;;
+;; Get methods of a Contract DataStream
+;;
+
+_ %balance() method_id(104128) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_balance();
+    return res;
+}
+
+_ %storageReserve() method_id(74311) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_storageReserve();
+    return res;
+}
+
+_ %deployBatchDeposit() method_id(85748) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_deployBatchDeposit();
+    return res;
+}
+
+_ %deploySessionDeposit() method_id(107403) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_deploySessionDeposit();
+    return res;
+}
+
+_ %publishCandlestickDeposit() method_id(77189) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_publishCandlestickDeposit();
+    return res;
+}
+
+_ %notificationDeposit() method_id(104184) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_notificationDeposit();
+    return res;
+}
+
+_ %notificationPremium() method_id(80193) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_notificationPremium();
+    return res;
+}
+
+_ %publisherAddress() method_id(107982) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_publisherAddress();
+    return res;
+}
+
+_ %topic() method_id(76995) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_topic();
+    return res;
+}
+
+_ %batches() method_id(71470) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_batches();
+    return res;
+}
+
+_ %nextBatchId() method_id(86386) {
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_nextBatchId();
+    return res;
+}
+
+_ %batchAddress(int $$batchId) method_id(120781) {
+    int $batchId = $$batchId;
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_batchAddress($batchId);
+    return res;
+}
+
+_ %sessionAddress(slice $$subscriber) method_id(128322) {
+    slice $subscriber = __tact_verify_address($$subscriber);
+    var self = $DataStream$_contract_load();
+    var res = self~$DataStream$_fun_sessionAddress($subscriber);
+    return res;
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmQ22zBzZ7nggm8qAP1yNRjujzQX962Gb2ZHssmSHhZRgt";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract DataStream
+;;
+
+((slice, slice, cell, int), int) $DataStream$_contract_router_internal((slice, slice, cell, int) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        
+        ;; Skip 0xFFFFFFFF
+        in_msg~skip_bits(32);
+        
+        ;; Parse op
+        int op = 0;
+        if (slice_bits(in_msg) >= 32) {
+            op = in_msg.preload_uint(32);
+        }
+        
+        ;; Bounced handler for SBDeploy message
+        if (op == 4267613765) {
+            var msg = in_msg~$SBDeploy$_load();
+            self~$DataStream$_receive_binary_bounce_SBDeploy(msg);
+            return (self, true);
+        }
+        
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive DSTDeploy message
+    if (op == 306133030) {
+        var msg = in_msg~$DSTDeploy$_load();
+        self~$DataStream$_internal_binary_DSTDeploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTDeployBatch message
+    if (op == 3012477066) {
+        var msg = in_msg~$DSTDeployBatch$_load();
+        self~$DataStream$_internal_binary_DSTDeployBatch(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SBDeploySuccess message
+    if (op == 1031311118) {
+        var msg = in_msg~$SBDeploySuccess$_load();
+        self~$DataStream$_internal_binary_SBDeploySuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTDeploySession message
+    if (op == 1658160529) {
+        var msg = in_msg~$DSTDeploySession$_load();
+        self~$DataStream$_internal_binary_DSTDeploySession(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESDeploySuccess message
+    if (op == 269942218) {
+        var msg = in_msg~$SESDeploySuccess$_load();
+        self~$DataStream$_internal_binary_SESDeploySuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTSubscribe message
+    if (op == 3216336466) {
+        var msg = in_msg~$DSTSubscribe$_load();
+        self~$DataStream$_internal_binary_DSTSubscribe(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTTopUpSubscription message
+    if (op == 495971614) {
+        var msg = in_msg~$DSTTopUpSubscription$_load();
+        self~$DataStream$_internal_binary_DSTTopUpSubscription(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SBSubscribeSuccess message
+    if (op == 4082513223) {
+        var msg = in_msg~$SBSubscribeSuccess$_load();
+        self~$DataStream$_internal_binary_SBSubscribeSuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTPublishCandlestick message
+    if (op == 990592317) {
+        var msg = in_msg~$DSTPublishCandlestick$_load();
+        self~$DataStream$_internal_binary_DSTPublishCandlestick(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SBUnsubscribedNotification message
+    if (op == 1003141156) {
+        var msg = in_msg~$SBUnsubscribedNotification$_load();
+        self~$DataStream$_internal_binary_SBUnsubscribedNotification(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $DataStream$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$DataStream$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $DataStream$_contract_store(self);
+}

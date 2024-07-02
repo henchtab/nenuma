@@ -1,0 +1,224 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_Brokerage.headers.fc";
+#include "tact_Brokerage.stdlib.fc";
+#include "tact_Brokerage.storage.fc";
+
+;;
+;; Contract Brokerage functions
+;;
+
+(slice) $Brokerage$_contract_init(slice $owner) impure inline_ref {
+    var (($self'owner)) = (null());
+    $self'owner = $owner;
+    return ($self'owner);
+}
+
+((slice), int) $Brokerage$_fun_storageReserve((slice) $self) impure inline_ref {
+    var (($self'owner)) = $self;
+    return (($self'owner), 10000000);
+}
+
+((slice), slice) $Brokerage$_fun_owner((slice) $self) impure inline_ref {
+    var (($self'owner)) = $self;
+    return (($self'owner), $self'owner);
+}
+
+((slice), slice) $Brokerage$_fun_broker((slice) $self, slice $stream) impure inline_ref {
+    var (($self'owner)) = $self;
+    var ($brokerStateInit'code, $brokerStateInit'data) = $Broker$_init_child(__tact_context_sys, $self'owner, $stream);
+    slice $broker = $global_contractAddress(($brokerStateInit'code, $brokerStateInit'data));
+    return (($self'owner), $broker);
+}
+
+((slice), slice) $Brokerage$_fun_account((slice) $self, slice $trader) impure inline_ref {
+    var (($self'owner)) = $self;
+    var ($accountStateInit'code, $accountStateInit'data) = $BrokerageAccount$_init_child(__tact_context_sys, my_address(), $trader);
+    slice $account = $global_contractAddress(($accountStateInit'code, $accountStateInit'data));
+    return (($self'owner), $account);
+}
+
+;;
+;; Receivers of a Contract Brokerage
+;;
+
+(((slice)), ()) $Brokerage$_internal_binary_BRGDeploy((slice) $self, (int) $request) impure inline {
+    var ($self'owner) = $self;
+    var ($request'queryId) = $request;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    ($self'owner)~$Brokerage$_fun_notify($BRGDeploySuccess$_store_cell($BRGDeploySuccess$_constructor_queryId($request'queryId)));
+    return (($self'owner), ());
+}
+
+(((slice)), ()) $Brokerage$_internal_binary_BRGDeployBroker((slice) $self, (int, slice) $request) impure inline {
+    var ($self'owner) = $self;
+    var ($request'queryId, $request'stream) = $request;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(401, ($ctx'value >= 50000000));
+    var ($brokerStateInit'code, $brokerStateInit'data) = $Broker$_init_child(__tact_context_sys, $self'owner, $request'stream);
+    slice $broker = $global_contractAddress(($brokerStateInit'code, $brokerStateInit'data));
+    ($self'owner)~$Brokerage$_fun_forward($broker, $BRKDeploy$_store_cell($BRKDeploy$_constructor_queryId($request'queryId)), true, $StateInit$_as_optional(($brokerStateInit'code, $brokerStateInit'data)));
+    return (($self'owner), ());
+}
+
+(((slice)), ()) $Brokerage$_internal_binary_BRKDeploySuccess((slice) $self, (int, slice) $response) impure inline {
+    var ($self'owner) = $self;
+    var ($response'queryId, $response'stream) = $response;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($brokerStateInit'code, $brokerStateInit'data) = $Broker$_init_child(__tact_context_sys, $self'owner, $response'stream);
+    slice $broker = $global_contractAddress(($brokerStateInit'code, $brokerStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($broker, $ctx'sender) ));
+    ($self'owner)~$Brokerage$_fun_forward($self'owner, $BRGDeployBrokerSuccess$_store_cell($BRGDeployBrokerSuccess$_constructor_queryId_broker($response'queryId, $broker)), false, null());
+    return (($self'owner), ());
+}
+
+(((slice)), ()) $Brokerage$_internal_binary_BRGDeployAccount((slice) $self, (int) $request) impure inline {
+    var ($self'owner) = $self;
+    var ($request'queryId) = $request;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(401, ($ctx'value >= 100000000));
+    var ($accountStateInit'code, $accountStateInit'data) = $BrokerageAccount$_init_child(__tact_context_sys, my_address(), $ctx'sender);
+    slice $account = $global_contractAddress(($accountStateInit'code, $accountStateInit'data));
+    ($self'owner)~$Brokerage$_fun_forward($account, $BRADeploy$_store_cell($BRADeploy$_constructor_queryId($request'queryId)), true, $StateInit$_as_optional(($accountStateInit'code, $accountStateInit'data)));
+    return (($self'owner), ());
+}
+
+(((slice)), ()) $Brokerage$_internal_binary_BRADeploySuccess((slice) $self, (int, slice) $response) impure inline {
+    var ($self'owner) = $self;
+    var ($response'queryId, $response'trader) = $response;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($accountStateInit'code, $accountStateInit'data) = $BrokerageAccount$_init_child(__tact_context_sys, my_address(), $response'trader);
+    slice $account = $global_contractAddress(($accountStateInit'code, $accountStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($account, $ctx'sender) ));
+    ($self'owner)~$Brokerage$_fun_forward($response'trader, $BRGDeployAccountSuccess$_store_cell($BRGDeployAccountSuccess$_constructor_queryId_account($response'queryId, $account)), false, null());
+    return (($self'owner), ());
+}
+
+;;
+;; Get methods of a Contract Brokerage
+;;
+
+_ %storageReserve() method_id(74311) {
+    var self = $Brokerage$_contract_load();
+    var res = self~$Brokerage$_fun_storageReserve();
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $Brokerage$_contract_load();
+    var res = self~$Brokerage$_fun_owner();
+    return res;
+}
+
+_ %broker(slice $$stream) method_id(115185) {
+    slice $stream = __tact_verify_address($$stream);
+    var self = $Brokerage$_contract_load();
+    var res = self~$Brokerage$_fun_broker($stream);
+    return res;
+}
+
+_ %account(slice $$trader) method_id(116095) {
+    slice $trader = __tact_verify_address($$trader);
+    var self = $Brokerage$_contract_load();
+    var res = self~$Brokerage$_fun_account($trader);
+    return res;
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmRZRy9X9U7ewYaBH9TXvPgYvmpPY1ueaMWczMpTZrKjZq";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract Brokerage
+;;
+
+((slice), int) $Brokerage$_contract_router_internal((slice) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive BRGDeploy message
+    if (op == 4195386677) {
+        var msg = in_msg~$BRGDeploy$_load();
+        self~$Brokerage$_internal_binary_BRGDeploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BRGDeployBroker message
+    if (op == 298971134) {
+        var msg = in_msg~$BRGDeployBroker$_load();
+        self~$Brokerage$_internal_binary_BRGDeployBroker(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BRKDeploySuccess message
+    if (op == 2536416450) {
+        var msg = in_msg~$BRKDeploySuccess$_load();
+        self~$Brokerage$_internal_binary_BRKDeploySuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BRGDeployAccount message
+    if (op == 3233956202) {
+        var msg = in_msg~$BRGDeployAccount$_load();
+        self~$Brokerage$_internal_binary_BRGDeployAccount(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BRADeploySuccess message
+    if (op == 3517832790) {
+        var msg = in_msg~$BRADeploySuccess$_load();
+        self~$Brokerage$_internal_binary_BRADeploySuccess(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $Brokerage$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$Brokerage$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $Brokerage$_contract_store(self);
+}

@@ -1,0 +1,223 @@
+;;
+;; Header files for SimpleSubscriber
+;; NOTE: declarations are sorted for optimal order
+;;
+
+;; __tact_verify_address
+slice __tact_verify_address(slice address) inline;
+
+;; __tact_load_address
+(slice, slice) __tact_load_address(slice cs) inline;
+
+;; __tact_load_address_opt
+(slice, slice) __tact_load_address_opt(slice cs) inline;
+
+;; __tact_store_address
+builder __tact_store_address(builder b, slice address) inline;
+
+;; __tact_store_address_opt
+builder __tact_store_address_opt(builder b, slice address) inline;
+
+;; __tact_my_balance
+int __tact_my_balance() inline;
+
+;; __tact_not_null
+forall X -> X __tact_not_null(X x) inline;
+
+;; __tact_context_get
+(int, slice, int, slice) __tact_context_get() inline;
+
+;; __tact_store_bool
+builder __tact_store_bool(builder b, int v) inline;
+
+;; __tact_slice_eq_bits
+int __tact_slice_eq_bits(slice a, slice b) inline;
+
+;; __tact_slice_eq_bits_nullable_one
+int __tact_slice_eq_bits_nullable_one(slice a, slice b) inline;
+
+;; __tact_int_neq_nullable_one
+int __tact_int_neq_nullable_one(int a, int b) inline;
+
+;; $DSTDeploySession$_store
+builder $DSTDeploySession$_store(builder build_0, (int) v) inline;
+
+;; $DSTDeploySession$_store_cell
+cell $DSTDeploySession$_store_cell((int) v) inline;
+
+;; $DSTDeploySession$_load
+(slice, ((int))) $DSTDeploySession$_load(slice sc_0) inline;
+
+;; $DSTDeploySessionSuccess$_load
+(slice, ((int, slice))) $DSTDeploySessionSuccess$_load(slice sc_0) inline;
+
+;; $Candlestick$_store
+builder $Candlestick$_store(builder build_0, (int, int, int, int, int, int) v) inline_ref;
+
+;; $Candlestick$_load
+(slice, ((int, int, int, int, int, int))) $Candlestick$_load(slice sc_0) inline_ref;
+
+;; $SESSubscribe$_store
+builder $SESSubscribe$_store(builder build_0, (int, int) v) inline;
+
+;; $SESSubscribe$_store_cell
+cell $SESSubscribe$_store_cell((int, int) v) inline;
+
+;; $SESSubscribe$_load_bounced
+(slice, ((int))) $SESSubscribe$_load_bounced(slice sc_0) inline;
+
+;; $SESSubscribeSuccess$_load
+(slice, ((int, int))) $SESSubscribeSuccess$_load(slice sc_0) inline;
+
+;; $SESCandlestickPublishedNotification$_load
+(slice, ((int, (int, int, int, int, int, int), int))) $SESCandlestickPublishedNotification$_load(slice sc_0) inline;
+
+;; $SESUnsubscribedNotification$_load
+(slice, ((int, int))) $SESUnsubscribedNotification$_load(slice sc_0) inline;
+
+;; $SESUnsubscribe$_store
+builder $SESUnsubscribe$_store(builder build_0, (int) v) inline;
+
+;; $SESUnsubscribe$_store_cell
+cell $SESUnsubscribe$_store_cell((int) v) inline;
+
+;; $SESUnsubscribe$_load
+(slice, ((int))) $SESUnsubscribe$_load(slice sc_0) inline;
+
+;; $SESDestroy$_store
+builder $SESDestroy$_store(builder build_0, (int) v) inline;
+
+;; $SESDestroy$_store_cell
+cell $SESDestroy$_store_cell((int) v) inline;
+
+;; $SESDestroy$_load
+(slice, ((int))) $SESDestroy$_load(slice sc_0) inline;
+
+;; $SESDestroySuccess$_load
+(slice, ((int))) $SESDestroySuccess$_load(slice sc_0) inline;
+
+;; $SubscriberDestroyedNotification$_store
+builder $SubscriberDestroyedNotification$_store(builder build_0, (int) v) inline;
+
+;; $SubscriberDestroyedNotification$_store_cell
+cell $SubscriberDestroyedNotification$_store_cell((int) v) inline;
+
+;; $SubscriberCheckTimeout$_load
+(slice, ((int))) $SubscriberCheckTimeout$_load(slice sc_0) inline;
+
+;; $SubscriberTimeoutExceeded$_store
+builder $SubscriberTimeoutExceeded$_store(builder build_0, (int) v) inline;
+
+;; $SubscriberTimeoutExceeded$_store_cell
+cell $SubscriberTimeoutExceeded$_store_cell((int) v) inline;
+
+;; $SimpleSubscriberDeploy$_load
+(slice, ((int, slice, int, int))) $SimpleSubscriberDeploy$_load(slice sc_0) inline;
+
+;; $SimpleSubscriberDeploySuccess$_store
+builder $SimpleSubscriberDeploySuccess$_store(builder build_0, (int, int) v) inline;
+
+;; $SimpleSubscriberDeploySuccess$_store_cell
+cell $SimpleSubscriberDeploySuccess$_store_cell((int, int) v) inline;
+
+;; $Candlestick$_not_null
+((int, int, int, int, int, int)) $Candlestick$_not_null(tuple v) inline;
+
+;; $SimpleSubscriber$_store
+builder $SimpleSubscriber$_store(builder build_0, (slice, slice, int, slice, int, int, tuple) v) inline;
+
+;; $Candlestick$_as_optional
+tuple $Candlestick$_as_optional((int, int, int, int, int, int) v) inline;
+
+;; $SimpleSubscriber$_load
+(slice, ((slice, slice, int, slice, int, int, tuple))) $SimpleSubscriber$_load(slice sc_0) inline;
+
+;; $Candlestick$_to_tuple
+tuple $Candlestick$_to_tuple(((int, int, int, int, int, int)) v) inline;
+
+;; $Candlestick$_to_opt_tuple
+tuple $Candlestick$_to_opt_tuple(tuple v) inline;
+
+;; $Candlestick$_to_opt_external
+tuple $Candlestick$_to_opt_external(tuple v) inline;
+
+;; $SimpleSubscriber$init$_load
+(slice, ((slice, int))) $SimpleSubscriber$init$_load(slice sc_0) inline;
+
+;; $SimpleSubscriber$_contract_init
+(slice, slice, int, slice, int, int, tuple) $SimpleSubscriber$_contract_init(slice $deployer, int $subscriberId) impure inline_ref;
+
+;; $SimpleSubscriber$_contract_load
+(slice, slice, int, slice, int, int, tuple) $SimpleSubscriber$_contract_load() impure inline_ref;
+
+;; $SimpleSubscriber$_contract_store
+() $SimpleSubscriber$_contract_store((slice, slice, int, slice, int, int, tuple) v) impure inline;
+
+;; $global_send
+() $global_send((int, slice, int, int, cell, cell, cell) $params) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_latestCandlestick
+((slice, slice, int, slice, int, int, tuple), tuple) $SimpleSubscriber$_fun_latestCandlestick((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_handleCandlestick
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_handleCandlestick((slice, slice, int, slice, int, int, tuple) $self, int $queryId, (int, int, int, int, int, int) $candlestick) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_handleDestroy
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_handleDestroy((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_balance
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_fun_balance((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_deployerAddress
+((slice, slice, int, slice, int, int, tuple), slice) $SimpleSubscriber$_fun_deployerAddress((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_streamAddress
+((slice, slice, int, slice, int, int, tuple), slice) $SimpleSubscriber$_fun_streamAddress((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_notificationsCount
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_fun_notificationsCount((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_expiration
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_fun_expiration((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_sessionAddress
+((slice, slice, int, slice, int, int, tuple), slice) $SimpleSubscriber$_fun_sessionAddress((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref;
+
+;; $SendParameters$_constructor_to_value_mode_body
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body(slice to, int value, int mode, cell body) inline;
+
+;; $DSTDeploySession$_constructor_queryId
+((int)) $DSTDeploySession$_constructor_queryId(int queryId) inline;
+
+;; $SimpleSubscriber$_fun_deploySession
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_deploySession((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref;
+
+;; $SimpleSubscriber$_fun_subscribeStream
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_subscribeStream((slice, slice, int, slice, int, int, tuple) $self, int $queryId, slice $stream, int $notificationsCount, int $expiration) impure inline_ref;
+
+;; $SubscriberDestroyedNotification$_constructor_queryId
+((int)) $SubscriberDestroyedNotification$_constructor_queryId(int queryId) inline;
+
+;; $SimpleSubscriber$_fun_destroy
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_destroy((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref;
+
+;; $SESUnsubscribe$_constructor_queryId
+((int)) $SESUnsubscribe$_constructor_queryId(int queryId) inline;
+
+;; $SimpleSubscriber$_fun_unsubscribeSession
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_unsubscribeSession((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref;
+
+;; $SESDestroy$_constructor_queryId
+((int)) $SESDestroy$_constructor_queryId(int queryId) inline;
+
+;; $SimpleSubscriber$_fun_destroySession
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_destroySession((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref;
+
+;; $SimpleSubscriberDeploySuccess$_constructor_queryId_subscriberId
+((int, int)) $SimpleSubscriberDeploySuccess$_constructor_queryId_subscriberId(int queryId, int subscriberId) inline;
+
+;; $SESSubscribe$_constructor_queryId_notificationsCount
+((int, int)) $SESSubscribe$_constructor_queryId_notificationsCount(int queryId, int notificationsCount) inline;
+
+;; $SubscriberTimeoutExceeded$_constructor_queryId
+((int)) $SubscriberTimeoutExceeded$_constructor_queryId(int queryId) inline;

@@ -75,6 +75,10 @@ contract Broker {
     return self.payout;
   }
 
+  get fun payoutRatio(): Fraction {
+    return self.payoutRatio;
+  }
+
   get fun nextOptionId(): Int {
     return self.nextOptionId;
   }

@@ -1,0 +1,401 @@
+;;
+;; Type: StateInit
+;; TLB: _ code:^cell data:^cell = StateInit
+;;
+
+((cell, cell)) $StateInit$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (cell vvv'code, cell vvv'data) = __tact_tuple_destroy_2(v);
+    return (vvv'code, vvv'data);
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ bounce:bool to:address value:int257 mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell = SendParameters
+;;
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_bounce_to_value_mode_body_code_data(int bounce, slice to, int value, int mode, cell body, cell code, cell data) inline {
+    return (bounce, to, value, mode, body, code, data);
+}
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body(slice to, int value, int mode, cell body) inline {
+    return (true, to, value, mode, body, null(), null());
+}
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body_data_code(slice to, int value, int mode, cell body, cell data, cell code) inline {
+    return (true, to, value, mode, body, code, data);
+}
+
+;;
+;; Type: BRKDeploy
+;; Header: 0x51708f5d
+;; TLB: brk_deploy#51708f5d queryId:uint64 = BRKDeploy
+;;
+
+(slice, ((int))) $BRKDeploy$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1366331229);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: BRKDeploySuccess
+;; Header: 0x972ea4c2
+;; TLB: brk_deploy_success#972ea4c2 queryId:uint64 stream:address = BRKDeploySuccess
+;;
+
+builder $BRKDeploySuccess$_store(builder build_0, (int, slice) v) inline {
+    var (v'queryId, v'stream) = v;
+    build_0 = store_uint(build_0, 2536416450, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'stream);
+    return build_0;
+}
+
+cell $BRKDeploySuccess$_store_cell((int, slice) v) inline {
+    return $BRKDeploySuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice)) $BRKDeploySuccess$_constructor_queryId_stream(int queryId, slice stream) inline {
+    return (queryId, stream);
+}
+
+;;
+;; Type: BRKDeposit
+;; Header: 0x7fa9b2b4
+;; TLB: brk_deposit#7fa9b2b4 queryId:uint64 = BRKDeposit
+;;
+
+(slice, ((int))) $BRKDeposit$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2141827764);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: BRKDepositSuccess
+;; Header: 0x7b0c9548
+;; TLB: brk_deposit_success#7b0c9548 queryId:uint64 = BRKDepositSuccess
+;;
+
+builder $BRKDepositSuccess$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2064422216, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $BRKDepositSuccess$_store_cell((int) v) inline {
+    return $BRKDepositSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $BRKDepositSuccess$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: BRKWithdraw
+;; Header: 0x20d2e1b7
+;; TLB: brk_withdraw#20d2e1b7 queryId:uint64 = BRKWithdraw
+;;
+
+(slice, ((int))) $BRKWithdraw$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 550691255);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: BRKWithdrawSuccess
+;; Header: 0x9e3d0a1a
+;; TLB: brk_withdraw_success#9e3d0a1a queryId:uint64 = BRKWithdrawSuccess
+;;
+
+builder $BRKWithdrawSuccess$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 2654800410, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $BRKWithdrawSuccess$_store_cell((int) v) inline {
+    return $BRKWithdrawSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $BRKWithdrawSuccess$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: Fraction
+;; TLB: _ nominator:int257 denominator:int257 = Fraction
+;;
+
+builder $Fraction$_store(builder build_0, (int, int) v) inline {
+    var (v'nominator, v'denominator) = v;
+    build_0 = build_0.store_int(v'nominator, 257);
+    build_0 = build_0.store_int(v'denominator, 257);
+    return build_0;
+}
+
+(slice, ((int, int))) $Fraction$_load(slice sc_0) inline {
+    var v'nominator = sc_0~load_int(257);
+    var v'denominator = sc_0~load_int(257);
+    return (sc_0, (v'nominator, v'denominator));
+}
+
+(int, int) $Fraction$_to_external(((int, int)) v) inline {
+    var (v'nominator, v'denominator) = v; 
+    return (v'nominator, v'denominator);
+}
+
+((int, int)) $Fraction$_constructor_nominator_denominator(int nominator, int denominator) inline {
+    return (nominator, denominator);
+}
+
+;;
+;; Type: CashOrNothingOptionDraftAgreement
+;; TLB: _ holder:address initiation:int257 expiration:int257 optionType:bool investment:int257 = CashOrNothingOptionDraftAgreement
+;;
+
+(slice, ((slice, int, int, int, int))) $CashOrNothingOptionDraftAgreement$_load(slice sc_0) inline {
+    var v'holder = sc_0~__tact_load_address();
+    var v'initiation = sc_0~load_int(257);
+    var v'expiration = sc_0~load_int(257);
+    var v'optionType = sc_0~load_int(1);
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'investment = sc_1~load_int(257);
+    return (sc_0, (v'holder, v'initiation, v'expiration, v'optionType, v'investment));
+}
+
+((slice, int, int, int, int)) $CashOrNothingOptionDraftAgreement$_tensor_cast((slice, int, int, int, int) v) asm "NOP";
+
+;;
+;; Type: BrokerDeployOption
+;; Header: 0x4605e3d9
+;; TLB: broker_deploy_option#4605e3d9 queryId:uint64 draft:CashOrNothingOptionDraftAgreement{holder:address,initiation:int257,expiration:int257,optionType:bool,investment:int257} = BrokerDeployOption
+;;
+
+(slice, ((int, (slice, int, int, int, int)))) $BrokerDeployOption$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1174791129);
+    var v'queryId = sc_0~load_uint(64);
+    var v'draft = sc_0~$CashOrNothingOptionDraftAgreement$_load();
+    return (sc_0, (v'queryId, v'draft));
+}
+
+;;
+;; Type: BrokerDeployOptionSuccess
+;; Header: 0x9156a41b
+;; TLB: broker_deploy_option_success#9156a41b queryId:uint64 stream:address option:address = BrokerDeployOptionSuccess
+;;
+
+builder $BrokerDeployOptionSuccess$_store(builder build_0, (int, slice, slice) v) inline {
+    var (v'queryId, v'stream, v'option) = v;
+    build_0 = store_uint(build_0, 2438374427, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'stream);
+    build_0 = __tact_store_address(build_0, v'option);
+    return build_0;
+}
+
+cell $BrokerDeployOptionSuccess$_store_cell((int, slice, slice) v) inline {
+    return $BrokerDeployOptionSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, slice)) $BrokerDeployOptionSuccess$_constructor_queryId_stream_option(int queryId, slice stream, slice option) inline {
+    return (queryId, stream, option);
+}
+
+;;
+;; Type: CashOrNothingOptionAgreement
+;; TLB: _ holder:address writer:address initiation:uint32 expiration:uint32 optionType:bool investment:coins payout:coins = CashOrNothingOptionAgreement
+;;
+
+builder $CashOrNothingOptionAgreement$_store(builder build_0, (slice, slice, int, int, int, int, int) v) inline_ref {
+    var (v'holder, v'writer, v'initiation, v'expiration, v'optionType, v'investment, v'payout) = v;
+    build_0 = __tact_store_address(build_0, v'holder);
+    build_0 = __tact_store_address(build_0, v'writer);
+    build_0 = build_0.store_uint(v'initiation, 32);
+    build_0 = build_0.store_uint(v'expiration, 32);
+    build_0 = build_0.store_int(v'optionType, 1);
+    build_0 = build_0.store_coins(v'investment);
+    build_0 = build_0.store_coins(v'payout);
+    return build_0;
+}
+
+((slice, slice, int, int, int, int, int)) $CashOrNothingOptionAgreement$_constructor_holder_writer_initiation_expiration_optionType_investment_payout(slice holder, slice writer, int initiation, int expiration, int optionType, int investment, int payout) inline {
+    return (holder, writer, initiation, expiration, optionType, investment, payout);
+}
+
+;;
+;; Type: CashOrNothingOptionDeploy
+;; Header: 0xc74f6284
+;; TLB: cash_or_nothing_option_deploy#c74f6284 queryId:uint64 stream:address agreement:CashOrNothingOptionAgreement{holder:address,writer:address,initiation:uint32,expiration:uint32,optionType:bool,investment:coins,payout:coins} = CashOrNothingOptionDeploy
+;;
+
+builder $CashOrNothingOptionDeploy$_store(builder build_0, (int, slice, (slice, slice, int, int, int, int, int)) v) inline {
+    var (v'queryId, v'stream, (v'agreement'holder, v'agreement'writer, v'agreement'initiation, v'agreement'expiration, v'agreement'optionType, v'agreement'investment, v'agreement'payout)) = v;
+    build_0 = store_uint(build_0, 3343868548, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'stream);
+    var build_1 = begin_cell();
+    build_1 = $CashOrNothingOptionAgreement$_store(build_1, (v'agreement'holder, v'agreement'writer, v'agreement'initiation, v'agreement'expiration, v'agreement'optionType, v'agreement'investment, v'agreement'payout));
+    build_0 = store_ref(build_0, build_1.end_cell());
+    return build_0;
+}
+
+cell $CashOrNothingOptionDeploy$_store_cell((int, slice, (slice, slice, int, int, int, int, int)) v) inline {
+    return $CashOrNothingOptionDeploy$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, (slice, slice, int, int, int, int, int))) $CashOrNothingOptionDeploy$_constructor_queryId_stream_agreement(int queryId, slice stream, (slice, slice, int, int, int, int, int) agreement) inline {
+    return (queryId, stream, agreement);
+}
+
+;;
+;; Type: CashOrNothingOptionDeploySuccess
+;; Header: 0x9f1c052d
+;; TLB: cash_or_nothing_option_deploy_success#9f1c052d queryId:uint64 optionId:int257 holder:address = CashOrNothingOptionDeploySuccess
+;;
+
+(slice, ((int, int, slice))) $CashOrNothingOptionDeploySuccess$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2669413677);
+    var v'queryId = sc_0~load_uint(64);
+    var v'optionId = sc_0~load_int(257);
+    var v'holder = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'optionId, v'holder));
+}
+
+;;
+;; Type: CashOrNothingOptionSettledInMoneyNotification
+;; Header: 0xff379604
+;; TLB: cash_or_nothing_option_settled_in_money_notification#ff379604 queryId:uint64 = CashOrNothingOptionSettledInMoneyNotification
+;;
+
+(slice, ((int))) $CashOrNothingOptionSettledInMoneyNotification$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 4281832964);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: CashOrNothingOptionSettledOutMoneyNotification
+;; Header: 0x1800dc14
+;; TLB: cash_or_nothing_option_settled_out_money_notification#1800dc14 queryId:uint64 = CashOrNothingOptionSettledOutMoneyNotification
+;;
+
+(slice, ((int))) $CashOrNothingOptionSettledOutMoneyNotification$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 402709524);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: CashOrNothingOptionSettledAtMoneyNotification
+;; Header: 0x50240b79
+;; TLB: cash_or_nothing_option_settled_at_money_notification#50240b79 queryId:uint64 = CashOrNothingOptionSettledAtMoneyNotification
+;;
+
+(slice, ((int))) $CashOrNothingOptionSettledAtMoneyNotification$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1344539513);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: SubscriberDestroyedNotification
+;; Header: 0x86560ea9
+;; TLB: subscriber_destroyed_notification#86560ea9 queryId:uint64 = SubscriberDestroyedNotification
+;;
+
+(slice, ((int))) $SubscriberDestroyedNotification$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2253786793);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: Broker
+;;
+
+builder $Broker$_store(builder build_0, (slice, slice, (int, int), (int, int), int) v) inline {
+    var (v'owner, v'stream, (v'payout'nominator, v'payout'denominator), (v'payoutRatio'nominator, v'payoutRatio'denominator), v'nextOptionId) = v;
+    build_0 = __tact_store_address(build_0, v'owner);
+    build_0 = __tact_store_address(build_0, v'stream);
+    var build_1 = begin_cell();
+    build_1 = $Fraction$_store(build_1, (v'payout'nominator, v'payout'denominator));
+    var build_2 = begin_cell();
+    build_2 = $Fraction$_store(build_2, (v'payoutRatio'nominator, v'payoutRatio'denominator));
+    build_2 = build_2.store_int(v'nextOptionId, 257);
+    build_1 = store_ref(build_1, build_2.end_cell());
+    build_0 = store_ref(build_0, build_1.end_cell());
+    return build_0;
+}
+
+(slice, ((slice, slice, (int, int), (int, int), int))) $Broker$_load(slice sc_0) inline {
+    var v'owner = sc_0~__tact_load_address();
+    var v'stream = sc_0~__tact_load_address();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'payout = sc_1~$Fraction$_load();
+    slice sc_2 = sc_1~load_ref().begin_parse();
+    var v'payoutRatio = sc_2~$Fraction$_load();
+    var v'nextOptionId = sc_2~load_int(257);
+    return (sc_0, (v'owner, v'stream, v'payout, v'payoutRatio, v'nextOptionId));
+}
+
+(slice, ((slice, slice))) $Broker$init$_load(slice sc_0) inline {
+    var v'owner = sc_0~__tact_load_address();
+    var v'stream = sc_0~__tact_load_address();
+    return (sc_0, (v'owner, v'stream));
+}
+
+(slice, slice, (int, int), (int, int), int) $Broker$_contract_load() impure inline_ref {
+    slice $sc = get_data().begin_parse();
+    __tact_context_sys = $sc~load_ref();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$Broker$_load();
+    } else {
+        ;; Allow only workchain deployments
+        throw_unless(137, my_address().preload_uint(11) == 1024);
+        (slice owner, slice stream) = $sc~$Broker$init$_load();
+        $sc.end_parse();
+        return $Broker$_contract_init(owner, stream);
+    }
+}
+
+() $Broker$_contract_store((slice, slice, (int, int), (int, int), int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_ref(__tact_context_sys);
+    b = b.store_int(true, 1);
+    b = $Broker$_store(b, v);
+    set_data(b.end_cell());
+}
+
+;;
+;; Type: CashOrNothingOption
+;;
+
+builder $CashOrNothingOption$init$_store(builder build_0, (slice, int) v) inline {
+    var (v'deployer, v'optionId) = v;
+    build_0 = __tact_store_address(build_0, v'deployer);
+    build_0 = build_0.store_int(v'optionId, 257);
+    return build_0;
+}
+
+(cell, cell) $CashOrNothingOption$_init_child(cell sys', slice $deployer, int $optionId) inline_ref {
+    slice sc' = sys'.begin_parse();
+    cell source = sc'~load_dict();
+    cell contracts = new_dict();
+    
+    ;; Contract Code: CashOrNothingOption
+    cell mine = __tact_dict_get_code(source, 45553);
+    contracts = __tact_dict_set_code(contracts, 45553, mine);
+    
+    ;; Build cell
+    builder b = begin_cell();
+    b = b.store_ref(begin_cell().store_dict(contracts).end_cell());
+    b = b.store_int(false, 1);
+    b = $CashOrNothingOption$init$_store(b, ($deployer, $optionId));
+    return (mine, b.end_cell());
+}

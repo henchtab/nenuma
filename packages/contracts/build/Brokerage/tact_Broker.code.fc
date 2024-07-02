@@ -1,0 +1,367 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_Broker.headers.fc";
+#include "tact_Broker.stdlib.fc";
+#include "tact_Broker.constants.fc";
+#include "tact_Broker.storage.fc";
+
+;;
+;; Contract Broker functions
+;;
+
+(slice, slice, (int, int), (int, int), int) $Broker$_contract_init(slice $owner, slice $stream) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = (null(), null(), null(), null(), null());
+    $self'owner = $owner;
+    $self'stream = $stream;
+    ($self'payout'nominator, $self'payout'denominator) = $Fraction$_constructor_nominator_denominator(74, 100);
+    ($self'payoutRatio'nominator, $self'payoutRatio'denominator) = $Fraction$_constructor_nominator_denominator(1, 10);
+    $self'nextOptionId = 0;
+    return ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId);
+}
+
+((slice, slice, (int, int), (int, int), int), int) $Broker$_fun_balance((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), __tact_my_balance());
+}
+
+((slice, slice, (int, int), (int, int), int), int) $Broker$_fun_storageReserve((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), 10000000);
+}
+
+((slice, slice, (int, int), (int, int), int), int) $Broker$_fun_depositDeposit((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), 50000000);
+}
+
+((slice, slice, (int, int), (int, int), int), slice) $Broker$_fun_owner((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), $self'owner);
+}
+
+((slice, slice, (int, int), (int, int), int), slice) $Broker$_fun_stream((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), $self'stream);
+}
+
+((slice, slice, (int, int), (int, int), int), (int, int)) $Broker$_fun_payout((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ($self'payout'nominator, $self'payout'denominator));
+}
+
+((slice, slice, (int, int), (int, int), int), (int, int)) $Broker$_fun_payoutRatio((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ($self'payoutRatio'nominator, $self'payoutRatio'denominator));
+}
+
+((slice, slice, (int, int), (int, int), int), int) $Broker$_fun_nextOptionId((slice, slice, (int, int), (int, int), int) $self) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), $self'nextOptionId);
+}
+
+((slice, slice, (int, int), (int, int), int), slice) $Broker$_fun_optionAddress((slice, slice, (int, int), (int, int), int) $self, int $optionId) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    var ($optionStateInit'code, $optionStateInit'data) = $CashOrNothingOption$_init_child(__tact_context_sys, my_address(), $optionId);
+    slice $option = $global_contractAddress(($optionStateInit'code, $optionStateInit'data));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), $option);
+}
+
+((slice, slice, (int, int), (int, int), int), ()) $Broker$_fun_validateDraftAgreement((slice, slice, (int, int), (int, int), int) $self, (slice, int, int, int, int) $draft) impure inline_ref {
+    var (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)) = $self;
+    var (($draft'holder, $draft'initiation, $draft'expiration, $draft'optionType, $draft'investment)) = $draft;
+    throw_unless(600, (($draft'initiation % 60) == 0));
+    throw_unless(601, ($draft'initiation >= now()));
+    throw_unless(602, ($draft'initiation <= (now() + 300)));
+    throw_unless(603, (($draft'expiration % 60) == 0));
+    throw_unless(604, ($draft'expiration >= ($draft'initiation + 60)));
+    throw_unless(605, ($draft'expiration <= ($draft'initiation + 300)));
+    throw_unless(606, ($draft'investment >= 1000000000));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+;;
+;; Receivers of a Contract Broker
+;;
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_BRKDeploy((slice, slice, (int, int), (int, int), int) $self, (int) $request) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)~$Broker$_fun_notify($BRKDeploySuccess$_store_cell($BRKDeploySuccess$_constructor_queryId_stream($request'queryId, $self'stream)));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_BRKDeposit((slice, slice, (int, int), (int, int), int) $self, (int) $request) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(401, ($ctx'value > 50000000));
+    raw_reserve(($ctx'value - 50000000), 4);
+    $global_send($SendParameters$_constructor_to_value_mode_body($self'owner, 0, 128, $BRKDepositSuccess$_store_cell($BRKDepositSuccess$_constructor_queryId($request'queryId))));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_BRKWithdraw((slice, slice, (int, int), (int, int), int) $self, (int) $request) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'owner, $ctx'sender) ));
+    throw_unless(401, ($ctx'value >= 50000000));
+    raw_reserve(10000000, 0);
+    $global_send($SendParameters$_constructor_to_value_mode_body($self'owner, 0, 128, $BRKWithdrawSuccess$_store_cell($BRKWithdrawSuccess$_constructor_queryId($request'queryId))));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_BrokerDeployOption((slice, slice, (int, int), (int, int), int) $self, (int, (slice, int, int, int, int)) $request) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($request'queryId, ($request'draft'holder, $request'draft'initiation, $request'draft'expiration, $request'draft'optionType, $request'draft'investment)) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId)~$Broker$_fun_validateDraftAgreement($CashOrNothingOptionDraftAgreement$_tensor_cast(($request'draft'holder, $request'draft'initiation, $request'draft'expiration, $request'draft'optionType, $request'draft'investment)));
+    int $notificationsCount = ((($request'draft'expiration - now()) / 60) + 1);
+    __tact_nop();
+    __tact_nop();
+    throw_unless(607, ($ctx'value >= ((((850000000 + $request'draft'investment) + 50000000) + 200000000) + (30000000 * $notificationsCount))));
+    int $payout = (($request'draft'investment * $self'payout'nominator) / $self'payout'denominator);
+    throw_unless(608, ($payout <= (((__tact_my_balance() - 10000000) * $self'payoutRatio'nominator) / $self'payoutRatio'denominator)));
+    __tact_nop();
+    var ($optionStateInit'code, $optionStateInit'data) = $CashOrNothingOption$_init_child(__tact_context_sys, my_address(), $self'nextOptionId);
+    __tact_nop();
+    __tact_nop();
+    slice $option = $global_contractAddress(($optionStateInit'code, $optionStateInit'data));
+    __tact_nop();
+    __tact_nop();
+    var ($agreement'holder, $agreement'writer, $agreement'initiation, $agreement'expiration, $agreement'optionType, $agreement'investment, $agreement'payout) = $CashOrNothingOptionAgreement$_constructor_holder_writer_initiation_expiration_optionType_investment_payout($request'draft'holder, my_address(), $request'draft'initiation, $request'draft'expiration, $request'draft'optionType, $request'draft'investment, $payout);
+    $global_send($SendParameters$_constructor_to_value_mode_body_data_code($option, (((((750000000 + $agreement'investment) + $payout) + 50000000) + 200000000) + (30000000 * $notificationsCount)), 16, $CashOrNothingOptionDeploy$_store_cell($CashOrNothingOptionDeploy$_constructor_queryId_stream_agreement($request'queryId, $self'stream, ($agreement'holder, $agreement'writer, $agreement'initiation, $agreement'expiration, $agreement'optionType, $agreement'investment, $agreement'payout))), $optionStateInit'data, $optionStateInit'code));
+    raw_reserve($payout, 12);
+    $self'nextOptionId = $self'nextOptionId + 1;
+    $global_send($SendParameters$_constructor_to_value_mode_body($ctx'sender, 0, 128, __gen_cell_comment_73cc63e7c356e26074f0ebda69a9c9185fb7800f91f62bc094ce49e050523850()));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_CashOrNothingOptionDeploySuccess((slice, slice, (int, int), (int, int), int) $self, (int, int, slice) $response) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($response'queryId, $response'optionId, $response'holder) = $response;
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    var ($optionStateInit'code, $optionStateInit'data) = $CashOrNothingOption$_init_child(__tact_context_sys, my_address(), $response'optionId);
+    slice $option = $global_contractAddress(($optionStateInit'code, $optionStateInit'data));
+    throw_unless(400, ( __tact_slice_eq_bits($option, $ctx'sender) ));
+    $global_send($SendParameters$_constructor_to_value_mode_body($response'holder, 0, 64, $BrokerDeployOptionSuccess$_store_cell($BrokerDeployOptionSuccess$_constructor_queryId_stream_option($response'queryId, $self'stream, $ctx'sender))));
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_CashOrNothingOptionSettledInMoneyNotification((slice, slice, (int, int), (int, int), int) $self, (int) $notification) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($notification'queryId) = $notification;
+    __tact_nop();
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_CashOrNothingOptionSettledOutMoneyNotification((slice, slice, (int, int), (int, int), int) $self, (int) $notification) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($notification'queryId) = $notification;
+    __tact_nop();
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_CashOrNothingOptionSettledAtMoneyNotification((slice, slice, (int, int), (int, int), int) $self, (int) $notification) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($notification'queryId) = $notification;
+    __tact_nop();
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+(((slice, slice, (int, int), (int, int), int)), ()) $Broker$_internal_binary_SubscriberDestroyedNotification((slice, slice, (int, int), (int, int), int) $self, (int) $notification) impure inline {
+    var ($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId) = $self;
+    var ($notification'queryId) = $notification;
+    __tact_nop();
+    return (($self'owner, $self'stream, ($self'payout'nominator, $self'payout'denominator), ($self'payoutRatio'nominator, $self'payoutRatio'denominator), $self'nextOptionId), ());
+}
+
+;;
+;; Get methods of a Contract Broker
+;;
+
+_ %balance() method_id(104128) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_balance();
+    return res;
+}
+
+_ %storageReserve() method_id(74311) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_storageReserve();
+    return res;
+}
+
+_ %depositDeposit() method_id(124969) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_depositDeposit();
+    return res;
+}
+
+_ %owner() method_id(83229) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_owner();
+    return res;
+}
+
+_ %stream() method_id(83306) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_stream();
+    return res;
+}
+
+_ %payout() method_id(80374) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_payout();
+    return $Fraction$_to_external(res);
+}
+
+_ %payoutRatio() method_id(84642) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_payoutRatio();
+    return $Fraction$_to_external(res);
+}
+
+_ %nextOptionId() method_id(109031) {
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_nextOptionId();
+    return res;
+}
+
+_ %optionAddress(int $$optionId) method_id(107992) {
+    int $optionId = $$optionId;
+    var self = $Broker$_contract_load();
+    var res = self~$Broker$_fun_optionAddress($optionId);
+    return res;
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmRgnjunwhQraZL8YRymX5wcbdUhmbeMU4373Ji4wXCmwe";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract Broker
+;;
+
+((slice, slice, (int, int), (int, int), int), int) $Broker$_contract_router_internal((slice, slice, (int, int), (int, int), int) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive BRKDeploy message
+    if (op == 1366331229) {
+        var msg = in_msg~$BRKDeploy$_load();
+        self~$Broker$_internal_binary_BRKDeploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BRKDeposit message
+    if (op == 2141827764) {
+        var msg = in_msg~$BRKDeposit$_load();
+        self~$Broker$_internal_binary_BRKDeposit(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BRKWithdraw message
+    if (op == 550691255) {
+        var msg = in_msg~$BRKWithdraw$_load();
+        self~$Broker$_internal_binary_BRKWithdraw(msg);
+        return (self, true);
+    }
+    
+    ;; Receive BrokerDeployOption message
+    if (op == 1174791129) {
+        var msg = in_msg~$BrokerDeployOption$_load();
+        self~$Broker$_internal_binary_BrokerDeployOption(msg);
+        return (self, true);
+    }
+    
+    ;; Receive CashOrNothingOptionDeploySuccess message
+    if (op == 2669413677) {
+        var msg = in_msg~$CashOrNothingOptionDeploySuccess$_load();
+        self~$Broker$_internal_binary_CashOrNothingOptionDeploySuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive CashOrNothingOptionSettledInMoneyNotification message
+    if (op == 4281832964) {
+        var msg = in_msg~$CashOrNothingOptionSettledInMoneyNotification$_load();
+        self~$Broker$_internal_binary_CashOrNothingOptionSettledInMoneyNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive CashOrNothingOptionSettledOutMoneyNotification message
+    if (op == 402709524) {
+        var msg = in_msg~$CashOrNothingOptionSettledOutMoneyNotification$_load();
+        self~$Broker$_internal_binary_CashOrNothingOptionSettledOutMoneyNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive CashOrNothingOptionSettledAtMoneyNotification message
+    if (op == 1344539513) {
+        var msg = in_msg~$CashOrNothingOptionSettledAtMoneyNotification$_load();
+        self~$Broker$_internal_binary_CashOrNothingOptionSettledAtMoneyNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SubscriberDestroyedNotification message
+    if (op == 2253786793) {
+        var msg = in_msg~$SubscriberDestroyedNotification$_load();
+        self~$Broker$_internal_binary_SubscriberDestroyedNotification(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $Broker$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$Broker$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $Broker$_contract_store(self);
+}

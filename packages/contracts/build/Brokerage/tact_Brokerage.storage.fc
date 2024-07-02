@@ -1,0 +1,297 @@
+;;
+;; Type: StateInit
+;; TLB: _ code:^cell data:^cell = StateInit
+;;
+
+((cell, cell)) $StateInit$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (cell vvv'code, cell vvv'data) = __tact_tuple_destroy_2(v);
+    return (vvv'code, vvv'data);
+}
+
+tuple $StateInit$_as_optional((cell, cell) v) inline {
+    var (v'code, v'data) = v;
+    return __tact_tuple_create_2(v'code, v'data);
+}
+
+;;
+;; Type: SendParameters
+;; TLB: _ bounce:bool to:address value:int257 mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell = SendParameters
+;;
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_bounce_to_value_mode_body_code_data(int bounce, slice to, int value, int mode, cell body, cell code, cell data) inline {
+    return (bounce, to, value, mode, body, code, data);
+}
+
+;;
+;; Type: BRGDeploy
+;; Header: 0xfa108535
+;; TLB: brg_deploy#fa108535 queryId:uint64 = BRGDeploy
+;;
+
+(slice, ((int))) $BRGDeploy$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 4195386677);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: BRGDeploySuccess
+;; Header: 0xbb564d93
+;; TLB: brg_deploy_success#bb564d93 queryId:uint64 = BRGDeploySuccess
+;;
+
+builder $BRGDeploySuccess$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 3142995347, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $BRGDeploySuccess$_store_cell((int) v) inline {
+    return $BRGDeploySuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $BRGDeploySuccess$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: BRGDeployBroker
+;; Header: 0x11d1effe
+;; TLB: brg_deploy_broker#11d1effe queryId:uint64 stream:address = BRGDeployBroker
+;;
+
+(slice, ((int, slice))) $BRGDeployBroker$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 298971134);
+    var v'queryId = sc_0~load_uint(64);
+    var v'stream = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'stream));
+}
+
+;;
+;; Type: BRKDeploy
+;; Header: 0x51708f5d
+;; TLB: brk_deploy#51708f5d queryId:uint64 = BRKDeploy
+;;
+
+builder $BRKDeploy$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 1366331229, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $BRKDeploy$_store_cell((int) v) inline {
+    return $BRKDeploy$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $BRKDeploy$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: BRKDeploySuccess
+;; Header: 0x972ea4c2
+;; TLB: brk_deploy_success#972ea4c2 queryId:uint64 stream:address = BRKDeploySuccess
+;;
+
+(slice, ((int, slice))) $BRKDeploySuccess$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2536416450);
+    var v'queryId = sc_0~load_uint(64);
+    var v'stream = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'stream));
+}
+
+;;
+;; Type: BRGDeployBrokerSuccess
+;; Header: 0xf0ee3e25
+;; TLB: brg_deploy_broker_success#f0ee3e25 queryId:uint64 broker:address = BRGDeployBrokerSuccess
+;;
+
+builder $BRGDeployBrokerSuccess$_store(builder build_0, (int, slice) v) inline {
+    var (v'queryId, v'broker) = v;
+    build_0 = store_uint(build_0, 4042145317, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'broker);
+    return build_0;
+}
+
+cell $BRGDeployBrokerSuccess$_store_cell((int, slice) v) inline {
+    return $BRGDeployBrokerSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice)) $BRGDeployBrokerSuccess$_constructor_queryId_broker(int queryId, slice broker) inline {
+    return (queryId, broker);
+}
+
+;;
+;; Type: BRGDeployAccount
+;; Header: 0xc0c2416a
+;; TLB: brg_deploy_account#c0c2416a queryId:uint64 = BRGDeployAccount
+;;
+
+(slice, ((int))) $BRGDeployAccount$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 3233956202);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: BRADeploy
+;; Header: 0x466d2081
+;; TLB: bra_deploy#466d2081 queryId:uint64 = BRADeploy
+;;
+
+builder $BRADeploy$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 1181556865, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $BRADeploy$_store_cell((int) v) inline {
+    return $BRADeploy$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $BRADeploy$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: BRADeploySuccess
+;; Header: 0xd1adde56
+;; TLB: bra_deploy_success#d1adde56 queryId:uint64 trader:address = BRADeploySuccess
+;;
+
+(slice, ((int, slice))) $BRADeploySuccess$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 3517832790);
+    var v'queryId = sc_0~load_uint(64);
+    var v'trader = sc_0~__tact_load_address();
+    return (sc_0, (v'queryId, v'trader));
+}
+
+;;
+;; Type: BRGDeployAccountSuccess
+;; Header: 0x75007086
+;; TLB: brg_deploy_account_success#75007086 queryId:uint64 account:address = BRGDeployAccountSuccess
+;;
+
+builder $BRGDeployAccountSuccess$_store(builder build_0, (int, slice) v) inline {
+    var (v'queryId, v'account) = v;
+    build_0 = store_uint(build_0, 1962963078, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'account);
+    return build_0;
+}
+
+cell $BRGDeployAccountSuccess$_store_cell((int, slice) v) inline {
+    return $BRGDeployAccountSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice)) $BRGDeployAccountSuccess$_constructor_queryId_account(int queryId, slice account) inline {
+    return (queryId, account);
+}
+
+;;
+;; Type: Broker
+;;
+
+builder $Broker$init$_store(builder build_0, (slice, slice) v) inline {
+    var (v'owner, v'stream) = v;
+    build_0 = __tact_store_address(build_0, v'owner);
+    build_0 = __tact_store_address(build_0, v'stream);
+    return build_0;
+}
+
+(cell, cell) $Broker$_init_child(cell sys', slice $owner, slice $stream) inline_ref {
+    slice sc' = sys'.begin_parse();
+    cell source = sc'~load_dict();
+    cell contracts = new_dict();
+    
+    ;; Contract Code: Broker
+    cell mine = __tact_dict_get_code(source, 62713);
+    contracts = __tact_dict_set_code(contracts, 62713, mine);
+    
+    ;; Contract Code: CashOrNothingOption
+    cell code_45553 = __tact_dict_get_code(source, 45553);
+    contracts = __tact_dict_set_code(contracts, 45553, code_45553);
+    
+    ;; Build cell
+    builder b = begin_cell();
+    b = b.store_ref(begin_cell().store_dict(contracts).end_cell());
+    b = b.store_int(false, 1);
+    b = $Broker$init$_store(b, ($owner, $stream));
+    return (mine, b.end_cell());
+}
+
+;;
+;; Type: BrokerageAccount
+;;
+
+builder $BrokerageAccount$init$_store(builder build_0, (slice, slice) v) inline {
+    var (v'brokerage, v'trader) = v;
+    build_0 = __tact_store_address(build_0, v'brokerage);
+    build_0 = __tact_store_address(build_0, v'trader);
+    return build_0;
+}
+
+(cell, cell) $BrokerageAccount$_init_child(cell sys', slice $brokerage, slice $trader) inline_ref {
+    slice sc' = sys'.begin_parse();
+    cell source = sc'~load_dict();
+    cell contracts = new_dict();
+    
+    ;; Contract Code: BrokerageAccount
+    cell mine = __tact_dict_get_code(source, 17254);
+    contracts = __tact_dict_set_code(contracts, 17254, mine);
+    
+    ;; Build cell
+    builder b = begin_cell();
+    b = b.store_ref(begin_cell().store_dict(contracts).end_cell());
+    b = b.store_int(false, 1);
+    b = $BrokerageAccount$init$_store(b, ($brokerage, $trader));
+    return (mine, b.end_cell());
+}
+
+;;
+;; Type: Brokerage
+;;
+
+builder $Brokerage$_store(builder build_0, (slice) v) inline {
+    var (v'owner) = v;
+    build_0 = __tact_store_address(build_0, v'owner);
+    return build_0;
+}
+
+(slice, ((slice))) $Brokerage$_load(slice sc_0) inline {
+    var v'owner = sc_0~__tact_load_address();
+    return (sc_0, (v'owner));
+}
+
+(slice, ((slice))) $Brokerage$init$_load(slice sc_0) inline {
+    var v'owner = sc_0~__tact_load_address();
+    return (sc_0, (v'owner));
+}
+
+(slice) $Brokerage$_contract_load() impure inline_ref {
+    slice $sc = get_data().begin_parse();
+    __tact_context_sys = $sc~load_ref();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$Brokerage$_load();
+    } else {
+        ;; Allow only workchain deployments
+        throw_unless(137, my_address().preload_uint(11) == 1024);
+        (slice owner) = $sc~$Brokerage$init$_load();
+        $sc.end_parse();
+        return $Brokerage$_contract_init(owner);
+    }
+}
+
+() $Brokerage$_contract_store((slice) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_ref(__tact_context_sys);
+    b = b.store_int(true, 1);
+    b = $Brokerage$_store(b, v);
+    set_data(b.end_cell());
+}

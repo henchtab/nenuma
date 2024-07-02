@@ -1,0 +1,1736 @@
+PROGRAM{
+  DECLPROC __tact_verify_address
+  DECLPROC __tact_load_address
+  DECLPROC __tact_load_address_opt
+  DECLPROC __tact_store_address
+  DECLPROC __tact_store_address_opt
+  DECLPROC __tact_my_balance
+  DECLPROC __tact_not_null
+  DECLPROC __tact_context_get
+  DECLPROC __tact_store_bool
+  DECLPROC __tact_slice_eq_bits
+  DECLPROC __tact_slice_eq_bits_nullable_one
+  DECLPROC __tact_int_neq_nullable_one
+  DECLPROC $DSTDeploySession$_store
+  DECLPROC $DSTDeploySession$_store_cell
+  DECLPROC $DSTDeploySession$_load
+  DECLPROC $DSTDeploySessionSuccess$_load
+  DECLPROC $Candlestick$_store
+  DECLPROC $Candlestick$_load
+  DECLPROC $SESSubscribe$_store
+  DECLPROC $SESSubscribe$_store_cell
+  DECLPROC $SESSubscribe$_load_bounced
+  DECLPROC $SESSubscribeSuccess$_load
+  DECLPROC $SESCandlestickPublishedNotification$_load
+  DECLPROC $SESUnsubscribedNotification$_load
+  DECLPROC $SESUnsubscribe$_store
+  DECLPROC $SESUnsubscribe$_store_cell
+  DECLPROC $SESUnsubscribe$_load
+  DECLPROC $SESDestroy$_store
+  DECLPROC $SESDestroy$_store_cell
+  DECLPROC $SESDestroy$_load
+  DECLPROC $SESDestroySuccess$_load
+  DECLPROC $SubscriberDestroyedNotification$_store
+  DECLPROC $SubscriberDestroyedNotification$_store_cell
+  DECLPROC $SubscriberCheckTimeout$_load
+  DECLPROC $SubscriberTimeoutExceeded$_store
+  DECLPROC $SubscriberTimeoutExceeded$_store_cell
+  DECLPROC $CashOrNothingOptionAgreement$_store
+  DECLPROC $CashOrNothingOptionAgreement$_load
+  DECLPROC $CashOrNothingOptionDeploy$_load
+  DECLPROC $CashOrNothingOptionDeploySuccess$_store
+  DECLPROC $CashOrNothingOptionDeploySuccess$_store_cell
+  DECLPROC $CashOrNothingOptionSettledInMoneyNotification$_store
+  DECLPROC $CashOrNothingOptionSettledInMoneyNotification$_store_cell
+  DECLPROC $CashOrNothingOptionSettledOutMoneyNotification$_store
+  DECLPROC $CashOrNothingOptionSettledOutMoneyNotification$_store_cell
+  DECLPROC $CashOrNothingOptionSettledAtMoneyNotification$_store
+  DECLPROC $CashOrNothingOptionSettledAtMoneyNotification$_store_cell
+  DECLPROC $CashOrNothingOptionAgreement$_not_null
+  DECLPROC $Candlestick$_not_null
+  DECLPROC $CashOrNothingOption$_store
+  DECLPROC $CashOrNothingOptionAgreement$_as_optional
+  DECLPROC $Candlestick$_as_optional
+  DECLPROC $CashOrNothingOption$_load
+  DECLPROC $Candlestick$_to_tuple
+  DECLPROC $Candlestick$_to_opt_tuple
+  DECLPROC $Candlestick$_to_opt_external
+  DECLPROC $CashOrNothingOptionAgreement$_get_holder
+  DECLPROC $CashOrNothingOptionAgreement$_get_writer
+  DECLPROC $CashOrNothingOptionAgreement$_get_initiation
+  DECLPROC $CashOrNothingOptionAgreement$_get_expiration
+  DECLPROC $CashOrNothingOptionAgreement$_get_optionType
+  DECLPROC $CashOrNothingOptionAgreement$_get_investment
+  DECLPROC $CashOrNothingOptionAgreement$_get_payout
+  DECLPROC $CashOrNothingOptionAgreement$_to_tuple
+  DECLPROC $CashOrNothingOptionAgreement$_to_opt_tuple
+  DECLPROC $CashOrNothingOptionAgreement$_to_opt_external
+  DECLPROC $CashOrNothingOption$init$_load
+  DECLPROC $CashOrNothingOption$_contract_init
+  DECLPROC $CashOrNothingOption$_contract_load
+  DECLPROC $CashOrNothingOption$_contract_store
+  DECLPROC $global_send
+  DECLPROC $CashOrNothingOption$_fun_optionId
+  DECLPROC $CashOrNothingOption$_fun_agreement
+  DECLPROC $CashOrNothingOption$_fun_strikePrice
+  DECLPROC $CashOrNothingOption$_fun_latestCandlestick
+  DECLPROC $CashOrNothingOption$_fun_validateAgreement
+  DECLPROC $SendParameters$_constructor_to_value_mode_body
+  DECLPROC $CashOrNothingOptionSettledAtMoneyNotification$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_settleAtMoney
+  DECLPROC $CashOrNothingOptionSettledInMoneyNotification$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_settleInMoney
+  DECLPROC $CashOrNothingOptionSettledOutMoneyNotification$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_settleOutMoney
+  DECLPROC $SESUnsubscribe$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_unsubscribeSession
+  DECLPROC $CashOrNothingOption$_fun_handleCandlestick
+  DECLPROC $CashOrNothingOption$_fun_handleDestroy
+  DECLPROC $CashOrNothingOption$_fun_balance
+  DECLPROC $CashOrNothingOption$_fun_deployerAddress
+  DECLPROC $CashOrNothingOption$_fun_streamAddress
+  DECLPROC $CashOrNothingOption$_fun_notificationsCount
+  DECLPROC $CashOrNothingOption$_fun_expiration
+  DECLPROC $CashOrNothingOption$_fun_sessionAddress
+  DECLPROC $DSTDeploySession$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_deploySession
+  DECLPROC $CashOrNothingOption$_fun_subscribeStream
+  DECLPROC $SubscriberDestroyedNotification$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_destroy
+  DECLPROC $SESDestroy$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_fun_destroySession
+  DECLPROC $CashOrNothingOptionDeploySuccess$_constructor_queryId_optionId_holder
+  DECLPROC $SESSubscribe$_constructor_queryId_notificationsCount
+  DECLPROC $SubscriberTimeoutExceeded$_constructor_queryId
+  DECLPROC $CashOrNothingOption$_internal_binary_CashOrNothingOptionDeploy
+  DECLPROC $CashOrNothingOption$_receive_binary_bounce_DSTDeploySession
+  DECLPROC $CashOrNothingOption$_internal_binary_DSTDeploySessionSuccess
+  DECLPROC $CashOrNothingOption$_receive_binary_bounce_SESSubscribe
+  DECLPROC $CashOrNothingOption$_internal_binary_SESSubscribeSuccess
+  DECLPROC $CashOrNothingOption$_internal_binary_SESCandlestickPublishedNotification
+  DECLPROC $CashOrNothingOption$_receive_binary_bounce_SESUnsubscribe
+  DECLPROC $CashOrNothingOption$_internal_binary_SESUnsubscribedNotification
+  DECLPROC $CashOrNothingOption$_receive_binary_bounce_SESDestroy
+  DECLPROC $CashOrNothingOption$_internal_binary_SESDestroySuccess
+  DECLPROC $CashOrNothingOption$_internal_binary_SubscriberCheckTimeout
+  111782 DECLMETHOD %optionId
+  105807 DECLMETHOD %agreement
+  78162 DECLMETHOD %strikePrice
+  100054 DECLMETHOD %latestCandlestick
+  104128 DECLMETHOD %balance
+  104269 DECLMETHOD %deployerAddress
+  73159 DECLMETHOD %streamAddress
+  89261 DECLMETHOD %notificationsCount
+  83402 DECLMETHOD %expiration
+  128322 DECLMETHOD %sessionAddress
+  113617 DECLMETHOD supported_interfaces
+  121275 DECLMETHOD get_abi_ipfs
+  115390 DECLMETHOD lazy_deployment_completed
+  DECLPROC $CashOrNothingOption$_contract_router_internal
+  DECLPROC recv_internal
+  DECLGLOBVAR __tact_context
+  DECLGLOBVAR __tact_context_sender
+  DECLGLOBVAR __tact_context_sys
+  DECLGLOBVAR __tact_randomized
+  __tact_verify_address PROCINLINE:<{
+    DUP
+    SBITS
+    267 PUSHINT
+    EQUAL
+    136 THROWIFNOT
+    DUP
+    11 PLDU
+    DUP
+    1279 PUSHINT
+    EQUAL
+    137 THROWIF
+    10 PUSHPOW2
+    EQUAL
+    136 THROWIFNOT
+  }>
+  __tact_load_address PROCINLINE:<{
+    LDMSGADDR
+    SWAP
+    __tact_verify_address INLINECALLDICT
+  }>
+  __tact_load_address_opt PROCINLINE:<{
+    DUP
+    2 PLDU
+    0 NEQINT
+    IF:<{
+      LDMSGADDR
+      SWAP
+      __tact_verify_address INLINECALLDICT
+    }>ELSE<{
+      2 PUSHINT
+      SDSKIPFIRST
+      PUSHNULL
+    }>
+  }>
+  __tact_store_address PROCINLINE:<{
+    __tact_verify_address INLINECALLDICT
+    STSLICER
+  }>
+  __tact_store_address_opt PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      0 PUSHINT
+      SWAP
+      2 STU
+    }>ELSE<{
+      __tact_store_address INLINECALLDICT
+    }>
+  }>
+  __tact_my_balance PROCINLINE:<{
+    BALANCE
+    FIRST
+  }>
+  __tact_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+  }>
+  __tact_context_get PROCINLINE:<{
+    __tact_context GETGLOB
+    4 UNTUPLE
+  }>
+  __tact_store_bool PROCINLINE:<{
+    SWAP
+    1 STI
+  }>
+  __tact_slice_eq_bits PROCINLINE:<{
+    SDEQ
+  }>
+  __tact_slice_eq_bits_nullable_one PROCINLINE:<{
+    OVER
+    ISNULL
+    IF:<{
+      2DROP
+      FALSE
+    }>ELSE<{
+      SDEQ
+    }>
+  }>
+  __tact_int_neq_nullable_one PROCINLINE:<{
+    OVER
+    ISNULL
+    IF:<{
+      2DROP
+      TRUE
+    }>ELSE<{
+      NEQ
+    }>
+  }>
+  $DSTDeploySession$_store PROCINLINE:<{
+    1658160529 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $DSTDeploySession$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $DSTDeploySession$_store INLINECALLDICT
+    ENDC
+  }>
+  $DSTDeploySession$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    1658160529 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $DSTDeploySessionSuccess$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    3452518278 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    s1 s2 XCHG
+  }>
+  $Candlestick$_store PROCREF:<{
+    s5 s6 XCHG2
+    257 PUSHINT
+    STIX
+    s1 s3 XCHG
+    257 PUSHINT
+    STIX
+    257 PUSHINT
+    STIX
+    SWAP
+    NEWC
+    257 PUSHINT
+    STIX
+    s1 s2 XCHG
+    257 PUSHINT
+    STIX
+    s1 s2 XCHG
+    257 PUSHINT
+    STIX
+    ENDC
+    SWAP
+    STREF
+  }>
+  $Candlestick$_load PROCREF:<{
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    LDREF
+    SWAP
+    CTOS
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    257 PUSHINT
+    LDIX
+    DROP
+    s3 s6 XCHG
+    s3 s5 XCHG
+    s3 s4 XCHG
+  }>
+  $SESSubscribe$_store PROCINLINE:<{
+    1533823831 PUSHINT
+    s0 s3 XCHG2
+    32 STU
+    64 STU
+    257 PUSHINT
+    STIX
+  }>
+  $SESSubscribe$_store_cell PROCINLINE:<{
+    NEWC
+    -ROT
+    $SESSubscribe$_store INLINECALLDICT
+    ENDC
+  }>
+  $SESSubscribe$_load_bounced PROCINLINE:<{
+    32 LDU
+    SWAP
+    1533823831 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $SESSubscribeSuccess$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    1400038355 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    257 PUSHINT
+    LDIX
+    -ROT
+  }>
+  $SESCandlestickPublishedNotification$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    3200926804 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    $Candlestick$_load INLINECALLDICT
+    s0 s6 XCHG
+    LDREF
+    SWAP
+    CTOS
+    257 PUSHINT
+    LDIX
+    DROP
+    s1 s8 XCHG
+    s1 s7 XCHG
+  }>
+  $SESUnsubscribedNotification$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    4092566650 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    257 PUSHINT
+    LDIX
+    -ROT
+  }>
+  $SESUnsubscribe$_store PROCINLINE:<{
+    2668625285 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $SESUnsubscribe$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SESUnsubscribe$_store INLINECALLDICT
+    ENDC
+  }>
+  $SESUnsubscribe$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    2668625285 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $SESDestroy$_store PROCINLINE:<{
+    2226780297 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $SESDestroy$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SESDestroy$_store INLINECALLDICT
+    ENDC
+  }>
+  $SESDestroy$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    2226780297 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $SESDestroySuccess$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    21916563 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $SubscriberDestroyedNotification$_store PROCINLINE:<{
+    2253786793 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $SubscriberDestroyedNotification$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SubscriberDestroyedNotification$_store INLINECALLDICT
+    ENDC
+  }>
+  $SubscriberCheckTimeout$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    1397988627 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    SWAP
+  }>
+  $SubscriberTimeoutExceeded$_store PROCINLINE:<{
+    2857706980 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $SubscriberTimeoutExceeded$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $SubscriberTimeoutExceeded$_store INLINECALLDICT
+    ENDC
+  }>
+  $CashOrNothingOptionAgreement$_store PROCREF:<{
+    s7 s6 XCHG2
+    __tact_store_address INLINECALLDICT
+    s0 s4 XCHG2
+    __tact_store_address INLINECALLDICT
+    s1 s2 XCHG
+    32 STU
+    32 STU
+    1 STI
+    ROT
+    STGRAMS
+    SWAP
+    STGRAMS
+  }>
+  $CashOrNothingOptionAgreement$_load PROCREF:<{
+    __tact_load_address INLINECALLDICT
+    SWAP
+    __tact_load_address INLINECALLDICT
+    SWAP
+    32 LDU
+    32 LDU
+    1 LDI
+    LDGRAMS
+    LDGRAMS
+    7 -ROLL
+  }>
+  $CashOrNothingOptionDeploy$_load PROCINLINE:<{
+    32 LDU
+    SWAP
+    3343868548 PUSHINT
+    EQUAL
+    129 THROWIFNOT
+    64 LDU
+    __tact_load_address INLINECALLDICT
+    SWAP
+    LDREF
+    SWAP
+    CTOS
+    $CashOrNothingOptionAgreement$_load INLINECALLDICT
+    s7 POP
+    s7 s9 XCHG
+    s7 s8 XCHG
+    6 ROLL
+  }>
+  $CashOrNothingOptionDeploySuccess$_store PROCINLINE:<{
+    2669413677 PUSHINT
+    s0 s4 XCHG2
+    32 STU
+    s1 s2 XCHG
+    64 STU
+    257 PUSHINT
+    STIX
+    SWAP
+    __tact_store_address INLINECALLDICT
+  }>
+  $CashOrNothingOptionDeploySuccess$_store_cell PROCINLINE:<{
+    NEWC
+    3 -ROLL
+    $CashOrNothingOptionDeploySuccess$_store INLINECALLDICT
+    ENDC
+  }>
+  $CashOrNothingOptionSettledInMoneyNotification$_store PROCINLINE:<{
+    4281832964 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $CashOrNothingOptionSettledInMoneyNotification$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $CashOrNothingOptionSettledInMoneyNotification$_store INLINECALLDICT
+    ENDC
+  }>
+  $CashOrNothingOptionSettledOutMoneyNotification$_store PROCINLINE:<{
+    402709524 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $CashOrNothingOptionSettledOutMoneyNotification$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $CashOrNothingOptionSettledOutMoneyNotification$_store INLINECALLDICT
+    ENDC
+  }>
+  $CashOrNothingOptionSettledAtMoneyNotification$_store PROCINLINE:<{
+    1344539513 PUSHINT
+    ROT
+    32 STU
+    64 STU
+  }>
+  $CashOrNothingOptionSettledAtMoneyNotification$_store_cell PROCINLINE:<{
+    NEWC
+    SWAP
+    $CashOrNothingOptionSettledAtMoneyNotification$_store INLINECALLDICT
+    ENDC
+  }>
+  $CashOrNothingOptionAgreement$_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+    7 UNTUPLE
+  }>
+  $Candlestick$_not_null PROCINLINE:<{
+    DUP
+    ISNULL
+    128 THROWIF
+    6 UNTUPLE
+  }>
+  $CashOrNothingOption$_store PROCINLINE:<{
+    s10 s9 XCHG2
+    __tact_store_address INLINECALLDICT
+    s0 s7 XCHG2
+    __tact_store_address_opt INLINECALLDICT
+    s5 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      SWAP
+      1 STI
+      s1 s5 XCHG
+      257 PUSHINT
+      STIX
+    }>ELSE<{
+      s5 POP
+      FALSE
+      s0 s5 XCHG2
+      1 STI
+    }>
+    NEWC
+    s0 s4 XCHG2
+    __tact_store_address_opt INLINECALLDICT
+    s2 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      SWAP
+      1 STI
+      s1 s2 XCHG
+      257 PUSHINT
+      STIX
+    }>ELSE<{
+      s2 POP
+      FALSE
+      ROT
+      1 STI
+    }>
+    257 PUSHINT
+    STIX
+    NEWC
+    s3 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      SWAP
+      1 STI
+      s0 s3 XCHG
+      $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+      s7 s9 XCHG
+      $CashOrNothingOptionAgreement$_store INLINECALLDICT
+    }>ELSE<{
+      s3 POP
+      FALSE
+      s0 s3 XCHG2
+      1 STI
+    }>
+    NEWC
+    s4 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      SWAP
+      1 STI
+      s1 s4 XCHG
+      257 PUSHINT
+      STIX
+    }>ELSE<{
+      s4 POP
+      FALSE
+      s0 s4 XCHG2
+      1 STI
+    }>
+    s1 s5 XCHG
+    1 STI
+    NEWC
+    s4 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      SWAP
+      1 STI
+      s0 s4 XCHG
+      $Candlestick$_not_null INLINECALLDICT
+      s6 s9 XCHG
+      $Candlestick$_store INLINECALLDICT
+    }>ELSE<{
+      s4 POP
+      FALSE
+      s0 s4 XCHG2
+      1 STI
+    }>
+    ENDC
+    s0 s3 XCHG2
+    STREF
+    ENDC
+    SWAP
+    STREF
+    ENDC
+    SWAP
+    STREF
+    ENDC
+    SWAP
+    STREF
+  }>
+  $CashOrNothingOptionAgreement$_as_optional PROCINLINE:<{
+    7 TUPLE
+  }>
+  $Candlestick$_as_optional PROCINLINE:<{
+    6 TUPLE
+  }>
+  $CashOrNothingOption$_load PROCINLINE:<{
+    __tact_load_address INLINECALLDICT
+    SWAP
+    __tact_load_address_opt INLINECALLDICT
+    SWAP
+    1 LDI
+    SWAP
+    IF:<{
+      257 PUSHINT
+      LDIX
+    }>ELSE<{
+      PUSHNULL
+      SWAP
+    }>
+    LDREF
+    SWAP
+    CTOS
+    __tact_load_address_opt INLINECALLDICT
+    SWAP
+    1 LDI
+    SWAP
+    IF:<{
+      257 PUSHINT
+      LDIX
+    }>ELSE<{
+      PUSHNULL
+      SWAP
+    }>
+    257 PUSHINT
+    LDIX
+    LDREF
+    DROP
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      $CashOrNothingOptionAgreement$_load INLINECALLDICT
+      $CashOrNothingOptionAgreement$_as_optional INLINECALLDICT
+    }>ELSE<{
+      PUSHNULL
+    }>
+    SWAP
+    LDREF
+    DROP
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      257 PUSHINT
+      LDIX
+    }>ELSE<{
+      PUSHNULL
+      SWAP
+    }>
+    1 LDI
+    LDREF
+    DROP
+    CTOS
+    1 LDI
+    SWAP
+    IF:<{
+      $Candlestick$_load INLINECALLDICT
+      1 6 BLKDROP2
+      $Candlestick$_as_optional INLINECALLDICT
+    }>ELSE<{
+      DROP
+      PUSHNULL
+    }>
+    s7 s10 XCHG
+    s7 s9 XCHG
+    s7 s8 XCHG
+  }>
+  $Candlestick$_to_tuple PROCINLINE:<{
+    6 TUPLE
+  }>
+  $Candlestick$_to_opt_tuple PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      PUSHNULL
+    }>ELSE<{
+      $Candlestick$_not_null INLINECALLDICT
+      $Candlestick$_to_tuple INLINECALLDICT
+    }>
+  }>
+  $Candlestick$_to_opt_external PROCINLINE:<{
+    $Candlestick$_to_opt_tuple INLINECALLDICT
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      PUSHNULL
+    }>ELSE<{
+    }>
+  }>
+  $CashOrNothingOptionAgreement$_get_holder PROCINLINE:<{
+    6 BLKDROP
+  }>
+  $CashOrNothingOptionAgreement$_get_writer PROCINLINE:<{
+    s5 s6 XCHG
+    6 BLKDROP
+  }>
+  $CashOrNothingOptionAgreement$_get_initiation PROCINLINE:<{
+    s4 s6 XCHG
+    6 BLKDROP
+  }>
+  $CashOrNothingOptionAgreement$_get_expiration PROCINLINE:<{
+    s3 s6 XCHG
+    6 BLKDROP
+  }>
+  $CashOrNothingOptionAgreement$_get_optionType PROCINLINE:<{
+    s2 s6 XCHG
+    6 BLKDROP
+  }>
+  $CashOrNothingOptionAgreement$_get_investment PROCINLINE:<{
+    s1 s6 XCHG
+    6 BLKDROP
+  }>
+  $CashOrNothingOptionAgreement$_get_payout PROCINLINE:<{
+    6 1 BLKDROP2
+  }>
+  $CashOrNothingOptionAgreement$_to_tuple PROCINLINE:<{
+    7 TUPLE
+  }>
+  $CashOrNothingOptionAgreement$_to_opt_tuple PROCINLINE:<{
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      PUSHNULL
+    }>ELSE<{
+      $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+      $CashOrNothingOptionAgreement$_to_tuple INLINECALLDICT
+    }>
+  }>
+  $CashOrNothingOptionAgreement$_to_opt_external PROCINLINE:<{
+    $CashOrNothingOptionAgreement$_to_opt_tuple INLINECALLDICT
+    DUP
+    ISNULL
+    IF:<{
+      DROP
+      PUSHNULL
+    }>ELSE<{
+    }>
+  }>
+  $CashOrNothingOption$init$_load PROCINLINE:<{
+    __tact_load_address INLINECALLDICT
+    SWAP
+    257 PUSHINT
+    LDIX
+    -ROT
+  }>
+  $CashOrNothingOption$_contract_init PROCREF:<{
+    PUSHNULL
+    PUSHNULL
+    PUSHNULL
+    s1 s3 s0 XCHG3
+    PUSHNULL
+    ROT
+    PUSHNULL
+    PUSHNULL
+    FALSE
+    PUSHNULL
+  }>
+  $CashOrNothingOption$_contract_load PROCREF:<{
+    c4 PUSH
+    CTOS
+    LDREF
+    SWAP
+    __tact_context_sys SETGLOB
+    1 LDI
+    SWAP
+    IFJMP:<{
+      $CashOrNothingOption$_load INLINECALLDICT
+      1 10 BLKDROP2
+    }>
+    MYADDR
+    11 PLDU
+    10 PUSHPOW2
+    EQUAL
+    137 THROWIFNOT
+    $CashOrNothingOption$init$_load INLINECALLDICT
+    s0 s2 XCHG
+    ENDS
+    SWAP
+    $CashOrNothingOption$_contract_init INLINECALLDICT
+  }>
+  $CashOrNothingOption$_contract_store PROCINLINE:<{
+    NEWC
+    __tact_context_sys GETGLOB
+    SWAP
+    STREF
+    TRUE
+    SWAP
+    1 STI
+    10 -ROLL
+    $CashOrNothingOption$_store INLINECALLDICT
+    ENDC
+    c4 POP
+  }>
+  $global_send PROCREF:<{
+    NEWC
+    1 PUSHINT
+    SWAP
+    2 STI
+    s0 s7 XCHG2
+    __tact_store_bool INLINECALLDICT
+    0 PUSHINT
+    SWAP
+    3 STI
+    s0 s5 XCHG2
+    __tact_store_address INLINECALLDICT
+    s0 s3 XCHG2
+    STGRAMS
+    0 PUSHINT
+    SWAP
+    105 STI
+    s3 PUSH
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+    }>ELSE<{
+      s4 PUSH
+      ISNULL
+      NOT
+    }>
+    IF:<{
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      NEWC
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      s4 PUSH
+      ISNULL
+      NOT
+      IF:<{
+        TRUE
+        __tact_store_bool INLINECALLDICT
+        s0 s4 XCHG
+        __tact_not_null INLINECALLDICT
+        s0 s4 XCHG2
+        STREF
+      }>ELSE<{
+        s4 POP
+        s0 s3 XCHG
+        FALSE
+        __tact_store_bool INLINECALLDICT
+      }>
+      s4 PUSH
+      ISNULL
+      NOT
+      IF:<{
+        TRUE
+        __tact_store_bool INLINECALLDICT
+        s0 s4 XCHG
+        __tact_not_null INLINECALLDICT
+        s0 s4 XCHG2
+        STREF
+      }>ELSE<{
+        s4 POP
+        s0 s3 XCHG
+        FALSE
+        __tact_store_bool INLINECALLDICT
+      }>
+      FALSE
+      __tact_store_bool INLINECALLDICT
+      s0 s2 XCHG
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      s0 s2 XCHG
+      ENDC
+      ROT
+      STREF
+    }>ELSE<{
+      s3 POP
+      s3 POP
+      SWAP
+      FALSE
+      __tact_store_bool INLINECALLDICT
+    }>
+    OVER
+    ISNULL
+    NOT
+    IF:<{
+      TRUE
+      __tact_store_bool INLINECALLDICT
+      SWAP
+      __tact_not_null INLINECALLDICT
+      SWAP
+      STREF
+    }>ELSE<{
+      NIP
+      FALSE
+      __tact_store_bool INLINECALLDICT
+    }>
+    ENDC
+    SWAP
+    SENDRAWMSG
+  }>
+  $CashOrNothingOption$_fun_optionId PROCREF:<{
+    s4 PUSH
+  }>
+  $CashOrNothingOption$_fun_agreement PROCREF:<{
+    s3 PUSH
+  }>
+  $CashOrNothingOption$_fun_strikePrice PROCREF:<{
+    s2 PUSH
+  }>
+  $CashOrNothingOption$_fun_latestCandlestick PROCREF:<{
+    DUP
+  }>
+  $CashOrNothingOption$_fun_validateAgreement PROCREF:<{
+    s2 POP
+    s4 POP
+    s4 POP
+    OVER
+    NOW
+    GREATER
+    404 THROWIFNOT
+    LESS
+    404 THROWIFNOT
+    0 GTINT
+    404 THROWIFNOT
+    0 GTINT
+    404 THROWIFNOT
+  }>
+  $SendParameters$_constructor_to_value_mode_body PROCINLINE:<{
+    TRUE
+    4 -ROLL
+    PUSHNULL
+    PUSHNULL
+  }>
+  $CashOrNothingOptionSettledAtMoneyNotification$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_settleAtMoney PROCREF:<{
+    s4 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_holder INLINECALLDICT
+    20000000 PUSHINT
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_investment INLINECALLDICT
+    ADD
+    3 PUSHINT
+    s3 PUSH
+    $CashOrNothingOptionSettledAtMoneyNotification$_constructor_queryId INLINECALLDICT
+    $CashOrNothingOptionSettledAtMoneyNotification$_store_cell INLINECALLDICT
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    s4 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_writer INLINECALLDICT
+    20000000 PUSHINT
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_payout INLINECALLDICT
+    ADD
+    3 PUSHINT
+    s0 s3 XCHG
+    $CashOrNothingOptionSettledAtMoneyNotification$_constructor_queryId INLINECALLDICT
+    $CashOrNothingOptionSettledAtMoneyNotification$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $CashOrNothingOptionSettledInMoneyNotification$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_settleInMoney PROCREF:<{
+    s4 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_holder INLINECALLDICT
+    20000000 PUSHINT
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_investment INLINECALLDICT
+    ADD
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_payout INLINECALLDICT
+    ADD
+    3 PUSHINT
+    s3 PUSH
+    $CashOrNothingOptionSettledInMoneyNotification$_constructor_queryId INLINECALLDICT
+    $CashOrNothingOptionSettledInMoneyNotification$_store_cell INLINECALLDICT
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    s4 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_writer INLINECALLDICT
+    20000000 PUSHINT
+    3 PUSHINT
+    s0 s3 XCHG
+    $CashOrNothingOptionSettledInMoneyNotification$_constructor_queryId INLINECALLDICT
+    $CashOrNothingOptionSettledInMoneyNotification$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $CashOrNothingOptionSettledOutMoneyNotification$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_settleOutMoney PROCREF:<{
+    s4 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_holder INLINECALLDICT
+    20000000 PUSHINT
+    3 PUSHINT
+    s3 PUSH
+    $CashOrNothingOptionSettledOutMoneyNotification$_constructor_queryId INLINECALLDICT
+    $CashOrNothingOptionSettledOutMoneyNotification$_store_cell INLINECALLDICT
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    s4 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_writer INLINECALLDICT
+    20000000 PUSHINT
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_investment INLINECALLDICT
+    ADD
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_payout INLINECALLDICT
+    ADD
+    3 PUSHINT
+    s0 s3 XCHG
+    $CashOrNothingOptionSettledOutMoneyNotification$_constructor_queryId INLINECALLDICT
+    $CashOrNothingOptionSettledOutMoneyNotification$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $SESUnsubscribe$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_unsubscribeSession PROCREF:<{
+    s7 PUSH
+    __tact_not_null INLINECALLDICT
+    50000000 PUSHINT
+    1 PUSHINT
+    s0 s3 XCHG
+    $SESUnsubscribe$_constructor_queryId INLINECALLDICT
+    $SESUnsubscribe$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $CashOrNothingOption$_fun_handleCandlestick PROCREF:<{
+    s7 POP
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s13 PUSH
+    __tact_not_null INLINECALLDICT
+    SWAP
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    s4 PUSH
+    s4 s2 s(-1) PUXC2
+    s4 PUSH
+    s2 s2 s1 XC2PU
+    s0 s10 XCHG
+    $Candlestick$_as_optional INLINECALLDICT
+    s8 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_initiation INLINECALLDICT
+    s1 s4 XCHG
+    EQUAL
+    IF:<{
+      s6 POP
+    }>ELSE<{
+      DROP
+    }>
+    s6 PUSH
+    $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+    $CashOrNothingOptionAgreement$_get_expiration INLINECALLDICT
+    EQUAL
+    IF:<{
+      s4 PUSH
+      ISNULL
+      IF:<{
+        s2 POP
+        10 -ROLL
+        s10 PUSH
+        $CashOrNothingOption$_fun_settleAtMoney INLINECALLDICT
+        NIP
+      }>ELSE<{
+        s5 PUSH
+        $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+        $CashOrNothingOptionAgreement$_get_optionType INLINECALLDICT
+        -1 EQINT
+        IF:<{
+          s4 PUSH
+          __tact_not_null INLINECALLDICT
+          s3 s(-1) PUXC
+          GEQ
+        }>ELSE<{
+          FALSE
+        }>
+        IF:<{
+          s2 POP
+          10 -ROLL
+          s10 PUSH
+          $CashOrNothingOption$_fun_settleInMoney INLINECALLDICT
+          NIP
+        }>ELSE<{
+          s5 PUSH
+          $CashOrNothingOptionAgreement$_not_null INLINECALLDICT
+          $CashOrNothingOptionAgreement$_get_optionType INLINECALLDICT
+          0 EQINT
+          IF:<{
+            s4 PUSH
+            __tact_not_null INLINECALLDICT
+            s1 s3 XCHG
+            LEQ
+          }>ELSE<{
+            s2 POP
+            FALSE
+          }>
+          IF:<{
+            10 -ROLL
+            s10 PUSH
+            $CashOrNothingOption$_fun_settleInMoney INLINECALLDICT
+            NIP
+          }>ELSE<{
+            10 -ROLL
+            s10 PUSH
+            $CashOrNothingOption$_fun_settleOutMoney INLINECALLDICT
+            NIP
+          }>
+        }>
+      }>
+      s8 s9 XCHG
+      s7 s8 XCHG
+      s6 s7 XCHG
+      s5 s6 XCHG
+      s4 s5 XCHG
+      s3 s4 XCHG
+      s1 s3 s0 XCHG3
+      TRUE
+      s0 s2 XCHG
+      $CashOrNothingOption$_fun_unsubscribeSession INLINECALLDICT
+    }>ELSE<{
+      2 1 BLKDROP2
+    }>
+  }>
+  $CashOrNothingOption$_fun_handleDestroy PROCREF:<{
+    s2 PUSH
+    NOT
+    IF:<{
+      $CashOrNothingOption$_fun_settleAtMoney INLINECALLDICT
+    }>ELSE<{
+      DROP
+    }>
+  }>
+  $CashOrNothingOption$_fun_balance PROCREF:<{
+    __tact_my_balance INLINECALLDICT
+  }>
+  $CashOrNothingOption$_fun_deployerAddress PROCREF:<{
+    s9 PUSH
+  }>
+  $CashOrNothingOption$_fun_streamAddress PROCREF:<{
+    s8 PUSH
+  }>
+  $CashOrNothingOption$_fun_notificationsCount PROCREF:<{
+    s7 PUSH
+  }>
+  $CashOrNothingOption$_fun_expiration PROCREF:<{
+    s5 PUSH
+  }>
+  $CashOrNothingOption$_fun_sessionAddress PROCREF:<{
+    s6 PUSH
+  }>
+  $DSTDeploySession$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_deploySession PROCREF:<{
+    s9 PUSH
+    __tact_not_null INLINECALLDICT
+    100000000 PUSHINT
+    17 PUSHINT
+    s0 s3 XCHG
+    $DSTDeploySession$_constructor_queryId INLINECALLDICT
+    $DSTDeploySession$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $CashOrNothingOption$_fun_subscribeStream PROCREF:<{
+    s9 POP
+    s10 POP
+    s10 POP
+    __tact_context_get INLINECALLDICT
+    s1 s3 XCHG
+    3 BLKDROP
+    s9 PUSH
+    1 GTINT
+    404 THROWIFNOT
+    250000000 PUSHINT
+    30000000 PUSHINT
+    s11 PUSH
+    MUL
+    ADD
+    GEQ
+    401 THROWIFNOT
+    s8 PUSH
+    s10 s11 XCHG
+    s9 s11 XCHG
+    8 -ROLL
+    $CashOrNothingOption$_fun_deploySession INLINECALLDICT
+    150000000 PUSHINT
+    30000000 PUSHINT
+    s0 s12 XCHG2
+    MUL
+    s1 s11 XCHG
+    ADD
+    4 PUSHINT
+    RAWRESERVE
+    9 ROLL
+  }>
+  $SubscriberDestroyedNotification$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_destroy PROCREF:<{
+    10 -ROLL
+    s10 PUSH
+    $CashOrNothingOption$_fun_handleDestroy INLINECALLDICT
+    0 PUSHINT
+    160 PUSHINT
+    s0 s12 XCHG
+    $SubscriberDestroyedNotification$_constructor_queryId INLINECALLDICT
+    $SubscriberDestroyedNotification$_store_cell INLINECALLDICT
+    s11 PUSH
+    s0 s3 XCHG
+    s13 s13 XCHG2
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    9 ROLL
+  }>
+  $SESDestroy$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_fun_destroySession PROCREF:<{
+    s7 PUSH
+    __tact_not_null INLINECALLDICT
+    50000000 PUSHINT
+    17 PUSHINT
+    s0 s3 XCHG
+    $SESDestroy$_constructor_queryId INLINECALLDICT
+    $SESDestroy$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $CashOrNothingOptionDeploySuccess$_constructor_queryId_optionId_holder PROCINLINE:<{
+  }>
+  $SESSubscribe$_constructor_queryId_notificationsCount PROCINLINE:<{
+  }>
+  $SubscriberTimeoutExceeded$_constructor_queryId PROCINLINE:<{
+  }>
+  $CashOrNothingOption$_internal_binary_CashOrNothingOptionDeploy PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    19 s() PUSH
+    SWAP
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    s6 s5 s4 PUSH3
+    s6 s5 s4 PUSH3
+    s6 PUSH
+    16 s() 25 s() XCHG
+    s15 24 s() XCHG
+    s14 23 s() XCHG
+    s13 22 s() XCHG
+    s12 21 s() XCHG
+    s11 20 s() XCHG
+    s10 19 s() XCHG
+    s9 18 s() XCHG
+    s8 17 s() XCHG
+    s7 25 s() XCHG
+    $CashOrNothingOption$_fun_validateAgreement INLINECALLDICT
+    s3 POP
+    s14 PUSH
+    s14 s13 s3 XCHG3
+    s12 s11 s10 PUXCPU
+    20 s() PUSH
+    $CashOrNothingOptionAgreement$_as_optional INLINECALLDICT
+    s9 PUSH
+    NOW
+    SUB
+    60 PUSHINT
+    DIV
+    2 ADDCONST
+    s7 s12 XCHG
+    s6 s11 XCHG
+    s5 s10 XCHG
+    s4 s9 XCHG
+    s3 s8 XCHG
+    s7 s6 s0 XCHG3
+    s5 s4 s0 XCHG3
+    s3 s0 s15 XC2PU
+    s15 s1 s3 XCHG3
+    $CashOrNothingOption$_fun_subscribeStream INLINECALLDICT
+    s11 s13 XCHG2
+    ADD
+    4 PUSHINT
+    RAWRESERVE
+    0 PUSHINT
+    s11 s3 XCPU
+    7 PUSHPOW2
+    s0 s11 XCHG
+    $CashOrNothingOptionDeploySuccess$_constructor_queryId_optionId_holder INLINECALLDICT
+    $CashOrNothingOptionDeploySuccess$_store_cell INLINECALLDICT
+    s8 PUSH
+    s12 s1 s3 XCHG3
+    s10 s10 XCHG2
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    s5 s9 XCHG
+    s4 s8 XCHG
+    s3 s7 XCHG
+    s6 s1 s4 XCHG3
+    s0 s3 s3 XCHG3
+    s0 s5 XCHG
+  }>
+  $CashOrNothingOption$_receive_binary_bounce_DSTDeploySession PROCINLINE:<{
+    $CashOrNothingOption$_fun_destroy INLINECALLDICT
+  }>
+  $CashOrNothingOption$_internal_binary_DSTDeploySessionSuccess PROCINLINE:<{
+    s8 POP
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s10 s(-1) PUXC
+    __tact_slice_eq_bits_nullable_one INLINECALLDICT
+    400 THROWIFNOT
+    s7 PUSH
+    __tact_not_null INLINECALLDICT
+    50000000 PUSHINT
+    30000000 PUSHINT
+    s11 PUSH
+    __tact_not_null INLINECALLDICT
+    MUL
+    ADD
+    17 PUSHINT
+    s11 PUSH
+    __tact_not_null INLINECALLDICT
+    s1 s4 XCHG
+    $SESSubscribe$_constructor_queryId_notificationsCount INLINECALLDICT
+    $SESSubscribe$_store_cell INLINECALLDICT
+    s1 s3 s0 XCHG3
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+  }>
+  $CashOrNothingOption$_receive_binary_bounce_SESSubscribe PROCINLINE:<{
+    $CashOrNothingOption$_fun_destroy INLINECALLDICT
+  }>
+  $CashOrNothingOption$_internal_binary_SESSubscribeSuccess PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s9 PUSH
+    __tact_not_null INLINECALLDICT
+    SWAP
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    s9 s(-1) PUXC
+    __tact_int_neq_nullable_one INLINECALLDICT
+    IF:<{
+      $CashOrNothingOption$_fun_unsubscribeSession INLINECALLDICT
+    }>ELSE<{
+      DROP
+    }>
+  }>
+  $CashOrNothingOption$_internal_binary_SESCandlestickPublishedNotification PROCINLINE:<{
+    DROP
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s14 PUSH
+    __tact_not_null INLINECALLDICT
+    SWAP
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    ACCEPT
+    $CashOrNothingOption$_fun_handleCandlestick INLINECALLDICT
+  }>
+  $CashOrNothingOption$_receive_binary_bounce_SESUnsubscribe PROCINLINE:<{
+    $CashOrNothingOption$_fun_destroy INLINECALLDICT
+  }>
+  $CashOrNothingOption$_internal_binary_SESUnsubscribedNotification PROCINLINE:<{
+    DROP
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s8 PUSH
+    __tact_not_null INLINECALLDICT
+    SWAP
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    ACCEPT
+    $CashOrNothingOption$_fun_destroySession INLINECALLDICT
+  }>
+  $CashOrNothingOption$_receive_binary_bounce_SESDestroy PROCINLINE:<{
+    $CashOrNothingOption$_fun_destroy INLINECALLDICT
+  }>
+  $CashOrNothingOption$_internal_binary_SESDestroySuccess PROCINLINE:<{
+    __tact_context_get INLINECALLDICT
+    s2 s3 XCHG
+    3 BLKDROP
+    s8 PUSH
+    __tact_not_null INLINECALLDICT
+    SWAP
+    __tact_slice_eq_bits INLINECALLDICT
+    400 THROWIFNOT
+    $CashOrNothingOption$_fun_destroy INLINECALLDICT
+  }>
+  $CashOrNothingOption$_internal_binary_SubscriberCheckTimeout PROCINLINE:<{
+    NOW
+    s7 PUSH
+    __tact_not_null INLINECALLDICT
+    3600 PUSHINT
+    ADD
+    GREATER
+    411 THROWIFNOT
+    __tact_context_get INLINECALLDICT
+    DROP
+    s2 POP
+    17 PUSHINT
+    s3 PUSH
+    $SubscriberTimeoutExceeded$_constructor_queryId INLINECALLDICT
+    $SubscriberTimeoutExceeded$_store_cell INLINECALLDICT
+    s2 s3 XCHG
+    $SendParameters$_constructor_to_value_mode_body INLINECALLDICT
+    $global_send INLINECALLDICT
+    $CashOrNothingOption$_fun_unsubscribeSession INLINECALLDICT
+  }>
+  %optionId PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_optionId INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %agreement PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_agreement INLINECALLDICT
+    10 1 BLKDROP2
+    $CashOrNothingOptionAgreement$_to_opt_external INLINECALLDICT
+  }>
+  %strikePrice PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_strikePrice INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %latestCandlestick PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_latestCandlestick INLINECALLDICT
+    10 1 BLKDROP2
+    $Candlestick$_to_opt_external INLINECALLDICT
+  }>
+  %balance PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_balance INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %deployerAddress PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_deployerAddress INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %streamAddress PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_streamAddress INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %notificationsCount PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_notificationsCount INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %expiration PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_expiration INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  %sessionAddress PROC:<{
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    $CashOrNothingOption$_fun_sessionAddress INLINECALLDICT
+    10 1 BLKDROP2
+  }>
+  supported_interfaces PROC:<{
+    123515602279859691144772641439386770278 PUSHINT
+    209801025412363888721030803524359905849 PUSHINT
+    42980537499636128163026532310500881091 PUSHINT
+    209474421377847335869795010607481022628 PUSHINT
+  }>
+  get_abi_ipfs PROC:<{
+    x{697066733a2f2f516d626b61624763644234636d37525a3474383541475643624472343550534e74534c694c76556d505076613751} PUSHSLICE
+  }>
+  lazy_deployment_completed PROC:<{
+    c4 PUSH
+    CTOS
+    1 LDI
+    SWAP
+  }>
+  $CashOrNothingOption$_contract_router_internal PROCREF:<{
+    SWAP
+    IFJMP:<{
+      32 PUSHINT
+      SDSKIPFIRST
+      0 PUSHINT
+      OVER
+      SBITS
+      31 GTINT
+      IF:<{
+        DROP
+        DUP
+        32 PLDU
+      }>
+      DUP
+      1658160529 PUSHINT
+      EQUAL
+      IFJMP:<{
+        DROP
+        $DSTDeploySession$_load INLINECALLDICT
+        NIP
+        $CashOrNothingOption$_receive_binary_bounce_DSTDeploySession INLINECALLDICT
+        TRUE
+      }>
+      DUP
+      1533823831 PUSHINT
+      EQUAL
+      IFJMP:<{
+        DROP
+        $SESSubscribe$_load_bounced INLINECALLDICT
+        NIP
+        $CashOrNothingOption$_receive_binary_bounce_SESSubscribe INLINECALLDICT
+        TRUE
+      }>
+      DUP
+      2668625285 PUSHINT
+      EQUAL
+      IFJMP:<{
+        DROP
+        $SESUnsubscribe$_load INLINECALLDICT
+        NIP
+        $CashOrNothingOption$_receive_binary_bounce_SESUnsubscribe INLINECALLDICT
+        TRUE
+      }>
+      2226780297 PUSHINT
+      EQUAL
+      IFJMP:<{
+        $SESDestroy$_load INLINECALLDICT
+        NIP
+        $CashOrNothingOption$_receive_binary_bounce_SESDestroy INLINECALLDICT
+        TRUE
+      }>
+      DROP
+      TRUE
+    }>
+    0 PUSHINT
+    OVER
+    SBITS
+    31 GTINT
+    IF:<{
+      DROP
+      DUP
+      32 PLDU
+    }>
+    DUP
+    3343868548 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $CashOrNothingOptionDeploy$_load INLINECALLDICT
+      1 9 BLKDROP2
+      $CashOrNothingOption$_internal_binary_CashOrNothingOptionDeploy INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    3452518278 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $DSTDeploySessionSuccess$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $CashOrNothingOption$_internal_binary_DSTDeploySessionSuccess INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    1400038355 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SESSubscribeSuccess$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $CashOrNothingOption$_internal_binary_SESSubscribeSuccess INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    3200926804 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SESCandlestickPublishedNotification$_load INLINECALLDICT
+      1 8 BLKDROP2
+      $CashOrNothingOption$_internal_binary_SESCandlestickPublishedNotification INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    4092566650 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SESUnsubscribedNotification$_load INLINECALLDICT
+      1 2 BLKDROP2
+      $CashOrNothingOption$_internal_binary_SESUnsubscribedNotification INLINECALLDICT
+      TRUE
+    }>
+    DUP
+    21916563 PUSHINT
+    EQUAL
+    IFJMP:<{
+      DROP
+      $SESDestroySuccess$_load INLINECALLDICT
+      NIP
+      $CashOrNothingOption$_internal_binary_SESDestroySuccess INLINECALLDICT
+      TRUE
+    }>
+    1397988627 PUSHINT
+    EQUAL
+    IFJMP:<{
+      $SubscriberCheckTimeout$_load INLINECALLDICT
+      NIP
+      $CashOrNothingOption$_internal_binary_SubscriberCheckTimeout INLINECALLDICT
+      TRUE
+    }>
+    DROP
+    FALSE
+  }>
+  recv_internal PROC:<{
+    SWAP
+    CTOS
+    4 LDU
+    SWAP
+    1 PUSHINT
+    AND
+    NEGATE
+    SWAP
+    LDMSGADDR
+    SWAP
+    __tact_verify_address INLINECALLDICT
+    s0 s4 s2 PUXCPU
+    s0 s3 XCHG
+    4 TUPLE
+    __tact_context SETGLOB
+    s0 s2 XCHG
+    __tact_context_sender SETGLOB
+    $CashOrNothingOption$_contract_load INLINECALLDICT
+    2 10 BLKSWAP
+    $CashOrNothingOption$_contract_router_internal INLINECALLDICT
+    130 THROWIFNOT
+    $CashOrNothingOption$_contract_store INLINECALLDICT
+  }>
+}END>c

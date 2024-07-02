@@ -1,0 +1,323 @@
+;;
+;; Type: SendParameters
+;; TLB: _ bounce:bool to:address value:int257 mode:int257 body:Maybe ^cell code:Maybe ^cell data:Maybe ^cell = SendParameters
+;;
+
+((int, slice, int, int, cell, cell, cell)) $SendParameters$_constructor_to_value_mode_body(slice to, int value, int mode, cell body) inline {
+    return (true, to, value, mode, body, null(), null());
+}
+
+;;
+;; Type: Candlestick
+;; TLB: _ start:int257 end:int257 open:int257 close:int257 high:int257 low:int257 = Candlestick
+;;
+
+builder $Candlestick$_store(builder build_0, (int, int, int, int, int, int) v) inline_ref {
+    var (v'start, v'end, v'open, v'close, v'high, v'low) = v;
+    build_0 = build_0.store_int(v'start, 257);
+    build_0 = build_0.store_int(v'end, 257);
+    build_0 = build_0.store_int(v'open, 257);
+    var build_1 = begin_cell();
+    build_1 = build_1.store_int(v'close, 257);
+    build_1 = build_1.store_int(v'high, 257);
+    build_1 = build_1.store_int(v'low, 257);
+    build_0 = store_ref(build_0, build_1.end_cell());
+    return build_0;
+}
+
+(slice, ((int, int, int, int, int, int))) $Candlestick$_load(slice sc_0) inline_ref {
+    var v'start = sc_0~load_int(257);
+    var v'end = sc_0~load_int(257);
+    var v'open = sc_0~load_int(257);
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'close = sc_1~load_int(257);
+    var v'high = sc_1~load_int(257);
+    var v'low = sc_1~load_int(257);
+    return (sc_0, (v'start, v'end, v'open, v'close, v'high, v'low));
+}
+
+;;
+;; Type: SBDeploy
+;; Header: 0xfe5e9e45
+;; TLB: sb_deploy#fe5e9e45 queryId:uint64 = SBDeploy
+;;
+
+(slice, ((int))) $SBDeploy$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 4267613765);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: SBDeploySuccess
+;; Header: 0x3d788f0e
+;; TLB: sb_deploy_success#3d788f0e queryId:uint64 batchId:int257 = SBDeploySuccess
+;;
+
+builder $SBDeploySuccess$_store(builder build_0, (int, int) v) inline {
+    var (v'queryId, v'batchId) = v;
+    build_0 = store_uint(build_0, 1031311118, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = build_0.store_int(v'batchId, 257);
+    return build_0;
+}
+
+cell $SBDeploySuccess$_store_cell((int, int) v) inline {
+    return $SBDeploySuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, int)) $SBDeploySuccess$_constructor_queryId_batchId(int queryId, int batchId) inline {
+    return (queryId, batchId);
+}
+
+;;
+;; Type: SBSubscribe
+;; Header: 0x774d40a2
+;; TLB: sb_subscribe#774d40a2 queryId:uint64 session:address notificationsCount:int257 = SBSubscribe
+;;
+
+(slice, ((int, slice, int))) $SBSubscribe$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 2001551522);
+    var v'queryId = sc_0~load_uint(64);
+    var v'session = sc_0~__tact_load_address();
+    var v'notificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'session, v'notificationsCount));
+}
+
+;;
+;; Type: SBSubscribeSuccess
+;; Header: 0xf3563547
+;; TLB: sb_subscribe_success#f3563547 queryId:uint64 session:address remainingNotificationsCount:int257 = SBSubscribeSuccess
+;;
+
+builder $SBSubscribeSuccess$_store(builder build_0, (int, slice, int) v) inline {
+    var (v'queryId, v'session, v'remainingNotificationsCount) = v;
+    build_0 = store_uint(build_0, 4082513223, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'session);
+    build_0 = build_0.store_int(v'remainingNotificationsCount, 257);
+    return build_0;
+}
+
+cell $SBSubscribeSuccess$_store_cell((int, slice, int) v) inline {
+    return $SBSubscribeSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, int)) $SBSubscribeSuccess$_constructor_queryId_session_remainingNotificationsCount(int queryId, slice session, int remainingNotificationsCount) inline {
+    return (queryId, session, remainingNotificationsCount);
+}
+
+;;
+;; Type: SBPublishCandlestick
+;; Header: 0xf1762622
+;; TLB: sb_publish_candlestick#f1762622 queryId:uint64 candlestick:Candlestick{start:int257,end:int257,open:int257,close:int257,high:int257,low:int257} publisher:address = SBPublishCandlestick
+;;
+
+(slice, ((int, (int, int, int, int, int, int), slice))) $SBPublishCandlestick$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 4051052066);
+    var v'queryId = sc_0~load_uint(64);
+    var v'candlestick = sc_0~$Candlestick$_load();
+    slice sc_1 = sc_0~load_ref().begin_parse();
+    var v'publisher = sc_1~__tact_load_address();
+    return (sc_0, (v'queryId, v'candlestick, v'publisher));
+}
+
+;;
+;; Type: SBCandlestickPublishedNotification
+;; Header: 0xf8e0060d
+;; TLB: sb_candlestick_published_notification#f8e0060d queryId:uint64 candlestick:Candlestick{start:int257,end:int257,open:int257,close:int257,high:int257,low:int257} remainingNotificationsCount:int257 = SBCandlestickPublishedNotification
+;;
+
+builder $SBCandlestickPublishedNotification$_store(builder build_0, (int, (int, int, int, int, int, int), int) v) inline {
+    var (v'queryId, (v'candlestick'start, v'candlestick'end, v'candlestick'open, v'candlestick'close, v'candlestick'high, v'candlestick'low), v'remainingNotificationsCount) = v;
+    build_0 = store_uint(build_0, 4175431181, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = $Candlestick$_store(build_0, (v'candlestick'start, v'candlestick'end, v'candlestick'open, v'candlestick'close, v'candlestick'high, v'candlestick'low));
+    var build_1 = begin_cell();
+    build_1 = build_1.store_int(v'remainingNotificationsCount, 257);
+    build_0 = store_ref(build_0, build_1.end_cell());
+    return build_0;
+}
+
+cell $SBCandlestickPublishedNotification$_store_cell((int, (int, int, int, int, int, int), int) v) inline {
+    return $SBCandlestickPublishedNotification$_store(begin_cell(), v).end_cell();
+}
+
+((int, (int, int, int, int, int, int), int)) $SBCandlestickPublishedNotification$_constructor_queryId_candlestick_remainingNotificationsCount(int queryId, (int, int, int, int, int, int) candlestick, int remainingNotificationsCount) inline {
+    return (queryId, candlestick, remainingNotificationsCount);
+}
+
+;;
+;; Type: SBUnsubscribedNotification
+;; Header: 0x3bcab824
+;; TLB: sb_unsubscribed_notification#3bcab824 queryId:uint64 session:address remainingNotificationsCount:int257 = SBUnsubscribedNotification
+;;
+
+builder $SBUnsubscribedNotification$_store(builder build_0, (int, slice, int) v) inline {
+    var (v'queryId, v'session, v'remainingNotificationsCount) = v;
+    build_0 = store_uint(build_0, 1003141156, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    build_0 = __tact_store_address(build_0, v'session);
+    build_0 = build_0.store_int(v'remainingNotificationsCount, 257);
+    return build_0;
+}
+
+cell $SBUnsubscribedNotification$_store_cell((int, slice, int) v) inline {
+    return $SBUnsubscribedNotification$_store(begin_cell(), v).end_cell();
+}
+
+((int, slice, int)) $SBUnsubscribedNotification$_constructor_queryId_session_remainingNotificationsCount(int queryId, slice session, int remainingNotificationsCount) inline {
+    return (queryId, session, remainingNotificationsCount);
+}
+
+;;
+;; Type: SBPublishCandlestickSuccess
+;; Header: 0x3d406a4a
+;; TLB: sb_publish_candlestick_success#3d406a4a queryId:uint64 = SBPublishCandlestickSuccess
+;;
+
+builder $SBPublishCandlestickSuccess$_store(builder build_0, (int) v) inline {
+    var (v'queryId) = v;
+    build_0 = store_uint(build_0, 1027631690, 32);
+    build_0 = build_0.store_uint(v'queryId, 64);
+    return build_0;
+}
+
+cell $SBPublishCandlestickSuccess$_store_cell((int) v) inline {
+    return $SBPublishCandlestickSuccess$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $SBPublishCandlestickSuccess$_constructor_queryId(int queryId) inline {
+    return (queryId);
+}
+
+;;
+;; Type: SBTopUpSubscription
+;; Header: 0x0ff79718
+;; TLB: sb_top_up_subscription#0ff79718 queryId:uint64 session:address notificationsCount:int257 = SBTopUpSubscription
+;;
+
+(slice, ((int, slice, int))) $SBTopUpSubscription$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 267884312);
+    var v'queryId = sc_0~load_uint(64);
+    var v'session = sc_0~__tact_load_address();
+    var v'notificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'queryId, v'session, v'notificationsCount));
+}
+
+;;
+;; Type: SBUnsubscribe
+;; Header: 0x41515954
+;; TLB: sb_unsubscribe#41515954 queryId:uint64 = SBUnsubscribe
+;;
+
+(slice, ((int))) $SBUnsubscribe$_load(slice sc_0) inline {
+    throw_unless(129, sc_0~load_uint(32) == 1095850324);
+    var v'queryId = sc_0~load_uint(64);
+    return (sc_0, (v'queryId));
+}
+
+;;
+;; Type: SubscriptionInfo
+;; TLB: _ remainingNotificationsCount:int257 = SubscriptionInfo
+;;
+
+builder $SubscriptionInfo$_store(builder build_0, (int) v) inline {
+    var (v'remainingNotificationsCount) = v;
+    build_0 = build_0.store_int(v'remainingNotificationsCount, 257);
+    return build_0;
+}
+
+cell $SubscriptionInfo$_store_cell((int) v) inline {
+    return $SubscriptionInfo$_store(begin_cell(), v).end_cell();
+}
+
+((int)) $SubscriptionInfo$_not_null(tuple v) inline {
+    throw_if(128, null?(v));
+    var (int vvv'remainingNotificationsCount) = __tact_tuple_destroy_1(v);
+    return (vvv'remainingNotificationsCount);
+}
+
+cell $SubscriptionInfo$_store_opt(tuple v) inline {
+    if (null?(v)) {
+        return null();
+    }
+    return $SubscriptionInfo$_store_cell($SubscriptionInfo$_not_null(v));
+}
+
+(slice, ((int))) $SubscriptionInfo$_load(slice sc_0) inline {
+    var v'remainingNotificationsCount = sc_0~load_int(257);
+    return (sc_0, (v'remainingNotificationsCount));
+}
+
+tuple $SubscriptionInfo$_as_optional((int) v) inline {
+    var (v'remainingNotificationsCount) = v;
+    return __tact_tuple_create_1(v'remainingNotificationsCount);
+}
+
+tuple $SubscriptionInfo$_load_opt(cell cl) inline {
+    if (null?(cl)) {
+        return null();
+    }
+    var sc = cl.begin_parse();
+    return $SubscriptionInfo$_as_optional(sc~$SubscriptionInfo$_load());
+}
+
+_ $SubscriptionInfo$_get_remainingNotificationsCount((int) v) inline {
+    var (v'remainingNotificationsCount) = v;
+    return v'remainingNotificationsCount;
+}
+
+((int)) $SubscriptionInfo$_constructor_remainingNotificationsCount(int remainingNotificationsCount) inline {
+    return (remainingNotificationsCount);
+}
+
+;;
+;; Type: SubscriptionBatch
+;;
+
+builder $SubscriptionBatch$_store(builder build_0, (slice, int, cell, int) v) inline {
+    var (v'stream, v'batchId, v'subscriptions, v'subscriptionsCount) = v;
+    build_0 = __tact_store_address(build_0, v'stream);
+    build_0 = build_0.store_int(v'batchId, 257);
+    build_0 = build_0.store_dict(v'subscriptions);
+    build_0 = build_0.store_int(v'subscriptionsCount, 257);
+    return build_0;
+}
+
+(slice, ((slice, int, cell, int))) $SubscriptionBatch$_load(slice sc_0) inline {
+    var v'stream = sc_0~__tact_load_address();
+    var v'batchId = sc_0~load_int(257);
+    var v'subscriptions = sc_0~load_dict();
+    var v'subscriptionsCount = sc_0~load_int(257);
+    return (sc_0, (v'stream, v'batchId, v'subscriptions, v'subscriptionsCount));
+}
+
+(slice, ((slice, int))) $SubscriptionBatch$init$_load(slice sc_0) inline {
+    var v'stream = sc_0~__tact_load_address();
+    var v'batchId = sc_0~load_int(257);
+    return (sc_0, (v'stream, v'batchId));
+}
+
+(slice, int, cell, int) $SubscriptionBatch$_contract_load() impure inline_ref {
+    slice $sc = get_data().begin_parse();
+    __tact_context_sys = $sc~load_ref();
+    int $loaded = $sc~load_int(1);
+    if ($loaded) {
+        return $sc~$SubscriptionBatch$_load();
+    } else {
+        ;; Allow only workchain deployments
+        throw_unless(137, my_address().preload_uint(11) == 1024);
+        (slice stream, int batchId) = $sc~$SubscriptionBatch$init$_load();
+        $sc.end_parse();
+        return $SubscriptionBatch$_contract_init(stream, batchId);
+    }
+}
+
+() $SubscriptionBatch$_contract_store((slice, int, cell, int) v) impure inline {
+    builder b = begin_cell();
+    b = b.store_ref(__tact_context_sys);
+    b = b.store_int(true, 1);
+    b = $SubscriptionBatch$_store(b, v);
+    set_data(b.end_cell());
+}

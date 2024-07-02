@@ -1,0 +1,417 @@
+#pragma version =0.4.4;
+#pragma allow-post-modification;
+#pragma compute-asm-ltr;
+
+#include "tact_SimpleSubscriber.headers.fc";
+#include "tact_SimpleSubscriber.stdlib.fc";
+#include "tact_SimpleSubscriber.storage.fc";
+
+;;
+;; Contract SimpleSubscriber functions
+;;
+
+(slice, slice, int, slice, int, int, tuple) $SimpleSubscriber$_contract_init(slice $deployer, int $subscriberId) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = (null(), null(), null(), null(), null(), null(), null());
+    $self'deployer = $deployer;
+    $self'subscriberId = $subscriberId;
+    return ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick);
+}
+
+((slice, slice, int, slice, int, int, tuple), tuple) $SimpleSubscriber$_fun_latestCandlestick((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), $self'latestCandlestick);
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_handleCandlestick((slice, slice, int, slice, int, int, tuple) $self, int $queryId, (int, int, int, int, int, int) $candlestick) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    var (($candlestick'start, $candlestick'end, $candlestick'open, $candlestick'close, $candlestick'high, $candlestick'low)) = $candlestick;
+    __tact_nop();
+    $self'latestCandlestick = $Candlestick$_as_optional(($candlestick'start, $candlestick'end, $candlestick'open, $candlestick'close, $candlestick'high, $candlestick'low));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_handleDestroy((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    __tact_nop();
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_fun_balance((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), __tact_my_balance());
+}
+
+((slice, slice, int, slice, int, int, tuple), slice) $SimpleSubscriber$_fun_deployerAddress((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), $self'deployer);
+}
+
+((slice, slice, int, slice, int, int, tuple), slice) $SimpleSubscriber$_fun_streamAddress((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), $self'stream);
+}
+
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_fun_notificationsCount((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), $self'notificationsCount);
+}
+
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_fun_expiration((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), $self'expiration);
+}
+
+((slice, slice, int, slice, int, int, tuple), slice) $SimpleSubscriber$_fun_sessionAddress((slice, slice, int, slice, int, int, tuple) $self) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), $self'session);
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_deploySession((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    __tact_nop();
+    $global_send($SendParameters$_constructor_to_value_mode_body(__tact_not_null($self'stream), 100000000, 17, $DSTDeploySession$_store_cell($DSTDeploySession$_constructor_queryId($queryId))));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_subscribeStream((slice, slice, int, slice, int, int, tuple) $self, int $queryId, slice $stream, int $notificationsCount, int $expiration) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(404, ($notificationsCount >= 2));
+    throw_unless(401, ($ctx'value >= (250000000 + (30000000 * $notificationsCount))));
+    $self'stream = $stream;
+    $self'notificationsCount = $notificationsCount;
+    $self'expiration = $expiration;
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_deploySession($queryId);
+    raw_reserve((150000000 + (30000000 * $notificationsCount)), 4);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_destroy((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    __tact_nop();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_handleDestroy($queryId);
+    $global_send($SendParameters$_constructor_to_value_mode_body($self'deployer, 0, 160, $SubscriberDestroyedNotification$_store_cell($SubscriberDestroyedNotification$_constructor_queryId($queryId))));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_unsubscribeSession((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    __tact_nop();
+    $global_send($SendParameters$_constructor_to_value_mode_body(__tact_not_null($self'session), 50000000, 1, $SESUnsubscribe$_store_cell($SESUnsubscribe$_constructor_queryId($queryId))));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+((slice, slice, int, slice, int, int, tuple), ()) $SimpleSubscriber$_fun_destroySession((slice, slice, int, slice, int, int, tuple) $self, int $queryId) impure inline_ref {
+    var (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)) = $self;
+    __tact_nop();
+    $global_send($SendParameters$_constructor_to_value_mode_body(__tact_not_null($self'session), 50000000, 17, $SESDestroy$_store_cell($SESDestroy$_constructor_queryId($queryId))));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+;;
+;; Receivers of a Contract SimpleSubscriber
+;;
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_SimpleSubscriberDeploy((slice, slice, int, slice, int, int, tuple) $self, (int, slice, int, int) $request) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($request'queryId, $request'stream, $request'notificationsCount, $request'expiration) = $request;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits($self'deployer, $ctx'sender) ));
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_subscribeStream($request'queryId, $request'stream, $request'notificationsCount, $request'expiration);
+    $global_send($SendParameters$_constructor_to_value_mode_body($self'deployer, 0, 128, $SimpleSubscriberDeploySuccess$_store_cell($SimpleSubscriberDeploySuccess$_constructor_queryId_subscriberId($request'queryId, $self'subscriberId))));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_receive_binary_bounce_DSTDeploySession((slice, slice, int, slice, int, int, tuple) $self, (int) $request) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_destroy($request'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_DSTDeploySessionSuccess((slice, slice, int, slice, int, int, tuple) $self, (int, slice) $response) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($response'queryId, $response'session) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits_nullable_one($self'stream, $ctx'sender) ));
+    $self'session = $response'session;
+    $global_send($SendParameters$_constructor_to_value_mode_body(__tact_not_null($self'session), (50000000 + (30000000 * __tact_not_null($self'notificationsCount))), 17, $SESSubscribe$_store_cell($SESSubscribe$_constructor_queryId_notificationsCount($response'queryId, __tact_not_null($self'notificationsCount)))));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_receive_binary_bounce_SESSubscribe((slice, slice, int, slice, int, int, tuple) $self, (int) $request) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_destroy($request'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_SESSubscribeSuccess((slice, slice, int, slice, int, int, tuple) $self, (int, int) $response) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($response'queryId, $response'remainingNotificationsCount) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits(__tact_not_null($self'session), $ctx'sender) ));
+    if (__tact_int_neq_nullable_one($self'notificationsCount, $response'remainingNotificationsCount)) {
+        __tact_nop();
+        ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_unsubscribeSession($response'queryId);
+    }
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_SESCandlestickPublishedNotification((slice, slice, int, slice, int, int, tuple) $self, (int, (int, int, int, int, int, int), int) $notification) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($notification'queryId, ($notification'candlestick'start, $notification'candlestick'end, $notification'candlestick'open, $notification'candlestick'close, $notification'candlestick'high, $notification'candlestick'low), $notification'remainingNotificationsCount) = $notification;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits(__tact_not_null($self'session), $ctx'sender) ));
+    accept_message();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_handleCandlestick($notification'queryId, ($notification'candlestick'start, $notification'candlestick'end, $notification'candlestick'open, $notification'candlestick'close, $notification'candlestick'high, $notification'candlestick'low));
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_receive_binary_bounce_SESUnsubscribe((slice, slice, int, slice, int, int, tuple) $self, (int) $request) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_destroy($request'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_SESUnsubscribedNotification((slice, slice, int, slice, int, int, tuple) $self, (int, int) $notification) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($notification'queryId, $notification'remainingNotificationsCount) = $notification;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits(__tact_not_null($self'session), $ctx'sender) ));
+    accept_message();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_destroySession($notification'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_receive_binary_bounce_SESDestroy((slice, slice, int, slice, int, int, tuple) $self, (int) $request) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_destroy($request'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_SESDestroySuccess((slice, slice, int, slice, int, int, tuple) $self, (int) $response) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($response'queryId) = $response;
+    __tact_nop();
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    throw_unless(400, ( __tact_slice_eq_bits(__tact_not_null($self'session), $ctx'sender) ));
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_destroy($response'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+(((slice, slice, int, slice, int, int, tuple)), ()) $SimpleSubscriber$_internal_binary_SubscriberCheckTimeout((slice, slice, int, slice, int, int, tuple) $self, (int) $request) impure inline {
+    var ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick) = $self;
+    var ($request'queryId) = $request;
+    __tact_nop();
+    throw_unless(411, (now() > (__tact_not_null($self'expiration) + 3600)));
+    var ($ctx'bounced, $ctx'sender, $ctx'value, $ctx'raw) = __tact_context_get();
+    $global_send($SendParameters$_constructor_to_value_mode_body($ctx'sender, $ctx'value, 17, $SubscriberTimeoutExceeded$_store_cell($SubscriberTimeoutExceeded$_constructor_queryId($request'queryId))));
+    ($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick)~$SimpleSubscriber$_fun_unsubscribeSession($request'queryId);
+    return (($self'deployer, $self'stream, $self'notificationsCount, $self'session, $self'expiration, $self'subscriberId, $self'latestCandlestick), ());
+}
+
+;;
+;; Get methods of a Contract SimpleSubscriber
+;;
+
+_ %latestCandlestick() method_id(100054) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_latestCandlestick();
+    return $Candlestick$_to_opt_external(res);
+}
+
+_ %balance() method_id(104128) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_balance();
+    return res;
+}
+
+_ %deployerAddress() method_id(104269) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_deployerAddress();
+    return res;
+}
+
+_ %streamAddress() method_id(73159) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_streamAddress();
+    return res;
+}
+
+_ %notificationsCount() method_id(89261) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_notificationsCount();
+    return res;
+}
+
+_ %expiration() method_id(83402) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_expiration();
+    return res;
+}
+
+_ %sessionAddress() method_id(128322) {
+    var self = $SimpleSubscriber$_contract_load();
+    var res = self~$SimpleSubscriber$_fun_sessionAddress();
+    return res;
+}
+
+_ supported_interfaces() method_id {
+    return (
+        "org.ton.introspection.v0"H >> 128,
+        "org.ton.abi.ipfs.v0"H >> 128,
+        "org.ton.deploy.lazy.v0"H >> 128,
+        "org.ton.chain.workchain.v0"H >> 128
+    );
+}
+
+_ get_abi_ipfs() method_id {
+    return "ipfs://QmSya24UHYu1uNxBbUYAadzhxjTwRiwbotdqekB3BPogLu";
+}
+
+_ lazy_deployment_completed() method_id {
+    return get_data().begin_parse().load_int(1);
+}
+
+;;
+;; Routing of a Contract SimpleSubscriber
+;;
+
+((slice, slice, int, slice, int, int, tuple), int) $SimpleSubscriber$_contract_router_internal((slice, slice, int, slice, int, int, tuple) self, int msg_bounced, slice in_msg) impure inline_ref {
+    ;; Handle bounced messages
+    if (msg_bounced) {
+        
+        ;; Skip 0xFFFFFFFF
+        in_msg~skip_bits(32);
+        
+        ;; Parse op
+        int op = 0;
+        if (slice_bits(in_msg) >= 32) {
+            op = in_msg.preload_uint(32);
+        }
+        
+        ;; Bounced handler for DSTDeploySession message
+        if (op == 1658160529) {
+            var msg = in_msg~$DSTDeploySession$_load();
+            self~$SimpleSubscriber$_receive_binary_bounce_DSTDeploySession(msg);
+            return (self, true);
+        }
+        
+        ;; Bounced handler for SESSubscribe message
+        if (op == 1533823831) {
+            var msg = in_msg~$SESSubscribe$_load_bounced();
+            self~$SimpleSubscriber$_receive_binary_bounce_SESSubscribe(msg);
+            return (self, true);
+        }
+        
+        ;; Bounced handler for SESUnsubscribe message
+        if (op == 2668625285) {
+            var msg = in_msg~$SESUnsubscribe$_load();
+            self~$SimpleSubscriber$_receive_binary_bounce_SESUnsubscribe(msg);
+            return (self, true);
+        }
+        
+        ;; Bounced handler for SESDestroy message
+        if (op == 2226780297) {
+            var msg = in_msg~$SESDestroy$_load();
+            self~$SimpleSubscriber$_receive_binary_bounce_SESDestroy(msg);
+            return (self, true);
+        }
+        
+        return (self, true);
+    }
+    
+    ;; Parse incoming message
+    int op = 0;
+    if (slice_bits(in_msg) >= 32) {
+        op = in_msg.preload_uint(32);
+    }
+    
+    
+    ;; Receive SimpleSubscriberDeploy message
+    if (op == 3073362313) {
+        var msg = in_msg~$SimpleSubscriberDeploy$_load();
+        self~$SimpleSubscriber$_internal_binary_SimpleSubscriberDeploy(msg);
+        return (self, true);
+    }
+    
+    ;; Receive DSTDeploySessionSuccess message
+    if (op == 3452518278) {
+        var msg = in_msg~$DSTDeploySessionSuccess$_load();
+        self~$SimpleSubscriber$_internal_binary_DSTDeploySessionSuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESSubscribeSuccess message
+    if (op == 1400038355) {
+        var msg = in_msg~$SESSubscribeSuccess$_load();
+        self~$SimpleSubscriber$_internal_binary_SESSubscribeSuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESCandlestickPublishedNotification message
+    if (op == 3200926804) {
+        var msg = in_msg~$SESCandlestickPublishedNotification$_load();
+        self~$SimpleSubscriber$_internal_binary_SESCandlestickPublishedNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESUnsubscribedNotification message
+    if (op == 4092566650) {
+        var msg = in_msg~$SESUnsubscribedNotification$_load();
+        self~$SimpleSubscriber$_internal_binary_SESUnsubscribedNotification(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SESDestroySuccess message
+    if (op == 21916563) {
+        var msg = in_msg~$SESDestroySuccess$_load();
+        self~$SimpleSubscriber$_internal_binary_SESDestroySuccess(msg);
+        return (self, true);
+    }
+    
+    ;; Receive SubscriberCheckTimeout message
+    if (op == 1397988627) {
+        var msg = in_msg~$SubscriberCheckTimeout$_load();
+        self~$SimpleSubscriber$_internal_binary_SubscriberCheckTimeout(msg);
+        return (self, true);
+    }
+    
+    return (self, false);
+}
+
+() recv_internal(int msg_value, cell in_msg_cell, slice in_msg) impure {
+    
+    ;; Context
+    var cs = in_msg_cell.begin_parse();
+    var msg_flags = cs~load_uint(4);
+    var msg_bounced = -(msg_flags & 1);
+    slice msg_sender_addr = __tact_verify_address(cs~load_msg_addr());
+    __tact_context = (msg_bounced, msg_sender_addr, msg_value, cs);
+    __tact_context_sender = msg_sender_addr;
+    
+    ;; Load contract data
+    var self = $SimpleSubscriber$_contract_load();
+    
+    ;; Handle operation
+    int handled = self~$SimpleSubscriber$_contract_router_internal(msg_bounced, in_msg);
+    
+    ;; Throw if not handled
+    throw_unless(130, handled);
+    
+    ;; Persist state
+    $SimpleSubscriber$_contract_store(self);
+}
