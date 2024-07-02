@@ -4,6 +4,6 @@ export const compile: CompilerConfig = {
   lang: "tact",
   target: "contracts/brokerage.tact",
   options: {
-    debug: true,
+    debug: false,
   },
 };
