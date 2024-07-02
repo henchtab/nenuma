@@ -157,7 +157,7 @@ describe("Core Assessment", () => {
 
     // Deploy the Cash-or-Nothing Option contract and log transactions
     const BrokerDeployOptionResult = await broker.send(bob.getSender(), {
-      value: toNano("5") + toNano("10"),
+      value: toNano("2") + toNano("10"),
     }, {
       $$type: "BrokerDeployOption",
       queryId: 300n,

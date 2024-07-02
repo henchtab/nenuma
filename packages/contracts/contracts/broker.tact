@@ -30,9 +30,9 @@ message BrokerDeployOptionSuccess {
   option: Address;
 }
 
-const BROKER_DEPLOY_OPTION_DEPOSIT: Int = ton("0.5");
-const BROKER_MINIMUM_OPTION_INVESTMENT: Int = ton("0.125"); // FIXME:
-const CASH_OR_NOTHING_OPTION_DEPLOY_DEPOSIT: Int = ton("1");
+const BROKER_DEPLOY_OPTION_DEPOSIT: Int = ton("0.1");
+const BROKER_MINIMUM_OPTION_INVESTMENT: Int = ton("1"); // FIXME:
+const CASH_OR_NOTHING_OPTION_DEPLOY_DEPOSIT: Int = ton("0.75");
 
 contract Broker {
   override const storageReserve: Int = 10_000_000;
@@ -163,6 +163,9 @@ contract Broker {
 
     let notificationsCount: Int = (request.draft.expiration - now()) / 60 + 1;
 
+    dump("888");
+    dump(BROKER_DEPLOY_OPTION_DEPOSIT + CASH_OR_NOTHING_OPTION_DEPLOY_DEPOSIT + request.draft.investment + SUBSCRIBER_STORAGE_RESERVE + SUBSCRIBER_OPERATIONAL_RESERVE + (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount);
+
     nativeThrowUnless(607, ctx.value >= BROKER_DEPLOY_OPTION_DEPOSIT + CASH_OR_NOTHING_OPTION_DEPLOY_DEPOSIT + request.draft.investment + SUBSCRIBER_STORAGE_RESERVE + SUBSCRIBER_OPERATIONAL_RESERVE + (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount);
 
     let payout: Int = (request.draft.investment * self.payout.nominator) / self.payout.denominator;
@@ -199,15 +202,6 @@ contract Broker {
       data: optionStateInit.data,
       code: optionStateInit.code,
     });
-
-    // dump("myBalance()");
-    // dump(myBalance());
-
-    // dump("myBalance() - ctx.value");
-    // dump(myBalance() - ctx.value);
-
-    // dump("CASH_OR_NOTHING_OPTION_DEPLOY_DEPOSIT + agreement.investment + SUBSCRIBER_STORAGE_RESERVE + SUBSCRIBER_OPERATIONAL_RESERVE + (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount");
-    // dump(CASH_OR_NOTHING_OPTION_DEPLOY_DEPOSIT + agreement.investment + SUBSCRIBER_STORAGE_RESERVE + SUBSCRIBER_OPERATIONAL_RESERVE + (NOTIFICATION_DEPOSIT + NOTIFICATION_PREMIUM) * notificationsCount);
 
     nativeReserve(payout, ReserveExact | ReserveInvertSign | ReserveAddOriginalBalance);
 
