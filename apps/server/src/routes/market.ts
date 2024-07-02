@@ -28,12 +28,12 @@ const routes: FastifyPluginAsync = async (server) => {
             try {
               const client = new TonClient({
                 endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-                apiKey: '9e557d76a302f31496f5fe90a62cb4f90ed4ef97a0e8aa08d310080f30f6263c',
+                apiKey: server.config.RPC_PROVIDER_API_KEY,
               });
 
               const stream = client.open(
                 DataStream.fromAddress(
-                  Address.parse('kQCvKztqJAXd6hNVN48-9_b1atquZf9s1WTPsp6xtHQ1nr-D'),
+                  Address.parse(server.config.DATA_STREAM_ADDRESS),
                 ),
               );
 
@@ -113,7 +113,7 @@ const routes: FastifyPluginAsync = async (server) => {
                 messages: [
                   internal({
                     value: '5',
-                    to: 'kQCvKztqJAXd6hNVN48-9_b1atquZf9s1WTPsp6xtHQ1nr-D',
+                    to: server.config.DATA_STREAM_ADDRESS,
                     body: beginCell()
                       .store(
                         storeDSTPublishCandlestick({

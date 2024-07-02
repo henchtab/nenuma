@@ -20,6 +20,7 @@ const configSchema = z.object({
   COOKIE_SECRET: z.string(),
   JWT_SECRET: z.string(),
   RPC_PROVIDER_API_KEY: z.string(),
+  DATA_STREAM_ADDRESS: z.string(),
 });
 
 export type Config = z.infer<typeof configSchema>;
