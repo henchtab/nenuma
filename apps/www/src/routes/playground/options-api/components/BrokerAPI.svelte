@@ -114,7 +114,7 @@
           date: formatOutputDate(new Date()),
           message: JSON.stringify(result.toString(), null, 2)
         });
-      }}>Get New Option ID</Button
+      }}>Get Next Option ID</Button
     >
 
     <Button
