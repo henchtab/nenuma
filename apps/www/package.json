@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "export NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem && vite dev",
     "build": "vite build",
+    "build:digitalocean": "pnpm install --production=false && pnpm run build && rm -rf node_modules && pnpm install --production --frozen-lockfile",
     "preview": "export NODE_EXTRA_CA_CERTS=$(mkcert -CAROOT)/rootCA.pem && vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
