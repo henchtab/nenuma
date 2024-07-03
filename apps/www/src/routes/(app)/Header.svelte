@@ -42,7 +42,7 @@
   }
 </script>
 
-<header class="border-b border-ds-gray-400">
+<header class="border-b sticky top-0 z-50 bg-ds-background-200 border-ds-gray-400">
   <div class="container pr-0 flex justify-between items-center">
     <img src={logo} alt="Nenuma" class="w-8 h-8" />
     <div class="flex items-center gap-2 border-l border-ds-gray-400 p-4">

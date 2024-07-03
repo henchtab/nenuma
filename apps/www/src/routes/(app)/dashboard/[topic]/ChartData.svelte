@@ -51,7 +51,7 @@
       layout: {
         textColor: '#A1A1A1',
         background: { color: '#000' },
-        fontSize: 10
+        fontSize: 12
       },
       grid: {
         horzLines: { color: '#FFFFFF17' },
@@ -59,6 +59,10 @@
       },
       kineticScroll: {
         mouse: true
+      },
+      handleScale: {
+        axisPressedMouseMove: true,
+        mouseWheel: false,
       }
     });
     candlestickSeries = chart.addCandlestickSeries({
@@ -83,7 +87,11 @@
       alignLabels: true
     });
 
-    chart.subscribeCrosshairMove(() => $hapticFeedback.selectionChanged());
+    candlestickSeries.createPriceLine({
+      
+    })
+
+    // chart.subscribeCrosshairMove(() => $hapticFeedback.selectionChanged());
   });
 </script>
 
