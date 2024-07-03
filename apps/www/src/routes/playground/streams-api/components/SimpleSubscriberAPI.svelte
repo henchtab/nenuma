@@ -54,7 +54,7 @@
   <div class="flex gap-4 items-end overflow-x-auto pb-6 snap-x snap-mandatory">
     <a
       class="snap-start"
-      href={`/streams-api/deploy?contract=subscriber&title=${encodeURIComponent('Simple Subscriber')}&subtitle=simple subscriber`}
+      href={`/playground/streams-api/deploy?contract=subscriber&title=${encodeURIComponent('Simple Subscriber')}&subtitle=simple subscriber`}
     >
       <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700"
         >Deploy Simple Subscriber

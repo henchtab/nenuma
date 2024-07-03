@@ -1,12 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { tonConnectUI } from '$lib/stores/ton-connect';
+  import logo from '$lib/assets/logo.svg';
   import { Button } from '$lib/components/ui/button';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
-  import { getAccountInfo, reset } from '$lib/data';
-  import { cn, mediaQuery } from '$lib/utils';
+  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
+  import { getAccountInfo, removeAccessTokenCookie } from '$lib/data';
+  import { type TonConnectStore } from '$lib/stores/ton-connect';
   import { KlineTopic, latestPrices } from '$lib/stores/ws.svelte';
+  import { cn, mediaQuery } from '$lib/utils';
   import { createQuery } from '@tanstack/svelte-query';
   import CandlestickChart from 'lucide-svelte/icons/candlestick-chart';
   import Coins from 'lucide-svelte/icons/coins';
@@ -14,57 +16,35 @@
   import LogOut from 'lucide-svelte/icons/log-out';
   import Menu from 'lucide-svelte/icons/menu';
   import TestTubes from 'lucide-svelte/icons/test-tubes';
+  import { getContext } from 'svelte';
 
   const accountInfo = createQuery({
     queryKey: ['accountInfo'],
     queryFn: getAccountInfo
   });
 
+  const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
+
   const isDesktop = mediaQuery('(min-width: 768px)');
 
   const items = [
-    {
-      symbol: 'ETH',
-      href: '/dashboard/ETHUSDT',
-      name: 'Ethereum',
-      priceKey: KlineTopic.ETHUSDT
-    },
     {
       symbol: 'BTC',
       href: '/dashboard/BTCUSDT',
       name: 'Bitcoin',
       priceKey: KlineTopic.BTCUSDT
-    },
-    {
-      symbol: 'TON',
-      href: '/dashboard/TONUSDT',
-      name: 'Toncoin',
-      priceKey: KlineTopic.TONUSDT
-    },
-    {
-      symbol: 'SOL',
-      href: '/dashboard/SOLUSDT',
-      name: 'Solana',
-      priceKey: KlineTopic.SOLUSDT
-    },
-    {
-      symbol: 'BNB',
-      href: '/dashboard/BNBUSDT',
-      name: 'Binance Coin',
-      priceKey: KlineTopic.BNBUSDT
     }
   ];
 
   function signOut() {
-    $tonConnectUI?.disconnect();
-    reset();
-    goto('/auth/sign-in');
+    $tonConnect?.disconnectWallet();
+    goto('/');
   }
 </script>
 
 <header class="border-b border-ds-gray-400">
   <div class="container pr-0 flex justify-between items-center">
-    <span class="text-xl text-center text-medium">Nenuma</span>
+    <img src={logo} alt="Nenuma" class="w-8 h-8" />
     <div class="flex items-center gap-2 border-l border-ds-gray-400 p-4">
       <div class="inline-flex gap-2">
         <Coins size="24" strokeWidth={1.5} />
@@ -84,6 +64,7 @@
             $isDesktop && 'h-full left-auto min-w-[25%] right-0'
           )}
         >
+          <input type="checkbox" id="drawer" class="sr-only" aria-hidden="true" />
           <Drawer.Footer class="gap-0 m-0 overflow-auto">
             <div class="grid gap-3 pb-3 border-b">
               {#each items as item}
@@ -119,7 +100,7 @@
                 </a>
               </Drawer.Close>
               <Drawer.Close>
-                <a class="flex h-12 justify-between items-center" href="/">
+                <a class="flex h-12 justify-between items-center" href="/playground">
                   <div class="font-medium text-ds-gray-900">Playground</div>
                   <TestTubes size="20" strokeWidth={1.5} />
                 </a>

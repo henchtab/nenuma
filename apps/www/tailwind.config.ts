@@ -14,6 +14,9 @@ const config: Config = {
       }
     },
     extend: {
+      fontFamily: {
+        'mona-sans': ['Mona Sans', ...fontFamily.sans]
+      },
       colors: {
         border: 'hsl(var(--border) / <alpha-value>)',
         input: 'hsl(var(--input) / <alpha-value>)',
@@ -156,9 +159,7 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
       },
-      fontFamily: {
-        sans: [...fontFamily.sans]
-      },
+
       backgroundImage: {
         skeleton: 'linear-gradient(270deg, #111, #333, #333, #111)',
         spinner: `conic-gradient(

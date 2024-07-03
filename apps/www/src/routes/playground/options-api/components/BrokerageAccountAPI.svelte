@@ -25,17 +25,14 @@
       bind:value={$brokerageAddress}
     />
   </Label>
-  <p class="mt-3 text-lg mb-8 text-ds-gray-900 max-w-[640px]">
-    The Brokerage Account contract initializes with a brokerage address, a trader address, and a
-    storage reserve. It includes getter functions to retrieve the storage reserve, brokerage
-    address, and trader address. The contract can receive deployment requests (BRADeploy) and
-    ensures that these requests are only accepted from the designated brokerage address. Upon
-    successful validation of a deployment request, it sends a BRADeploySuccess notification back to
-    the requester with the trader address.
+  <p class="mt-3 mb-8 text-ds-gray-900 max-w-[640px]">
+    Sets up and manages brokerage accounts. Initializes with brokerage and trader addresses, ensures
+    the sender is authorized, and notifies deployment success. Tracks storage reserves and handles
+    account-related requests while validating access.
   </p>
-  <div class="flex gap-4 items-end overflow-x-auto">
+  <div class="flex gap-4 items-end overflow-x-auto snap-x snap-mandatory">
     <Button
-      class="bg-ds-purple-800 text-white hover:bg-ds-purple-700"
+      class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
         const result = await $brokerageAccount.getBrokerage();
         output.unshift({
@@ -46,7 +43,7 @@
     >
 
     <Button
-      class="bg-ds-purple-800 text-white hover:bg-ds-purple-700"
+      class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
         const result = await $brokerageAccount.getTrader();
 
@@ -58,7 +55,7 @@
     >
 
     <Button
-      class="bg-ds-purple-800 text-white hover:bg-ds-purple-700"
+      class="bg-ds-purple-800 snap-start text-white hover:bg-ds-purple-700"
       onclick={async () => {
         const result = await $brokerageAccount.getStorageReserve();
 
@@ -69,6 +66,6 @@
       }}>Get Storage Reserve</Button
     >
   </div>
-  
+
   <Output bind:output />
 </Section>

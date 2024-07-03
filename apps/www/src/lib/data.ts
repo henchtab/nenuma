@@ -100,7 +100,7 @@ export async function getAccountInfo(): Promise<{
 /**
  * Reset the token
  */
-export function reset() {
+export function removeAccessTokenCookie() {
   cookie.remove(ACCESS_TOKEN_COOKIE);
   generatePayload();
 }

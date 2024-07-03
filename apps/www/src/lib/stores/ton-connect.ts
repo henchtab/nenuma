@@ -1,22 +1,66 @@
-import { TonConnectUI } from '@tonconnect/ui';
-import { derived, readable } from 'svelte/store';
+import { TonConnectUI, Wallet } from '@tonconnect/ui';
+import { Writable, derived, readable, writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { SenderArguments } from '@ton/core';
 
 export const tonConnectUI = readable<TonConnectUI>(undefined, (set) => {
-  if (!browser) {
-    // If not in the browser, return early and don't set sdk
-    return () => {};
-  }
+  console.log('tonConnectUI');
 
-  const sdk = new TonConnectUI({
-    manifestUrl:
-      'https://nenuma.telegram-mini-apps.manuvantara.com/tonconnect-manifest.json',
-    widgetRootId: 'ton-connect'
-  });
+  const update = () => {
+    if (!browser) return;
 
-  set(sdk);
+    const sdk = new TonConnectUI({
+      manifestUrl: 'https://nenuma.telegram-mini-apps.manuvantara.com/tonconnect-manifest.json',
+      widgetRootId: 'ton-connect'
+    });
+
+    set(sdk);
+  };
+
+  update();
+
+  return () => {
+    if (browser) {
+      const el = document.getElementById('ton-connect');
+
+      if (el) {
+        el.innerHTML = '';
+        console.log('tonConnectUI cleanup');
+      }
+    }
+  };
 });
+
+type TonConnect = {
+  sdk: TonConnectUI | null;
+  connection: {
+    status: 'reconnecting' | 'connected' | 'disconnected';
+    wallet: Wallet | null;
+  };
+  connectWallet: () => Promise<void>;
+  disconnectWallet: () => Promise<void>;
+};
+
+export type TonConnectStore = Writable<TonConnect>;
+
+export const tonConnect = writable<TonConnect>({
+  sdk: null,
+  connection: {
+    status: 'reconnecting',
+    wallet: null
+  },
+  connectWallet: async () => {},
+  disconnectWallet: async () => {}
+});
+
+export const isReconnecting = derived(
+  tonConnect,
+  ($tonConnect) => $tonConnect.connection.status === 'reconnecting'
+);
+export const isConnected = derived(
+  tonConnect,
+  ($tonConnect) => $tonConnect.connection.status === 'connected'
+);
 
 export const sender = derived(tonConnectUI, ($tonConnectUI) => {
   return {

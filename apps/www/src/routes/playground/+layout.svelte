@@ -5,21 +5,20 @@
   import { Button } from '$lib/components/ui/button';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
+  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { tonConnectUI } from '$lib/stores/ton-connect';
+  import { type TonConnectStore, tonConnectUI } from '$lib/stores/ton-connect';
   import { Address } from '@ton/core';
   import Bookmark from 'lucide-svelte/icons/bookmark';
   import Menu from 'lucide-svelte/icons/menu';
-  import { onMount } from 'svelte';
+  import { getContext, onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
   import Saved from './components/Saved.svelte';
+  import { isConnected, isReconnecting } from '$lib/stores/ton-connect';
 
   let { children } = $props();
 
-  let connectionState = $state({
-    isConnnected: false,
-    isReconnecting: true
-  });
+  const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
   let isSavedOpen = $state(false);
 
@@ -33,52 +32,52 @@
     window.onunhandledrejection = (e) =>
       toast.error(`An unhandled promise rejection occurred - ${e.reason}`);
 
-    tonConnectUI.subscribe(async (tonConnectUI) => {
-      if (!tonConnectUI) {
-        connectionState.isConnnected = false;
-        connectionState.isReconnecting = false;
-        return;
-      }
+    // tonConnectUI.subscribe(async (tonConnectUI) => {
+    //   if (!tonConnectUI) {
+    //     connectionState.isConnnected = false;
+    //     connectionState.isReconnecting = false;
+    //     return;
+    //   }
 
-      const status = await tonConnectUI.connectionRestored;
-      connectionState.isConnnected = status;
-      connectionState.isReconnecting = false;
+    //   const status = await tonConnectUI.connectionRestored;
+    //   connectionState.isConnnected = status;
+    //   connectionState.isReconnecting = false;
 
-      tonConnectUI.onStatusChange((status) => {
-        connectionState.isConnnected = status ? true : false;
-      });
-    });
+    //   tonConnectUI.onStatusChange((status) => {
+    //     connectionState.isConnnected = status ? true : false;
+    //   });
+    // });
   });
 
-  async function connectWallet() {
-    if (!$tonConnectUI) {
-      console.warn('TonConnectUI is not initialized');
-      return;
-    }
+  // async function connectWallet() {
+  //   if (!$tonConnectUI) {
+  //     console.warn('TonConnectUI is not initialized');
+  //     return;
+  //   }
 
-    try {
-      if ($tonConnectUI.connected || $tonConnectUI.wallet) {
-        await $tonConnectUI.disconnect();
-      }
+  //   try {
+  //     if ($tonConnectUI.connected || $tonConnectUI.wallet) {
+  //       await $tonConnectUI.disconnect();
+  //     }
 
-      await $tonConnectUI.openModal();
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  //     await $tonConnectUI.openModal();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
-  async function disconnectWallet() {
-    if (!$tonConnectUI) {
-      console.warn('TonConnectUI is not initialized');
-      return;
-    }
+  // async function disconnectWallet() {
+  //   if (!$tonConnectUI) {
+  //     console.warn('TonConnectUI is not initialized');
+  //     return;
+  //   }
 
-    try {
-      await $tonConnectUI.disconnect();
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  //   try {
+  //     await $tonConnectUI.disconnect();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
   function formatWalletAddress(address: string | undefined) {
     if (!address) {
@@ -102,16 +101,16 @@
         <ul class="flex justify-center space-x-4">
           <li>
             <a
-              data-active={$page.url.pathname === '/'}
+              data-active={$page.url.pathname.includes('/playground/streams-api')}
               class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors data-[active=true]:text-ds-gray-1000"
-              href="/">Streams API</a
+              href="/playground/streams-api/data-stream">Streams API</a
             >
           </li>
           <li>
             <a
-              data-active={$page.url.pathname === '/options-api'}
+              data-active={$page.url.pathname.includes('/playground/options-api')}
               class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors data-[active=true]:text-ds-gray-1000"
-              href="/options-api">Derivatives API</a
+              href="/playground/options-api/brokerage">Derivatives API</a
             >
           </li>
           <li>
@@ -125,18 +124,18 @@
       </nav>
     </div>
 
-    <Skeleton class="hidden md:block" show={connectionState.isReconnecting}>
+    <Skeleton class="hidden md:block" show={$isReconnecting}>
       <Button
         type="button"
         onclickcapture={() => {
-          if (connectionState.isConnnected) {
-            disconnectWallet();
+          if ($isConnected) {
+            $tonConnect.disconnectWallet();
           } else {
-            connectWallet();
+            $tonConnect.connectWallet();
           }
         }}
       >
-        {#if connectionState.isConnnected}
+        {#if $isConnected}
           <div class="flex gap-2 items-center">
             <Ton />
             {formatWalletAddress($tonConnectUI.account?.address)}
@@ -172,7 +171,7 @@
       <Drawer.Root>
         <!-- To avoid excessive gap while drawer content being portalled, we need to add ml-2 here -->
         <Drawer.Trigger
-          class="w-8 h-8 border border-ds-gray-400 rounded-full ml-2" 
+          class="w-8 h-8 border border-ds-gray-400 rounded-full ml-2"
           onclick={() => $hapticFeedback.impactOccurred('light')}
         >
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
@@ -182,23 +181,23 @@
             <input class="sr-only" aria-hidden="true" type="checkbox" />
 
             <div class="pb-6">
-              <Skeleton class="w-full" show={connectionState.isReconnecting}>
+              <Skeleton class="w-full" show={$isReconnecting}>
                 <Button
                   class="w-full"
                   type="button"
                   size="lg"
                   onclickcapture={() => {
-                    if (connectionState.isConnnected) {
-                      disconnectWallet();
+                    if ($isConnected) {
+                      $tonConnect.disconnectWallet();
                     } else {
-                      connectWallet();
+                      $tonConnect.connectWallet();
                     }
                   }}
                 >
                   <div class="flex gap-2 items-center">
                     <Ton />
-                    {#if connectionState.isConnnected}
-                      {formatWalletAddress($tonConnectUI.account?.address)}
+                    {#if $isConnected}
+                      {formatWalletAddress($tonConnect.connection.wallet?.account.address)}
                     {:else}
                       Connect TON
                     {/if}
@@ -208,6 +207,17 @@
             </div>
 
             <nav class="grid gap-3">
+              <Drawer.Close asChild let:builder>
+                <a
+                  use:builder.action
+                  {...builder}
+                  class="flex justify-between items-center h-12 text-lg font-medium"
+                  href="/dashboard"
+                >
+                  Derivatives Exchange
+                </a>
+              </Drawer.Close>
+
               <section class="flex flex-col gap-2">
                 <span class="text-lg text-ds-gray-900 font-medium">Streams API</span>
                 <ul class="pl-4">
@@ -217,7 +227,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/streams-api/data-stream"
+                        href="/playground/streams-api/data-stream"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Data Stream
@@ -230,7 +240,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/streams-api/subscription-batch"
+                        href="/playground/streams-api/subscription-batch"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Subscription Batch
@@ -243,7 +253,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/streams-api/session"
+                        href="/playground/streams-api/session"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Session
@@ -256,7 +266,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/streams-api/simple-subscriber"
+                        href="/playground/streams-api/simple-subscriber"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Simple Subscriber
@@ -275,7 +285,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/options-api/brokerage"
+                        href="/playground/options-api/brokerage"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Brokerage
@@ -288,7 +298,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/options-api/broker"
+                        href="/playground/options-api/broker"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Broker
@@ -301,7 +311,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/options-api/brokerage-account"
+                        href="/playground/options-api/brokerage-account"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Brokerage Account
@@ -314,7 +324,7 @@
                         use:builder.action
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg"
-                        href="/options-api/cash-or-nothing-option"
+                        href="/playground/options-api/cash-or-nothing-option"
                         onclick={() => $hapticFeedback.impactOccurred('light')}
                       >
                         Cash-or-Nothing Option
@@ -323,17 +333,6 @@
                   </li>
                 </ul>
               </section>
-
-              <Drawer.Close asChild let:builder>
-                <a
-                  use:builder.action
-                  {...builder}
-                  class="flex justify-between items-center h-12 text-lg font-medium"
-                  href="/dashboard"
-                >
-                  Derivatives Exchange
-                </a>
-              </Drawer.Close>
             </nav>
           </div>
         </Drawer.Content>

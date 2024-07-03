@@ -82,7 +82,7 @@
   >
     <a
       class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
-      href={`/streams-api/deploy?contract=stream&title=${encodeURIComponent('Data Stream')}&subtitle=stream`}
+      href={`/playground/streams-api/deploy?contract=stream&title=${encodeURIComponent('Data Stream')}&subtitle=stream`}
     >
       <Button class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white">Deploy Stream</Button>
     </a>
@@ -91,7 +91,7 @@
       class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
       href={$shouldDisableActions
         ? undefined
-        : `/streams-api/deploy?contract=batch&title=${encodeURIComponent('Subscription Batch')}&subtitle=batch&streamAddress=${$streamAddress}`}
+        : `/playground/streams-api/deploy?contract=batch&title=${encodeURIComponent('Subscription Batch')}&subtitle=batch&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -103,7 +103,7 @@
       class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
       href={$shouldDisableActions
         ? undefined
-        : `/streams-api/deploy?contract=session&title=${encodeURIComponent('Session')}&subtitle=session&streamAddress=${$streamAddress}`}
+        : `/playground/streams-api/deploy?contract=session&title=${encodeURIComponent('Session')}&subtitle=session&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -115,7 +115,7 @@
       class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
       href={$shouldDisableActions
         ? undefined
-        : `/streams-api/deploy?contract=candlestick&title=${encodeURIComponent('Candlestick')}&subtitle=candlestick&streamAddress=${$streamAddress}`}
+        : `/playground/streams-api/deploy?contract=candlestick&title=${encodeURIComponent('Candlestick')}&subtitle=candlestick&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}

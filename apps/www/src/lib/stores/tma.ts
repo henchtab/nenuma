@@ -17,7 +17,7 @@ export const mainButton = readable<MainButton>(undefined, (set) => {
   }
 
   const mb = initMainButton();
-  set(mb[0]);
+  set(mb[0].setBgColor('#ffffff').setTextColor('#000000'));
 
   return () => mb[1]();
 });

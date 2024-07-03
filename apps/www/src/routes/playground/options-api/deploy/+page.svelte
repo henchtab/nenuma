@@ -2,17 +2,21 @@
   import { backButton } from '$lib/stores/tma';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import { OptionForm } from './components';
+  import { BrokerOptionForm, BrokerDepositForm, OptionForm } from './components';
   import { derived } from 'svelte/store';
 
   type ComponentKey = keyof ComponentMap;
 
   // Define the contract to component mapping type
   type ComponentMap = {
+    brokerOption: typeof BrokerOptionForm;
+    brokerDeposit: typeof BrokerDepositForm;
     option: typeof OptionForm;
   };
 
   const contractToComponent: ComponentMap = {
+    brokerOption: BrokerOptionForm,
+    brokerDeposit: BrokerDepositForm,
     option: OptionForm
   };
 
@@ -23,7 +27,9 @@
   });
 
   const title = $page.url.searchParams.get('title') || 'Fill out the form';
+  // TODO: What to do with subtitle?
   const subtitle = $page.url.searchParams.get('subtitle') || '';
+  const shouldForceTitle = $page.url.searchParams.get('forceTitle') === 'true';
 
   onMount(() => {
     $backButton.show();
@@ -40,19 +46,18 @@
 </script>
 
 <svelte:head>
-  <title>Deploy {title}</title>
-  <meta name="description" content="Fill out the form below to deploy your own {subtitle}." />
+  <title>
+    {shouldForceTitle ? title : `Deploy ${title}`}
+  </title>
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <div class="bg-ds-background-100 border-b">
   <div class="container py-6 grid gap-1.5">
     <h1 class="text-lg font-medium text-center text-balance">
-      Deploy {title}
+      {shouldForceTitle ? title : `Deploy ${title}`}
     </h1>
-    <p class="text-ds-gray-900 text-center text-balance">
-      Fill out the form below to deploy your own {subtitle}.
-    </p>
+    <p class="text-ds-gray-900 text-center text-balance">Fill out the form below</p>
   </div>
 </div>
 

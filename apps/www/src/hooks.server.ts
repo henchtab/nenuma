@@ -1,7 +1,7 @@
 import { ACCESS_TOKEN_COOKIE } from '$lib/constants';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 
-const AUTH_ROUTE = '/auth/sign-in';
+const AUTH_ROUTE = '/';
 const PROTECTED_ROUTES_PREFIX = '/(app)';
 const DASHBOARD_ROUTE = '/dashboard';
 

@@ -92,7 +92,7 @@
       class={clsx('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
       href={$shouldDisableActions
         ? undefined
-        : `/options-api/deploy?contract=option&title=${encodeURIComponent('Cash-or-Nothing Option')}&subtitle=option&stream=${$streamAddress}`}
+        : `/playground/options-api/deploy?contract=option&title=${encodeURIComponent('Cash-or-Nothing Option')}&subtitle=option&stream=${$streamAddress}`}
     >
       <Button
         class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white"
