@@ -137,6 +137,8 @@
     <div class="relative isolate min-h-screen flex flex-col">
       {@render children()}
     </div>
+
+    <div id="portalled-content"></div>
   </div>
 </div>
 
