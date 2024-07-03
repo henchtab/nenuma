@@ -8,20 +8,24 @@ import {
   storeBRGDeploy,
   storeCashOrNothingOptionDeploy,
   storeStateInit,
-  type Candlestick
+  type CashOrNothingOptionDraftAgreement,
+  type Candlestick,
+  storeBrokerDeployOption
 } from 'nenuma-contracts';
 import { derived, readable, type Readable, type Writable } from 'svelte/store';
 import {
   BRG_DEPLOY_ACCOUNT_DEPOSIT,
   BRG_DEPLOY_BROKER_DEPOSIT,
   LATEST_OPTION_STORAGE_KEY,
-  OPTIONS_STORAGE_KEY
+  OPTIONS_STORAGE_KEY,
+  TON_VALID_UNTIL
 } from '../constants';
 import { sender, tonConnectUI } from '../stores/ton-connect';
 import DataStreamWrapper from './data-stream';
 import SessionWrapper from './session';
 import SimpleSubscriberWrapper from './simple-subscriber';
 import SubscriptionBatchWrapper from './subscription-batch';
+import { CHAIN } from '@tonconnect/ui';
 
 export const publicClient = readable<TonClient4>(undefined, (set) => {
   set(
@@ -238,12 +242,22 @@ export const createBrokerage = (): Readable<BrokerageMethods> => {
 
 type BrokerMethods = {
   getStorageReserve: () => Promise<bigint>;
-  getBrokerage: () => Promise<Address>;
+  getOptionAddress: (optionId: bigint) => Promise<Address>;
   getStream: () => Promise<Address>;
   getBalance: () => Promise<bigint>;
+  getPayout: () => Promise<{
+    $$type: 'Fraction';
+    nominator: bigint;
+    denominator: bigint;
+  }>;
+  getNextOptionId: () => Promise<bigint>;
   deploy: (args: { queryId: bigint }) => Promise<void>;
   deposit: (args: { queryId: bigint; deposit: bigint }) => Promise<void>;
   withdraw: (args: { queryId: bigint }) => Promise<void>;
+  deployOption: (args: {
+    queryId: bigint;
+    draft: Omit<CashOrNothingOptionDraftAgreement, '$$type'>;
+  }) => Promise<void>;
 };
 
 export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMethods> => {
@@ -279,7 +293,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         return await broker.getStorageReserve();
       };
 
-      const getBrokerage = async () => {
+      const getOptionAddress = async (optionId: bigint) => {
         const brokerageAddress = localStorage.getItem('brokerage');
 
         if (!brokerageAddress) {
@@ -288,7 +302,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
 
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
-        return await broker.getBrokerage();
+        return await broker.getOptionAddress(optionId);
       };
 
       const getStream = async () => {
@@ -301,6 +315,30 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getStream();
+      };
+
+      const getPayout = async () => {
+        const brokerageAddress = localStorage.getItem('brokerage');
+
+        if (!brokerageAddress) {
+          throw new Error('No brokerage found. Did you deploy a brokerage?');
+        }
+
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
+
+        return await broker.getPayout();
+      };
+
+      const getNextOptionId = async () => {
+        const brokerageAddress = localStorage.getItem('brokerage');
+
+        if (!brokerageAddress) {
+          throw new Error('No brokerage found. Did you deploy a brokerage?');
+        }
+
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
+
+        return await broker.getNextOptionId();
       };
 
       const deploy = async (args: { queryId: bigint }) => {
@@ -377,13 +415,54 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         );
       };
 
+      const deployOption = async (args: {
+        queryId: bigint;
+        draft: Omit<CashOrNothingOptionDraftAgreement, '$$type'>;
+      }) => {
+        const deployer = $tonConnectUI.account?.address;
+
+        if (!deployer) {
+          throw new Error('No account connected. Did you connect to the wallet?');
+        }
+
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
+
+        const message = {
+          address: broker.address.toString(),
+          amount: (args.draft.investment + toNano('2')).toString(),
+          payload: beginCell()
+            .store(
+              storeBrokerDeployOption({
+                $$type: 'BrokerDeployOption',
+                queryId: args.queryId,
+                draft: {
+                  $$type: 'CashOrNothingOptionDraftAgreement',
+                  ...args.draft
+                }
+              })
+            )
+            .endCell()
+            .toBoc()
+            .toString('base64')
+        };
+
+        await $tonConnectUI.sendTransaction({
+          validUntil: Math.floor(Date.now() / 1000) + 360,
+          messages: [message],
+          network: CHAIN.TESTNET
+        });
+      };
+
       set({
         getStorageReserve,
         deploy,
         withdraw,
         deposit,
         getStream,
-        getBrokerage,
+        getPayout,
+        getNextOptionId,
+        getOptionAddress,
+        deployOption,
         getBalance
       });
     }
