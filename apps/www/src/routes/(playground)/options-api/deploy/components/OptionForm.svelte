@@ -95,6 +95,8 @@
 
     const initiation = BigInt(new Date(formData.get('initiation') as string).getTime() / 1000);
 
+    console.log('initiation', initiation);
+
     try {
       const args = {
         optionId: BigInt(formData.get('optionId') as string),
