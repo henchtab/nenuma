@@ -1,4 +1,4 @@
-export { Broker, storeBRGDeploy } from './Broker';
+export { Broker, storeBRGDeploy, type CashOrNothingOptionDraftAgreement, storeBrokerDeployOption } from './Broker';
 export { Brokerage } from './Brokerage';
 export { BrokerageAccount } from './BrokerageAccount';
 export {
