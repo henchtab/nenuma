@@ -87,10 +87,6 @@
       alignLabels: true
     });
 
-    candlestickSeries.createPriceLine({
-      
-    })
-
     // chart.subscribeCrosshairMove(() => $hapticFeedback.selectionChanged());
   });
 </script>
