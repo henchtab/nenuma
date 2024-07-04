@@ -51,7 +51,7 @@
     }
   });
 
-  options.subscribe((o) => console.log('Options', o));
+  // options.subscribe((o) => console.log('Options', o));
 
   onMount(() => {
     // const interval = setInterval(() => {
