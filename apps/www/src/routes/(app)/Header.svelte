@@ -7,12 +7,11 @@
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { getAccountInfo } from '$lib/data';
+  import { hapticFeedback } from '$lib/stores/tma';
   import { type TonConnectStore } from '$lib/stores/ton-connect';
   import { KlineTopic, latestPrices } from '$lib/stores/ws.svelte';
-  import { cn, mediaQuery } from '$lib/utils';
   import { createQuery } from '@tanstack/svelte-query';
   import { Address } from '@ton/core';
-  import LogOut from 'lucide-svelte/icons/log-out';
   import Menu from 'lucide-svelte/icons/menu';
   import TestTubes from 'lucide-svelte/icons/test-tubes';
   import { getContext } from 'svelte';
@@ -25,8 +24,6 @@
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
-  const isDesktop = mediaQuery('(min-width: 768px)');
-
   const items = [
     {
       symbol: 'BTC',
@@ -35,11 +32,6 @@
       priceKey: KlineTopic.BTCUSDT
     }
   ];
-
-  function signOut() {
-    $tonConnect?.disconnectWallet();
-    goto('/');
-  }
 
   function formatWalletAddress(address: string | undefined) {
     if (!address) {
@@ -55,7 +47,7 @@
   }
 </script>
 
-<header class="border-b sticky top-0 z-50 bg-ds-background-200 border-ds-gray-400">
+<header class="border-b sticky h-16 top-0 z-50 bg-ds-background-200 border-ds-gray-400">
   <div class="container pr-0 flex justify-between items-center">
     <img src={logo} alt="Nenuma" class="w-8 h-8" />
     <div class="flex items-center gap-2 border-l border-ds-gray-400 p-4">
@@ -78,32 +70,45 @@
           </div>
         </Skeleton>
       </div>
-      <Drawer.Root direction={$isDesktop ? 'right' : 'bottom'}>
-        <Drawer.Trigger class="w-8 h-8 border border-ds-gray-400 rounded-full">
+      <Drawer.Root>
+        <Drawer.Trigger
+          class="w-8 h-8 border border-ds-gray-400 rounded-full"
+          onclick={() => $hapticFeedback.impactOccurred('light')}
+        >
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
-        <Drawer.Content
-          class={cn(
-            'max-h-[96%] bg-ds-background-200',
-            $isDesktop && 'h-full left-auto min-w-[25%] right-0'
-          )}
-        >
+        <Drawer.Content>
           <input type="checkbox" id="drawer" class="sr-only" aria-hidden="true" />
+
+          <Drawer.Header class="relative">
+            <Drawer.Title>Menu</Drawer.Title>
+
+            <Drawer.Close class="absolute top-1/2 right-4 -translate-y-1/2">
+              <span class="text-ds-blue-700 font-semibold">Done</span>
+            </Drawer.Close>
+          </Drawer.Header>
+
           <Drawer.Footer class="gap-0 m-0 overflow-auto">
             <div class="grid gap-3 pb-3 border-b">
               {#each items as item}
-                <Drawer.Close>
-                  <a class="flex justify-between items-center" href={item.href}>
+                <Drawer.Close asChild let:builder>
+                  <a
+                    use:builder.action
+                    {...builder}
+                    class="flex justify-between items-center"
+                    href={item.href}
+                    onclick={() => $hapticFeedback.impactOccurred('light')}
+                  >
                     <div class="flex flex-col items-baseline">
                       <div class="flex items-center gap-1">
-                        <span class="text-ds-gray-1000 text-left tracking-tight font-medium">
+                        <span class="text-ds-gray-1000 text-left text-lg tracking-tight font-medium">
                           {item.symbol}
                         </span>
-                        <span class="text-ds-gray-900 text-xs">/ USDT</span>
+                        <span class="text-ds-gray-900 text-sm">/ USDT</span>
                       </div>
-                      <span class="text-sm text-left text-ds-gray-900"> {item.name} </span>
+                      <span class="text-base text-left text-ds-gray-900"> {item.name} </span>
                     </div>
-                    <div class="text-ds-gray-1000 flex-1 justify-end flex font-medium">
+                    <div class="text-ds-gray-1000 flex-1 text-lg justify-end flex font-medium">
                       {$latestPrices[item.priceKey].toFixed(2)} $
                     </div>
                   </a>
@@ -111,21 +116,15 @@
               {/each}
             </div>
             <div class="py-3 grid">
-              <!-- <Drawer.Close>
-                <a class="flex h-12 justify-between items-center" href="/dashboard/options">
-                  <div class="font-medium text-ds-gray-900">Options</div>
-                  <CandlestickChart size="20" strokeWidth={1.5} />
-                </a>
-              </Drawer.Close>
-              <Drawer.Close>
-                <a class="flex h-12 justify-between items-center" href="/dashboard/transactions">
-                  <div class="font-medium text-ds-gray-900">Transactions</div>
-                  <CreditCard size="20" strokeWidth={1.5} />
-                </a>
-              </Drawer.Close> -->
-              <Drawer.Close>
-                <a class="flex h-12 justify-between items-center" href="/playground">
-                  <div class="font-medium text-ds-gray-900">Playground</div>
+              <Drawer.Close asChild let:builder>
+                <a
+                  use:builder.action
+                  {...builder}
+                  class="flex h-12 justify-between items-center"
+                  href="/playground"
+                  onclick={() => $hapticFeedback.impactOccurred('light')}
+                >
+                  <div class="font-medium text-ds-gray-1000 text-lg">Playground</div>
                   <TestTubes size="20" strokeWidth={1.5} />
                 </a>
               </Drawer.Close>
@@ -137,6 +136,7 @@
                 size="lg"
                 onclickcapture={() => {
                   $tonConnect.disconnectWallet();
+                  $hapticFeedback.impactOccurred('medium');
                   goto('/');
                 }}
               >
@@ -146,23 +146,6 @@
                 </div>
               </Button>
             </div>
-            <!-- <ul class="flex pt-3 gap-3 justify-center">
-              <li>
-                <Drawer.Close
-                  ><a class="text-ds-gray-900 font-medium" href="/about">About</a></Drawer.Close
-                >
-              </li>
-              <li>
-                <Drawer.Close
-                  ><a class="text-ds-gray-900 font-medium" href="/terms">Terms</a></Drawer.Close
-                >
-              </li>
-              <li>
-                <Drawer.Close
-                  ><a class="text-ds-gray-900 font-medium" href="/privacy">Privacy</a></Drawer.Close
-                >
-              </li>
-            </ul> -->
           </Drawer.Footer>
         </Drawer.Content>
       </Drawer.Root>
