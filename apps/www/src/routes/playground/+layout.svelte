@@ -179,7 +179,7 @@
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
         <Drawer.Content>
-          <div class="container py-4 overflow-y-scroll">
+          <div class="container pt-4 pb-8 overflow-y-scroll">
             <input class="sr-only" aria-hidden="true" type="checkbox" />
 
             <nav class="grid gap-3">
