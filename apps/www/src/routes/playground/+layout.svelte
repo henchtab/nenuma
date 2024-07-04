@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import logo from '$lib/assets/logo.svg';
   import Ton from '$lib/components/Ton.svelte';
   import { Button } from '$lib/components/ui/button';
@@ -7,15 +7,13 @@
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { type TonConnectStore, tonConnectUI } from '$lib/stores/ton-connect';
+  import { isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
   import { Address } from '@ton/core';
   import Bookmark from 'lucide-svelte/icons/bookmark';
   import Menu from 'lucide-svelte/icons/menu';
   import { getContext, onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
   import Saved from './components/Saved.svelte';
-  import { isConnected, isReconnecting } from '$lib/stores/ton-connect';
-  import { goto } from '$app/navigation';
 
   let { children } = $props();
 
@@ -32,59 +30,9 @@
 
     window.onunhandledrejection = (e) =>
       toast.error(`An unhandled promise rejection occurred - ${e.reason}`);
-
-    // tonConnectUI.subscribe(async (tonConnectUI) => {
-    //   if (!tonConnectUI) {
-    //     connectionState.isConnnected = false;
-    //     connectionState.isReconnecting = false;
-    //     return;
-    //   }
-
-    //   const status = await tonConnectUI.connectionRestored;
-    //   connectionState.isConnnected = status;
-    //   connectionState.isReconnecting = false;
-
-    //   tonConnectUI.onStatusChange((status) => {
-    //     connectionState.isConnnected = status ? true : false;
-    //   });
-    // });
   });
 
-  // async function connectWallet() {
-  //   if (!$tonConnectUI) {
-  //     console.warn('TonConnectUI is not initialized');
-  //     return;
-  //   }
-
-  //   try {
-  //     if ($tonConnectUI.connected || $tonConnectUI.wallet) {
-  //       await $tonConnectUI.disconnect();
-  //     }
-
-  //     await $tonConnectUI.openModal();
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
-  // async function disconnectWallet() {
-  //   if (!$tonConnectUI) {
-  //     console.warn('TonConnectUI is not initialized');
-  //     return;
-  //   }
-
-  //   try {
-  //     await $tonConnectUI.disconnect();
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
-  function formatWalletAddress(address: string | undefined) {
-    if (!address) {
-      return 'Connect';
-    }
-
+  function formatWalletAddress(address: string) {
     const formattedAddress = Address.parse(address).toString({
       testOnly: true,
       bounceable: false
@@ -96,57 +44,7 @@
 
 <header class="border-b sticky top-0 h-16 overflow-hidden bg-ds-background-200 z-50">
   <div class="flex items-center h-full justify-between container">
-    <div class="flex items-center gap-8">
-      <img src={logo} alt="Nenuma" class="w-8 h-8" />
-      <nav class="py-4 hidden md:block">
-        <ul class="flex justify-center space-x-4">
-          <li>
-            <a
-              data-active={$page.url.pathname.includes('/playground/streams-api')}
-              class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors data-[active=true]:text-ds-gray-1000"
-              href="/playground/streams-api/data-stream">Streams API</a
-            >
-          </li>
-          <li>
-            <a
-              data-active={$page.url.pathname.includes('/playground/options-api')}
-              class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors data-[active=true]:text-ds-gray-1000"
-              href="/playground/options-api/brokerage">Derivatives API</a
-            >
-          </li>
-          <li>
-            <a
-              data-active={$page.url.pathname.includes('/dashboard')}
-              class="text-semibold text-lg text-ds-gray-900 hover:text-ds-gray-1000 transition-colors data-[active=true]:text-ds-gray-1000"
-              href="/dashboard">Derivatives Exchange</a
-            >
-          </li>
-        </ul>
-      </nav>
-    </div>
-
-    <Skeleton class="hidden md:block" show={$isReconnecting}>
-      <Button
-        type="button"
-        onclickcapture={() => {
-          if ($isConnected) {
-            $tonConnect.disconnectWallet();
-            goto('/');
-          } else {
-            $tonConnect.connectWallet();
-          }
-        }}
-      >
-        {#if $isConnected}
-          <div class="flex gap-2 items-center">
-            <Ton />
-            {formatWalletAddress($tonConnectUI.account?.address)}
-          </div>
-        {:else}
-          Connect
-        {/if}
-      </Button>
-    </Skeleton>
+    <img src={logo} alt="Nenuma" class="w-8 h-8" />
     <div class="border-l py-4 flex pl-4 md:hidden">
       <Drawer.Root
         onOpenChange={(v) => (isSavedOpen = v)}
@@ -189,6 +87,7 @@
                   {...builder}
                   class="flex justify-between items-center h-12 text-lg font-medium"
                   href="/dashboard"
+                  onclick={() => $hapticFeedback.impactOccurred('light')}
                 >
                   Derivatives Exchange
                 </a>
@@ -318,21 +217,14 @@
                   type="button"
                   size="lg"
                   onclickcapture={() => {
-                    if ($isConnected) {
-                      $tonConnect.disconnectWallet();
-                      goto('/');
-                    } else {
-                      $tonConnect.connectWallet();
-                    }
+                    $tonConnect.disconnectWallet();
+                    $hapticFeedback.impactOccurred('medium');
+                    goto('/');
                   }}
                 >
                   <div class="flex gap-2 items-center">
                     <Ton />
-                    {#if $isConnected}
-                      {formatWalletAddress($tonConnect.connection.wallet?.account.address)}
-                    {:else}
-                      Connect TON
-                    {/if}
+                    {formatWalletAddress($tonConnect.connection.wallet!.account.address)}
                   </div>
                 </Button>
               </Skeleton>
