@@ -93,9 +93,8 @@
       }
     }
 
-    const initiation = BigInt(new Date(formData.get('initiation') as string).getTime() / 1000);
-
-    console.log('initiation', initiation);
+    const intitiationTime = formData.get('initiation') as string;
+    const initiation = BigInt(new Date(`${new Date().toDateString()} ${intitiationTime}`).getTime() / 1000);
 
     try {
       const args = {
@@ -203,7 +202,7 @@
     <Label for="initiation" class="w-fit">Initiation</Label>
     <Input
       id="initiation"
-      type="datetime-local"
+      type="time"
       name="initiation"
       min={initiation}
       bind:value={initiation}

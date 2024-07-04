@@ -62,7 +62,7 @@
       },
       handleScale: {
         axisPressedMouseMove: true,
-        mouseWheel: false,
+        mouseWheel: true,
       }
     });
     candlestickSeries = chart.addCandlestickSeries({
