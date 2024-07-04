@@ -7,10 +7,13 @@
       name="viewport"
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
-    <link rel="preload" href="/Mona-Sans.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/Mona-Sans.woff2" as="font" type="font/woff2" crossorigin />
     %sveltekit.head%
   </head>
-  <body class="flex flex-col font-mona-sans data-[sticky-app]:overflow-hidden data-[sticky-app]:h-screen" data-sveltekit-preload-data="hover">
+  <body
+    class="flex flex-col font-mona-sans data-[sticky-app]:overflow-hidden data-[sticky-app]:!h-screen"
+    data-sveltekit-preload-data="hover"
+  >
     <div style="display: contents">%sveltekit.body%</div>
     <div id="ton-connect"></div>
   </body>

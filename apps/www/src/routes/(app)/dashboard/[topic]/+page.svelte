@@ -16,11 +16,41 @@
   import { writable } from 'svelte/store';
   import type { PageData } from './$types';
   import ChartData from './ChartData.svelte';
-  import OpenOptions from './OpenOptions.svelte';
+
+  // type BaseOption = {
+  //   optionId: number;
+  // };
+
+  // type PendingOption = BaseOption & {
+  //   status: 'pending';
+  //   draft: CashOrNothingOptionDraftAgreement;
+  // };
+
+  // type DeployedOption = BaseOption & {
+  //   status: 'deployed';
+  //   address: Address;
+  //   agreement: CashOrNothingOptionAgreement;
+  // };
+
+  // type InitiatedOption = Omit<DeployedOption, 'status'> & {
+  //   status: 'initiated';
+  //   strikePrice: number;
+  // };
+
+  // type SettledOption = Omit<InitiatedOption, 'status'> & {
+  //   status: 'settled';
+  // };
+
+  // type ExpiredOption = Omit<DeployedOption, 'status'> & {
+  //   status: 'expired';
+  // };
+
+  // type Option = PendingOption | DeployedOption | InitiatedOption | SettledOption | ExpiredOption;
 
   let { data }: { data: PageData } = $props();
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
+  // const options = getContext<Writable<Option[]>>('options');
 
   let actionsHeight = $state(0);
 
@@ -69,31 +99,49 @@
       }
     };
 
+    // const optionId = await $broker.getNextOptionId();
+    // options.update((prev) => [
+    //   ...prev,
+    //   {
+    //     status: 'pending',
+    //     optionId: Number(optionId),
+    //     draft: {
+    //       $$type: 'CashOrNothingOptionDraftAgreement',
+    //       ...args.draft
+    //     }
+    //   }
+    // ]);
+
     await $broker.deployOption(args);
   }
 </script>
 
 <div
   style="--actions-height: {actionsHeight}px;"
-  class={cn('pt-6 flex flex-col min-h-[calc(100vh+var(--actions-height))]')}
+  class={cn('pt-6 flex flex-col')}
 >
   <div class="border-b pb-6">
-    <h1 class="container text-2xl tracking-tight mb-4 font-bold">
-      {data.topic}
-    </h1>
+    <div class="container grid gap-2 mb-4">
+      <h1 class=" text-2xl tracking-tight font-semibold">
+        <!-- FIXME: Hack -->
+        <!-- {data.topic} -->
+        BTC <span class="text-lg text-ds-gray-900">/ USDT</span>
+      </h1>
+      <div class="text-ds-gray-900 font-medium">Bitcoin</div>
+    </div>
 
     {#key data.result.list}
       <ChartData initialData={[...data.result.list, data.result.latest]} />
     {/key}
   </div>
 
-  <div class="container pt-6">
+  <!-- <div class="container pt-6">
     <OpenOptions />
-  </div>
+  </div> -->
 
   <div
     bind:offsetHeight={actionsHeight}
-    class="fixed bg-ds-background-100 bottom-0 z-10 border-t w-full p-4 gap-2"
+    class="bg-ds-background-100 bottom-0 z-10 border-t w-full p-4 gap-2"
   >
     <form class="grid gap-4" onsubmit={handleSubmit}>
       <div class="grid grid-cols-2 gap-4">

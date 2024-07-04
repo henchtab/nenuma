@@ -1,18 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import logo from '$lib/assets/logo.svg';
+  import Ton from '$lib/components/Ton.svelte';
   import { Button } from '$lib/components/ui/button';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
-  import { getAccountInfo, removeAccessTokenCookie } from '$lib/data';
+  import { getAccountInfo } from '$lib/data';
   import { type TonConnectStore } from '$lib/stores/ton-connect';
   import { KlineTopic, latestPrices } from '$lib/stores/ws.svelte';
   import { cn, mediaQuery } from '$lib/utils';
   import { createQuery } from '@tanstack/svelte-query';
-  import CandlestickChart from 'lucide-svelte/icons/candlestick-chart';
-  import Coins from 'lucide-svelte/icons/coins';
-  import CreditCard from 'lucide-svelte/icons/credit-card';
+  import { Address } from '@ton/core';
   import LogOut from 'lucide-svelte/icons/log-out';
   import Menu from 'lucide-svelte/icons/menu';
   import TestTubes from 'lucide-svelte/icons/test-tubes';
@@ -20,7 +19,8 @@
 
   const accountInfo = createQuery({
     queryKey: ['accountInfo'],
-    queryFn: getAccountInfo
+    queryFn: getAccountInfo,
+    refetchInterval: 5000
   });
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
@@ -40,17 +40,41 @@
     $tonConnect?.disconnectWallet();
     goto('/');
   }
+
+  function formatWalletAddress(address: string | undefined) {
+    if (!address) {
+      return 'Connect';
+    }
+
+    const formattedAddress = Address.parse(address).toString({
+      testOnly: true,
+      bounceable: false
+    });
+
+    return `${formattedAddress.slice(0, 6)}...${formattedAddress.slice(-4)}`;
+  }
 </script>
 
 <header class="border-b sticky top-0 z-50 bg-ds-background-200 border-ds-gray-400">
   <div class="container pr-0 flex justify-between items-center">
     <img src={logo} alt="Nenuma" class="w-8 h-8" />
     <div class="flex items-center gap-2 border-l border-ds-gray-400 p-4">
-      <div class="inline-flex gap-2">
-        <Coins size="24" strokeWidth={1.5} />
+      <div class="inline-flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 17 18" width="17"
+          ><g
+            fill="none"
+            fill-rule="evenodd"
+            stroke="var(--ds-gray-1000, '#000')"
+            stroke-width="1.5"
+            ><path
+              d="m1.84 3h13.3c.28 0 .5.22.5.5 0 .09-.02.17-.06.25l-6.33 11.18c-.27.48-.88.65-1.36.38-.16-.09-.3-.23-.38-.39l-6.11-11.18c-.13-.24-.04-.55.2-.68.08-.04.16-.06.24-.06z"
+            /><path d="m8.5 15v-12" /></g
+          ></svg
+        >
+
         <Skeleton show={$accountInfo.isLoading}>
           <div class="font-medium min-w-10 text-center">
-            {$accountInfo.data?.balance.slice(0, 4)}
+            {$accountInfo.data?.balance.slice(0, 6)}
           </div>
         </Skeleton>
       </div>
@@ -87,7 +111,7 @@
               {/each}
             </div>
             <div class="py-3 grid">
-              <Drawer.Close>
+              <!-- <Drawer.Close>
                 <a class="flex h-12 justify-between items-center" href="/dashboard/options">
                   <div class="font-medium text-ds-gray-900">Options</div>
                   <CandlestickChart size="20" strokeWidth={1.5} />
@@ -98,7 +122,7 @@
                   <div class="font-medium text-ds-gray-900">Transactions</div>
                   <CreditCard size="20" strokeWidth={1.5} />
                 </a>
-              </Drawer.Close>
+              </Drawer.Close> -->
               <Drawer.Close>
                 <a class="flex h-12 justify-between items-center" href="/playground">
                   <div class="font-medium text-ds-gray-900">Playground</div>
@@ -107,12 +131,22 @@
               </Drawer.Close>
             </div>
             <div class="py-3">
-              <Button onclickcapture={signOut} class="flex w-full gap-2" size="lg">
-                <LogOut size="20" strokeWidth={1.5} />
-                Sign out
+              <Button
+                class="w-full"
+                type="button"
+                size="lg"
+                onclickcapture={() => {
+                  $tonConnect.disconnectWallet();
+                  goto('/');
+                }}
+              >
+                <div class="flex gap-2 items-center">
+                  <Ton />
+                  {formatWalletAddress($tonConnect.connection.wallet?.account.address)}
+                </div>
               </Button>
             </div>
-            <ul class="flex pt-3 gap-3 justify-center">
+            <!-- <ul class="flex pt-3 gap-3 justify-center">
               <li>
                 <Drawer.Close
                   ><a class="text-ds-gray-900 font-medium" href="/about">About</a></Drawer.Close
@@ -128,7 +162,7 @@
                   ><a class="text-ds-gray-900 font-medium" href="/privacy">Privacy</a></Drawer.Close
                 >
               </li>
-            </ul>
+            </ul> -->
           </Drawer.Footer>
         </Drawer.Content>
       </Drawer.Root>

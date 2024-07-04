@@ -1,18 +1,47 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { goto } from '$app/navigation';
-  import { tonConnectUI } from '$lib/stores/ton-connect';
+  import { isConnected, isReconnecting } from '$lib/stores/ton-connect';
   import { KlineTopic, ws } from '$lib/stores/ws.svelte';
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
-  import { onDestroy, onMount } from 'svelte';
-  import { type Unsubscriber } from 'svelte/store';
+  import { onMount } from 'svelte';
   import Header from './Header.svelte';
 
   let { children } = $props();
 
-  let isRestoringSession = $state(true);
-  let isConnected = $state(false);
-  let subscription: Unsubscriber | undefined = $state();
+  // const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
+
+  // type BaseOption = {
+  //   optionId: number;
+  // };
+
+  // type PendingOption = BaseOption & {
+  //   status: 'pending';
+  //   draft: CashOrNothingOptionDraftAgreement;
+  // };
+
+  // type DeployedOption = BaseOption & {
+  //   status: 'deployed';
+  //   address: Address;
+  //   agreement: CashOrNothingOptionAgreement;
+  // };
+
+  // type InitiatedOption = Omit<DeployedOption, 'status'> & {
+  //   status: 'initiated';
+  //   strikePrice: number;
+  // };
+
+  // type SettledOption = Omit<InitiatedOption, 'status'> & {
+  //   status: 'settled';
+  // };
+
+  // type ExpiredOption = Omit<DeployedOption, 'status'> & {
+  //   status: 'expired';
+  // };
+
+  // type Option = PendingOption | DeployedOption | InitiatedOption | SettledOption | ExpiredOption;
+
+  // const options = writable<Option[]>([]);
+  // setContext('options', options);
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -22,38 +51,109 @@
     }
   });
 
+  options.subscribe((o) => console.log('Options', o));
+
   onMount(() => {
-    subscription = tonConnectUI.subscribe(async (tonConnectUI) => {
-      if (!tonConnectUI) {
-        return;
-      }
+    // const interval = setInterval(() => {
+    //   options.subscribe(async (_options) => {
+    //     for (const option of _options) {
+    //       if (option.status === 'pending') {
+    //         for (let i = 0; i < 32; i++) {
+    //           const contract = $publicClient.open(
+    //             await CashOrNothingOption.fromInit(
+    //               Address.parse(PUBLIC_BROKER_ADDRESS),
+    //               BigInt(option.optionId + i)
+    //             )
+    //           );
 
-      tonConnectUI.onStatusChange((status) => {
-        isConnected = status ? true : false;
-      });
+    //           try {
+    //             const agreement = await contract.getAgreement();
 
-      const status = await tonConnectUI.connectionRestored;
+    //             if (
+    //               agreement &&
+    //               agreement.holder === Address.parse($tonConnect.connection.wallet!.account.address)
+    //             ) {
+    //               const updatedOption: DeployedOption = {
+    //                 ...option,
+    //                 status: 'deployed',
+    //                 address: contract.address,
+    //                 agreement
+    //               };
 
-      // Redirect to sign-in page if the user is not connected and somehow got here (e.g. by having access cookie)
-      if (!status) {
-        await goto('/auth/sign-in');
-      }
+    //               options.update((_options) =>
+    //                 _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
+    //               );
+    //             }
+    //           } catch (error) {
+    //             console.error(error);
+    //             break;
+    //           }
+    //         }
 
-      isRestoringSession = false;
-      isConnected = status;
-    });
+    //         continue;
+    //       }
+
+    //       const contract = $publicClient.open(CashOrNothingOption.fromAddress(option.address));
+
+    //       if (option.status === 'deployed') {
+    //         const strikePrice = await contract.getStrikePrice();
+
+    //         if (!strikePrice) {
+    //           continue;
+    //         }
+
+    //         const updatedOption: InitiatedOption = {
+    //           ...option,
+    //           status: 'initiated',
+    //           strikePrice: Number(strikePrice)
+    //         };
+
+    //         options.update((_options) =>
+    //           _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
+    //         );
+    //       } else if (option.status === 'initiated') {
+    //         try {
+    //           const expiration = await contract.getExpiration();
+
+    //           // @ts-expect-error
+    //           if (expiration < BigInt(Date.now() / 1000)) {
+    //             const updatedOption: ExpiredOption = {
+    //               ...option,
+    //               status: 'expired'
+    //             };
+
+    //             options.update((_options) =>
+    //               _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
+    //             );
+    //           }
+    //         } catch (error) {
+    //           const updatedOption: SettledOption = {
+    //             ...option,
+    //             status: 'settled'
+    //           };
+
+    //           options.update((_options) =>
+    //             _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
+    //           );
+    //         }
+    //       }
+
+    //       await new Promise((resolve) => setTimeout(resolve, 2000));
+    //     }
+    //   });
+
+    //   console.log('Options 2', $options);
+    // }, 1000 * 5);
 
     $ws.addEventListener('open', () => {
       $ws.send(JSON.stringify({ op: 'subscribe', args: [KlineTopic.BTCUSDT] }));
     });
-  });
 
-  onDestroy(() => {
-    subscription?.();
+    // return () => clearInterval(interval);
   });
 </script>
 
-{#if isRestoringSession}
+{#if $isReconnecting}
   <div class="fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
     <div class="animate-rotate">
       <div
@@ -61,7 +161,7 @@
       ></div>
     </div>
   </div>
-{:else if isConnected}
+{:else if $isConnected}
   <QueryClientProvider client={queryClient}>
     <Header />
 

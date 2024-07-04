@@ -7,6 +7,12 @@
   export let activeSnapPoint: $$Props['activeSnapPoint'] = undefined;
 </script>
 
-<DrawerPrimitive.Root portal="#portalled-content" {shouldScaleBackground} bind:open bind:activeSnapPoint {...$$restProps}>
+<DrawerPrimitive.Root
+  closeThreshold={0.1}
+  {shouldScaleBackground}
+  bind:open
+  bind:activeSnapPoint
+  {...$$restProps}
+>
   <slot />
 </DrawerPrimitive.Root>

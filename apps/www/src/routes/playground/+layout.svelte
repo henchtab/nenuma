@@ -15,6 +15,7 @@
   import { toast } from 'svelte-sonner';
   import Saved from './components/Saved.svelte';
   import { isConnected, isReconnecting } from '$lib/stores/ton-connect';
+  import { goto } from '$app/navigation';
 
   let { children } = $props();
 
@@ -26,7 +27,7 @@
     // Hack to prevent the button from being shown after Saved is opened and closed
     // E.g. open deploy form -> go back -> reload app -> open Saved -> close Saved
     if ($mainButton.isEnabled) {
-      $mainButton.disable();
+      $mainButton.disable().hide();
     }
 
     window.onunhandledrejection = (e) =>
@@ -130,6 +131,7 @@
         onclickcapture={() => {
           if ($isConnected) {
             $tonConnect.disconnectWallet();
+            goto('/');
           } else {
             $tonConnect.connectWallet();
           }
@@ -179,32 +181,6 @@
         <Drawer.Content>
           <div class="container py-4 overflow-y-scroll">
             <input class="sr-only" aria-hidden="true" type="checkbox" />
-
-            <div class="pb-6">
-              <Skeleton class="w-full" show={$isReconnecting}>
-                <Button
-                  class="w-full"
-                  type="button"
-                  size="lg"
-                  onclickcapture={() => {
-                    if ($isConnected) {
-                      $tonConnect.disconnectWallet();
-                    } else {
-                      $tonConnect.connectWallet();
-                    }
-                  }}
-                >
-                  <div class="flex gap-2 items-center">
-                    <Ton />
-                    {#if $isConnected}
-                      {formatWalletAddress($tonConnect.connection.wallet?.account.address)}
-                    {:else}
-                      Connect TON
-                    {/if}
-                  </div>
-                </Button>
-              </Skeleton>
-            </div>
 
             <nav class="grid gap-3">
               <Drawer.Close asChild let:builder>
@@ -334,6 +310,33 @@
                 </ul>
               </section>
             </nav>
+
+            <div class="pt-6">
+              <Skeleton class="w-full" show={$isReconnecting}>
+                <Button
+                  class="w-full"
+                  type="button"
+                  size="lg"
+                  onclickcapture={() => {
+                    if ($isConnected) {
+                      $tonConnect.disconnectWallet();
+                      goto('/');
+                    } else {
+                      $tonConnect.connectWallet();
+                    }
+                  }}
+                >
+                  <div class="flex gap-2 items-center">
+                    <Ton />
+                    {#if $isConnected}
+                      {formatWalletAddress($tonConnect.connection.wallet?.account.address)}
+                    {:else}
+                      Connect TON
+                    {/if}
+                  </div>
+                </Button>
+              </Skeleton>
+            </div>
           </div>
         </Drawer.Content>
       </Drawer.Root>
