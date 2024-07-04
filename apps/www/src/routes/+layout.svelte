@@ -24,6 +24,7 @@
     expandApp();
 
     postEvent('web_app_set_header_color', { color: '#000' });
+    postEvent('web_app_set_background_color', { color: '#000' });
 
     tonConnectUI.subscribe(async (tonConnectUI) => {
       if (!tonConnectUI) {
