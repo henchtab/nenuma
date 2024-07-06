@@ -9,7 +9,6 @@
     type IChartApi
   } from 'lightweight-charts';
   import { onMount } from 'svelte';
-  import { hapticFeedback } from '$lib/stores/tma';
 
   let { initialData }: { initialData: CandlestickData[] } = $props();
 
@@ -31,11 +30,12 @@
       timeScale: {
         timeVisible: true,
         fixLeftEdge: true,
-        borderVisible: false,
         secondsVisible: false,
         allowShiftVisibleRangeOnWhitespaceReplacement: true,
         shiftVisibleRangeOnNewBar: true,
-        rightOffset: 12
+        rightOffset: 12,
+        borderVisible: false,
+        ticksVisible: true
       },
       crosshair: {
         mode: CrosshairMode.Magnet,
@@ -51,7 +51,8 @@
       layout: {
         textColor: '#A1A1A1',
         background: { color: '#000' },
-        fontSize: 12
+        fontSize: 12,
+        fontFamily: 'Mona Sans'
       },
       grid: {
         horzLines: { color: '#FFFFFF17' },
@@ -62,15 +63,15 @@
       },
       handleScale: {
         axisPressedMouseMove: true,
-        mouseWheel: true,
+        mouseWheel: true
       }
     });
     candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#28A948',
-      downColor: '#D8001B',
+      upColor: '#00AC3A',
+      downColor: '#E2162A',
       borderVisible: false,
-      wickUpColor: '#28A948',
-      wickDownColor: '#D8001B'
+      wickUpColor: '#00AC3A',
+      wickDownColor: '#E2162A'
     });
 
     if (initialData) {
@@ -78,7 +79,7 @@
     }
 
     candlestickSeries.priceScale().applyOptions({
-      borderVisible: false,
+      borderColor: '#2E2E2E',
       ticksVisible: true,
       scaleMargins: {
         top: 0.1,
@@ -91,4 +92,4 @@
   });
 </script>
 
-<div bind:this={chartContainer} class="w-full h-96"></div>
+<div bind:this={chartContainer} class="w-full h-80"></div>
