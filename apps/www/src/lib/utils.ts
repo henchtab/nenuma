@@ -18,6 +18,21 @@ export function formatTime(date: Date) {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+export function timeToLocal(originalTime: number) {
+  const d = new Date(originalTime * 1000);
+  return (
+    Date.UTC(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+      d.getMilliseconds()
+    ) / 1000
+  );
+}
+
 /**
  * Format date to the playground output console format
  *  @param date - Date object
