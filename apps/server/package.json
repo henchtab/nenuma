@@ -11,8 +11,7 @@
     "dev": "tsx --watch src .env .tsconfig.json | pino-pretty --colorize",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "start": "node build",
-    "pretest": "npm run build",
+    "start": "node dist",
     "test": "vitest",
     "test:watch": "vitest -w"
   },
@@ -55,6 +54,10 @@
     "vitest": "^1.6.0",
     "nenuma-contracts": "workspace:*"
   },
+  "files": [
+    "dist",
+    ".env"
+  ],
   "engines": {
     "node": ">=18.0.0"
   }

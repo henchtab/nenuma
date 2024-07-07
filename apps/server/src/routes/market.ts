@@ -12,7 +12,22 @@ import z from 'zod';
 const routes: FastifyPluginAsync = async (server) => {
   const { redis, bybit, log } = server;
 
-  bybit.ws.subscribeV5(Object.values(BybitKlineTopic), 'spot');
+  bybit.ws.subscribeV5(BybitKlineTopic.BTCUSDT, 'spot');
+
+  const publicClient = new TonClient({
+    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+    apiKey: server.config.RPC_PROVIDER_API_KEY,
+  });
+
+  const keyPair = await mnemonicToPrivateKey(server.config.MNEMONIC.split(' '));
+
+  const workchain = 0; // Usually you need a workchain 0
+  const wallet = WalletContractV4.create({ workchain, publicKey: keyPair.publicKey });
+  const btcCandlestickPublisherWallet = publicClient.open(wallet);
+
+  const stream = publicClient.open(
+    DataStream.fromAddress(Address.parse(server.config.DATA_STREAM_ADDRESS)),
+  );
 
   bybit.ws.on('update', async (data: BybitResponseDto) => {
     switch (data.topic) {
@@ -22,21 +37,10 @@ const routes: FastifyPluginAsync = async (server) => {
             redis
               .pipeline()
               .rpush(RedisKey.KlineBTC24H, JSON.stringify(candlestick))
-              .ltrim(RedisKey.KlineBTC24H, 0, 1439)
+              .ltrim(RedisKey.KlineBTC24H, -1440, -1)
               .exec();
 
             try {
-              const client = new TonClient({
-                endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-                apiKey: server.config.RPC_PROVIDER_API_KEY,
-              });
-
-              const stream = client.open(
-                DataStream.fromAddress(
-                  Address.parse(server.config.DATA_STREAM_ADDRESS),
-                ),
-              );
-
               const batches = await stream.getBatches();
 
               let shouldSkip = false;
@@ -54,39 +58,8 @@ const routes: FastifyPluginAsync = async (server) => {
                 return;
               }
 
-              let keyPair = await mnemonicToPrivateKey([
-                'squirrel',
-                'focus',
-                'excite',
-                'kangaroo',
-                'quit',
-                'post',
-                'milk',
-                'twelve',
-                'sketch',
-                'cupboard',
-                'sunny',
-                'similar',
-                'toe',
-                'orient',
-                'soccer',
-                'uncle',
-                'forward',
-                'fame',
-                'bundle',
-                'vanish',
-                'crisp',
-                'slush',
-                'coast',
-                'hair',
-              ]);
-
-              let workchain = 0; // Usually you need a workchain 0
-              let wallet = WalletContractV4.create({ workchain, publicKey: keyPair.publicKey });
-              let contract = client.open(wallet);
-
               // Create a transfer
-              let seqno: number = await contract.getSeqno();
+              let seqno: number = await btcCandlestickPublisherWallet.getSeqno();
 
               const candlestickToPublish = {
                 $$type: 'Candlestick' as const,
@@ -107,7 +80,7 @@ const routes: FastifyPluginAsync = async (server) => {
                 ),
               );
 
-              await contract.sendTransfer({
+              await btcCandlestickPublisherWallet.sendTransfer({
                 seqno,
                 secretKey: keyPair.secretKey,
                 messages: [
@@ -132,58 +105,58 @@ const routes: FastifyPluginAsync = async (server) => {
           }
         }
         break;
-      case BybitKlineTopic.ETHUSDT:
-        for (const candlestick of data.data) {
-          if (candlestick.confirm) {
-            redis
-              .pipeline()
-              .rpush(RedisKey.KlineETH24H, JSON.stringify(candlestick))
-              .ltrim(RedisKey.KlineETH24H, 0, 1439)
-              .exec();
-          } else {
-            redis.set(RedisKey.KlineETH1m, JSON.stringify(candlestick));
-          }
-        }
-        break;
-      case BybitKlineTopic.BNBUSDT:
-        for (const candlestick of data.data) {
-          if (candlestick.confirm) {
-            redis
-              .pipeline()
-              .rpush(RedisKey.KlineBNB24H, JSON.stringify(candlestick))
-              .ltrim(RedisKey.KlineBNB24H, 0, 1439)
-              .exec();
-          } else {
-            redis.set(RedisKey.KlineBNB1m, JSON.stringify(candlestick));
-          }
-        }
-        break;
-      case BybitKlineTopic.SOLUSDT:
-        for (const candlestick of data.data) {
-          if (candlestick.confirm) {
-            redis
-              .pipeline()
-              .rpush(RedisKey.KlineSOL24H, JSON.stringify(candlestick))
-              .ltrim(RedisKey.KlineSOL24H, 0, 1439)
-              .exec();
-          } else {
-            redis.set(RedisKey.KlineSOL1m, JSON.stringify(candlestick));
-          }
-        }
-        break;
-      case BybitKlineTopic.TONUSDT:
-        for (const candlestick of data.data) {
-          if (candlestick.confirm) {
-            redis
-              .pipeline()
-              .rpush(RedisKey.KlineTON24H, JSON.stringify(candlestick))
-              .ltrim(RedisKey.KlineTON24H, 0, 1439)
-              .exec();
-          } else {
-            redis.set(RedisKey.KlineTON1m, JSON.stringify(candlestick));
-          }
-        }
-        break;
+      // case BybitKlineTopic.ETHUSDT:
+      //   for (const candlestick of data.data) {
+      //     if (candlestick.confirm) {
+      //       redis
+      //         .pipeline()
+      //         .rpush(RedisKey.KlineETH24H, JSON.stringify(candlestick))
+      //         .ltrim(RedisKey.KlineETH24H, 0, 1439)
+      //         .exec();
+      //     } else {
+      //       redis.set(RedisKey.KlineETH1m, JSON.stringify(candlestick));
+      //     }
+      //   }
+      //   break;
+      // case BybitKlineTopic.BNBUSDT:
+      //   for (const candlestick of data.data) {
+      //     if (candlestick.confirm) {
+      //       redis
+      //         .pipeline()
+      //         .rpush(RedisKey.KlineBNB24H, JSON.stringify(candlestick))
+      //         .ltrim(RedisKey.KlineBNB24H, 0, 1439)
+      //         .exec();
+      //     } else {
+      //       redis.set(RedisKey.KlineBNB1m, JSON.stringify(candlestick));
+      //     }
+      //   }
+      //   break;
+      // case BybitKlineTopic.SOLUSDT:
+      //   for (const candlestick of data.data) {
+      //     if (candlestick.confirm) {
+      //       redis
+      //         .pipeline()
+      //         .rpush(RedisKey.KlineSOL24H, JSON.stringify(candlestick))
+      //         .ltrim(RedisKey.KlineSOL24H, 0, 1439)
+      //         .exec();
+      //     } else {
+      //       redis.set(RedisKey.KlineSOL1m, JSON.stringify(candlestick));
+      //     }
+      //   }
+      //   break;
+      // case BybitKlineTopic.TONUSDT:
+      //   for (const candlestick of data.data) {
+      //     if (candlestick.confirm) {
+      //       redis
+      //         .pipeline()
+      //         .rpush(RedisKey.KlineTON24H, JSON.stringify(candlestick))
+      //         .ltrim(RedisKey.KlineTON24H, 0, 1439)
+      //         .exec();
+      //     } else {
+      //       redis.set(RedisKey.KlineTON1m, JSON.stringify(candlestick));
+      //     }
+      //   }
+      //   break;
     }
   });
 

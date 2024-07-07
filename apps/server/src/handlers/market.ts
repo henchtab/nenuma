@@ -35,6 +35,7 @@ export const handleKlineTopic = async (
         );
 
         data = result.confirmedCandlesticks;
+
         latestCandlestick = result.latestCandlestick;
       } catch (error) {
         if (error instanceof ZodError) {
@@ -108,10 +109,6 @@ export const handleKlineTopic = async (
     return reply.status(400).send(error.errors);
   }
 
-  if (data.length <= 0 || !latestCandlestick) {
-    return reply.status(404).send({ error: 'Not found. Candlesticks data is empty.' });
-  }
-
   const candlesticks: CandlesticksResponseDto = [];
   for (const candlestick of data) {
     candlesticks.push({
@@ -119,19 +116,21 @@ export const handleKlineTopic = async (
       close: Number(candlestick.close),
       high: Number(candlestick.high),
       low: Number(candlestick.low),
-      time: candlestick.timestamp / 1000,
+      time: Number(candlestick.end.toString().slice(0, -3)),
     });
   }
 
   return reply.code(200).send({
     list: candlesticks,
-    latest: {
-      open: Number(latestCandlestick?.open),
-      close: Number(latestCandlestick?.close),
-      high: Number(latestCandlestick?.high),
-      low: Number(latestCandlestick?.low),
-      time: latestCandlestick.end / 1000,
-    },
+    latest: latestCandlestick
+      ? {
+          open: Number(latestCandlestick?.open),
+          close: Number(latestCandlestick?.close),
+          high: Number(latestCandlestick?.high),
+          low: Number(latestCandlestick?.low),
+          time: Number(latestCandlestick?.end.toString().slice(0, -3)),
+        }
+      : null,
   });
 };
 
@@ -179,7 +178,7 @@ const handleBybitResponse = (socket: WebSocket, data: BybitResponseDto, topics: 
               low: Number(candlestick.low),
               open: Number(candlestick.open),
               close: Number(candlestick.close),
-              time: Math.ceil(candlestick.end / 1000),
+              time: Number(candlestick.end.toString().slice(0, -3)),
             },
           }),
         );

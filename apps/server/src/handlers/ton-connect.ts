@@ -1,6 +1,6 @@
 import { CHAIN } from '@/constants';
 import type { CheckProofRequestDto } from '@/dtos/ton-connect.dto';
-import { TonApiService, TonProofService } from '@/services';
+import { TonApiService, TonProofService } from '@/services/index';
 import { fromNano } from '@ton/ton';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 

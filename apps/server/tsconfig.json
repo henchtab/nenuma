@@ -19,9 +19,9 @@
     "noImplicitOverride": true,
 
     "moduleResolution": "bundler",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["./src/**/*.ts", "./tests/**/*.ts"],
