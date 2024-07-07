@@ -98,7 +98,9 @@
     const formData = new FormData(e.currentTarget);
 
     const intitiationTime = formData.get('initiation') as string;
-    const initiation = BigInt(new Date(`${new Date().toDateString()} ${intitiationTime}`).getTime() / 1000);
+    const initiation = BigInt(
+      new Date(`${new Date().toDateString()} ${intitiationTime}`).getTime() / 1000
+    );
 
     const expiration = BigInt(initiation + BigInt(formData.get('expiration') as string) * 60n);
 
@@ -138,7 +140,7 @@
     </Tabs.List>
   </div>
   <Tabs.Content class="mt-6" value="chart">
-    <div class="border-b pb-6">
+    <div class="pb-6">
       <div class="container grid gap-1 mb-4">
         <h1 class="text-2xl tracking-tight font-semibold">
           <!-- FIXME: Hack -->
@@ -150,7 +152,11 @@
     </div>
 
     {#key data.result.list}
-      <ChartData initialData={[...data.result.list, data.result.latest]} />
+      <ChartData
+        initialData={data.result.list.length
+          ? [...data.result.list, data.result.latest]
+          : [data.result.latest]}
+      />
     {/key}
   </Tabs.Content>
   <Tabs.Content class="mt-6" value="trade">
