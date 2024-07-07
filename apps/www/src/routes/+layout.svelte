@@ -23,8 +23,6 @@
   onMount(async () => {
     expandApp();
 
-    // postEvent('web_app_set_header_color', { color: '#000' });
-
     tonConnectUI.subscribe(async (tonConnectUI) => {
       if (!tonConnectUI) {
         return;
@@ -94,8 +92,6 @@
     }
 
     if (wallet.connectItems?.tonProof && 'proof' in wallet.connectItems.tonProof) {
-      console.log('Proof:', wallet.connectItems.tonProof.proof);
-
       await checkProofAndRedirect(wallet.connectItems.tonProof.proof, wallet.account);
     }
   }
