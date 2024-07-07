@@ -1,18 +1,18 @@
 import { redirect } from '@sveltejs/kit';
 import { PageServerLoad } from './$types';
-import { ACCESS_TOKEN_COOKIE, REDIRECT_TO_COOKIE } from '$lib/constants';
+import { ACCESS_TOKEN_COOKIE, REDIRECT_URL_COOKIE } from '$lib/constants';
 
 export const load: PageServerLoad = async ({ url, cookies }) => {
+  const redirectUrl = url.searchParams.get('redirectUrl') || '/dashboard';
   const accessToken = cookies.get(ACCESS_TOKEN_COOKIE);
 
   if (accessToken) {
-    redirect(307, '/dashboard');
+    redirect(307, redirectUrl);
   }
 
-  const redirectTo = url.searchParams.get('redirectTo') || '/dashboard';
-  cookies.set(REDIRECT_TO_COOKIE, redirectTo, {
+  cookies.set(REDIRECT_URL_COOKIE, redirectUrl, {
     path: '/',
-    sameSite: 'lax',
+    secure: false,
     httpOnly: false
   });
 };

@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES, REDIRECT_TO_COOKIE } from './constants';
+import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES, REDIRECT_URL_COOKIE } from './constants';
 import type { Account, ConnectAdditionalRequest, TonProofItemReplySuccess } from '@tonconnect/ui';
 import cookie from 'js-cookie';
 
@@ -58,15 +58,12 @@ export async function checkProofAndRedirect(
     if (response?.token) {
       cookie.set(ACCESS_TOKEN_COOKIE, response.token, {
         expires: COOKIE_EXPIRES,
-        sameSite: 'Strict',
-        secure: true
+        sameSite: 'Lax'
       });
-      const redirectTo = cookie.get(REDIRECT_TO_COOKIE);
+      const redirectUrl = cookie.get(REDIRECT_URL_COOKIE);
 
-      if (redirectTo) {
-        console.log('Redirecting to:', redirectTo);
-
-        await goto(redirectTo, {
+      if (redirectUrl) {
+        await goto(redirectUrl, {
           replaceState: true
         });
       }
