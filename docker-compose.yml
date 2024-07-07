@@ -1,0 +1,35 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: 'redis-local'
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data # Persist data using a named volume
+
+  nginx:
+    image: 'nginx:latest'
+    container_name: 'nginx-local'
+    ports:
+      - '3000:80'
+    restart: always
+    volumes:
+      - './nginx.conf:/etc/nginx/nginx.conf:ro'
+      - './certs:/etc/nginx/certs:ro'
+    extra_hosts:
+      - 'localnode:${LOCALNODE_IP}'
+
+    # depends_on:
+    #   - backend
+
+  # backend:
+  #   build:
+  #     dockerfile: Dockerfile
+  #   container_name: 'backend-local'
+  #   ports:
+  #     - '3000:3000'
+  #   depends_on:
+  #     - redis
+
+volumes:
+  redis_data:
