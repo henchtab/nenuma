@@ -84,7 +84,7 @@
             <Drawer.Title>Menu</Drawer.Title>
 
             <Drawer.Close class="absolute top-1/2 right-4 -translate-y-1/2">
-              <span class="text-ds-blue-700 font-semibold">Done</span>
+              <span class="text-ds-blue-700 font-semibold">Close</span>
             </Drawer.Close>
           </Drawer.Header>
 
