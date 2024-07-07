@@ -41,6 +41,7 @@
   "type": "module",
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
+    "@sentry/sveltekit": "^8.15.0",
     "@tanstack/svelte-query": "^5.49.0",
     "@tma.js/sdk": "^2.5.1",
     "@ton/core": "^0.56.3",
