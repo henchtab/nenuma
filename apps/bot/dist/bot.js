@@ -1,0 +1,3 @@
+import"dotenv/config";import{Bot as o}from"grammy";import{emojiParser as r}from"@grammyjs/emoji";var e=new o(`${process.env.BOT_TOKEN}`,{client:{environment:"test"}});e.use(r());e.command("start",async t=>{await t.reply(`*Let's get started\\!* ${t.emoji`${"money_with_wings"}`}
+
+Please tap the button below to start trading with Nenuma\\!`,{parse_mode:"MarkdownV2",reply_markup:{inline_keyboard:[[{text:`${t.emoji`${"chart_increasing"}`} Start Trading`,web_app:{url:"http://192.168.1.101:5173"}}],[{text:`${t.emoji`${"lollipop"}`} Play with Smart Contracts`,web_app:{url:"http://192.168.1.101:5173?redirectUrl=playground"}}]]}})});e.command("ping",async t=>{await t.replyWithEmoji`Pong ${"ping_pong"}`});e.start();

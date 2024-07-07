@@ -1,0 +1,24 @@
+{
+  "name": "nenuma-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/bot.js",
+  "module": "./dist/bot.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --watch bot.ts | pino-pretty --colorize",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@grammyjs/emoji": "^1.2.0",
+    "dotenv": "^16.4.5",
+    "grammy": "^1.27.0"
+  }
+}
