@@ -77,6 +77,16 @@
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
         <Drawer.Content>
+          <input type="checkbox" class="sr-only" aria-hidden="true" />
+
+          <Drawer.Header class="relative">
+            <Drawer.Title>Playground</Drawer.Title>
+
+            <Drawer.Close class="absolute top-1/2 right-4 -translate-y-1/2">
+              <span class="text-ds-blue-700 font-semibold">Close</span>
+            </Drawer.Close>
+          </Drawer.Header>
+
           <div class="container pt-4 pb-8 overflow-y-scroll">
             <input class="sr-only" aria-hidden="true" type="checkbox" />
 
