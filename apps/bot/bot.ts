@@ -29,7 +29,7 @@ Please tap the button below to start trading with Nenuma\\!`,
             {
               text: `${ctx.emoji`${'chart_increasing'}`} Start Trading`,
               web_app: {
-                url: 'http://192.168.1.101:5173',
+                url: `${process.env.WEB_APP_URL}`,
               },
             },
           ],
@@ -37,7 +37,7 @@ Please tap the button below to start trading with Nenuma\\!`,
             {
               text: `${ctx.emoji`${'lollipop'}`} Play with Smart Contracts`,
               web_app: {
-                url: 'http://192.168.1.101:5173?redirectUrl=playground',
+                url: `${process.env.WEB_APP_URL}/?redirectUrl=playground`,
               },
             },
           ],
