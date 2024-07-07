@@ -1,15 +1,16 @@
+import { SIMPLE_SUBSCRIBER_STORAGE_KEY } from '$lib/constants';
+import { getValidUntil } from '$lib/utils';
+import { Address, beginCell, toNano, type TonClient4 } from '@ton/ton';
+import { CHAIN, type TonConnectUI } from '@tonconnect/ui';
 import {
-  SimpleSubscriber,
   NOTIFICATION_DEPOSIT,
   NOTIFICATION_PREMIUM,
+  SimpleSubscriber,
   storeSimpleSubscriberDeploy,
   storeSubscriberCheckTimeout
 } from 'nenuma-contracts';
 import type { OpenContract } from '.';
-import { Address, beginCell, toNano, type TonClient4 } from '@ton/ton';
-import { CHAIN, type TonConnectUI } from '@tonconnect/ui';
 import { loadData, saveContractAddress } from './utils';
-import { SIMPLE_SUBSCRIBER_STORAGE_KEY, TON_VALID_UNTIL } from '../constants';
 
 export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubscriber> {
   private readonly publicClient: TonClient4;
@@ -88,7 +89,7 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });
@@ -121,7 +122,7 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });

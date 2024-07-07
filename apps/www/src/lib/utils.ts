@@ -1,9 +1,10 @@
+import { browser } from '$app/environment';
 import { clsx, type ClassValue } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import { readable } from 'svelte/store';
 import type { TransitionConfig } from 'svelte/transition';
-import { browser } from '$app/environment';
 import { twMerge } from 'tailwind-merge';
+import { TON_VALID_UNTIL } from './constants';
 import { hapticFeedback } from './stores/tma';
 
 export function cn(...inputs: ClassValue[]) {
@@ -155,4 +156,8 @@ export function randomize() {
   }, 1000);
 
   return Math.floor(Math.random() * 10000);
+}
+
+export function getValidUntil() {
+  return Math.floor(Date.now() / 1000) + TON_VALID_UNTIL;
 }

@@ -1,13 +1,13 @@
+import {
+  DATA_STREAM_STORAGE_KEY,
+  SESSION_STORAGE_KEY,
+  SES_SUBSCRIBE_DEPOSIT
+} from '$lib/constants';
+import { getValidUntil } from '$lib/utils';
 import { Address, beginCell, type TonClient4 } from '@ton/ton';
 import { CHAIN, type TonConnectUI } from '@tonconnect/ui';
 import { Session, storeSESDestroy, storeSESSubscribe, storeSESUnsubscribe } from 'nenuma-contracts';
 import type { OpenContract } from '.';
-import {
-  DATA_STREAM_STORAGE_KEY,
-  SESSION_STORAGE_KEY,
-  SES_SUBSCRIBE_DEPOSIT,
-  TON_VALID_UNTIL
-} from '../constants';
 import { loadData, saveContractAddress, type AddressData } from './utils';
 
 export default class SessionWrapper implements OpenContract<Session> {
@@ -66,7 +66,7 @@ export default class SessionWrapper implements OpenContract<Session> {
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });
@@ -93,7 +93,7 @@ export default class SessionWrapper implements OpenContract<Session> {
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });
@@ -120,7 +120,7 @@ export default class SessionWrapper implements OpenContract<Session> {
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });

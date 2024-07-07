@@ -1,7 +1,7 @@
+import { DATA_STREAM_STORAGE_KEY, SUBSCRIPTION_BATCHES_STORAGE_KEY } from '$lib/constants';
 import { Address, OpenedContract, type TonClient4 } from '@ton/ton';
 import { SubscriptionBatch } from 'nenuma-contracts';
 import type { OpenContract } from '.';
-import { DATA_STREAM_STORAGE_KEY, SUBSCRIPTION_BATCHES_STORAGE_KEY } from '../constants';
 import { loadData, type AddressData } from './utils';
 
 export default class SubscriptionBatchWrapper implements OpenContract<SubscriptionBatch> {

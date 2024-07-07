@@ -1,3 +1,11 @@
+import {
+  DATA_STREAM_STORAGE_KEY,
+  DST_DEPLOY_BATCH_DEPOSIT,
+  DST_DEPLOY_DEPOSIT,
+  DST_DEPLOY_SESSION_DEPOSIT,
+  DST_PUBLISH_CANDLESTICK_DEPOSIT
+} from '$lib/constants';
+import { getValidUntil } from '$lib/utils';
 import { Address, beginCell, type TonClient4 } from '@ton/ton';
 import { CHAIN, type TonConnectUI } from '@tonconnect/ui';
 import {
@@ -6,18 +14,10 @@ import {
   storeDSTDeploy,
   storeDSTDeployBatch,
   storeDSTDeploySession,
-  storeStateInit,
-  storeDSTPublishCandlestick
+  storeDSTPublishCandlestick,
+  storeStateInit
 } from 'nenuma-contracts';
 import { OpenContract } from '.';
-import {
-  DATA_STREAM_STORAGE_KEY,
-  DST_DEPLOY_BATCH_DEPOSIT,
-  DST_DEPLOY_DEPOSIT,
-  DST_DEPLOY_SESSION_DEPOSIT,
-  DST_PUBLISH_CANDLESTICK_DEPOSIT,
-  TON_VALID_UNTIL
-} from '../constants';
 import { loadData, saveContractAddress } from './utils';
 
 export default class DataStreamWrapper implements OpenContract<DataStream> {
@@ -120,7 +120,7 @@ export default class DataStreamWrapper implements OpenContract<DataStream> {
     // Using `sendTransaction` from `TonConnectUI` because it gives us the boc of the transaction
     // Later will be used to wait for the transaction to be confirmed
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });
@@ -147,7 +147,7 @@ export default class DataStreamWrapper implements OpenContract<DataStream> {
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });
@@ -178,7 +178,7 @@ export default class DataStreamWrapper implements OpenContract<DataStream> {
     };
 
     await this.tonConnectUI.sendTransaction({
-      validUntil: TON_VALID_UNTIL,
+      validUntil: getValidUntil(),
       messages: [message],
       network: CHAIN.TESTNET
     });

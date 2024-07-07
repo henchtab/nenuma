@@ -29,7 +29,7 @@ export const BRK_WITHDRAW_DEPOSIT = toNano('0.2');
 
 export const TON_CONNECT_UI_CONTEXT = 'tonConnect';
 export const TON_CONNECT_UI_KEY = 'tonConnectUI';
-export const TON_VALID_UNTIL = Math.floor(Date.now() / 1000) + 360;
+export const TON_VALID_UNTIL = 360; // Seconds
 
 // END: TON Connect UI
 

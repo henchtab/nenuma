@@ -1,4 +1,5 @@
 import { Address, OpenedContract, TonClient, TonClient4, beginCell, toNano } from '@ton/ton';
+import { CHAIN } from '@tonconnect/ui';
 import {
   Broker,
   Brokerage,
@@ -6,26 +7,24 @@ import {
   CashOrNothingOption,
   CashOrNothingOptionAgreement,
   storeBRGDeploy,
+  storeBrokerDeployOption,
   storeCashOrNothingOptionDeploy,
   storeStateInit,
-  type CashOrNothingOptionDraftAgreement,
   type Candlestick,
-  storeBrokerDeployOption
+  type CashOrNothingOptionDraftAgreement
 } from 'nenuma-contracts';
 import { derived, readable, type Readable, type Writable } from 'svelte/store';
 import {
   BRG_DEPLOY_ACCOUNT_DEPOSIT,
   BRG_DEPLOY_BROKER_DEPOSIT,
   LATEST_OPTION_STORAGE_KEY,
-  OPTIONS_STORAGE_KEY,
-  TON_VALID_UNTIL
+  OPTIONS_STORAGE_KEY
 } from '../constants';
 import { sender, tonConnectUI } from '../stores/ton-connect';
 import DataStreamWrapper from './data-stream';
 import SessionWrapper from './session';
 import SimpleSubscriberWrapper from './simple-subscriber';
 import SubscriptionBatchWrapper from './subscription-batch';
-import { CHAIN } from '@tonconnect/ui';
 
 export const publicClient = readable<TonClient4>(undefined, (set) => {
   set(
