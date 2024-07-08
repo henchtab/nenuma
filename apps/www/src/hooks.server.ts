@@ -5,6 +5,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 
 init({
   dsn: 'https://55a4e626777e0b3cc8a1a49313c233e0@o4504770823061504.ingest.us.sentry.io/4507562211868672',
+  enabled: import.meta.env.PROD,
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
