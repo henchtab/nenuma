@@ -6,6 +6,36 @@
 
   let { children } = $props();
 
+  interface BaseOption {
+    optionId: number;
+  }
+
+  interface PendingOption extends BaseOption {
+    status: 'pending';
+    draft: CashOrNothingOptionDraftAgreement;
+  }
+
+  interface DeployedOption extends BaseOption {
+    status: 'deployed';
+    address: Address;
+    agreement: CashOrNothingOptionAgreement;
+  }
+
+  interface InitiatedOption extends Omit<DeployedOption, 'status'> {
+    status: 'initiated';
+    strikePrice: number;
+  }
+
+  interface SettledOption extends Omit<InitiatedOption, 'status'> {
+    status: 'settled';
+  }
+
+  interface ExpiredOption extends Omit<DeployedOption, 'status'> {
+    status: 'expired';
+  }
+
+  type Option = PendingOption | DeployedOption | InitiatedOption | SettledOption | ExpiredOption;
+
   // const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
   // type BaseOption = {

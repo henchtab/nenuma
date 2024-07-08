@@ -10,9 +10,9 @@ importers:
 
   apps/bot:
     dependencies:
-      '@grammyjs/emoji':
+      '@grammyjs/ratelimiter':
         specifier: ^1.2.0
-        version: 1.2.0(grammy@1.27.0)
+        version: 1.2.0
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -727,10 +727,8 @@ packages:
   '@formkit/auto-animate@0.8.2':
     resolution: {integrity: sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ==}
 
-  '@grammyjs/emoji@1.2.0':
-    resolution: {integrity: sha512-gpqvcuCxtk/quVyqx0VLB3KRGycvC9nB6LirD3eCjJjR0tUaPCvCqXrG2wntLWude9R8Ywbu3CmHx1JphhwJNg==}
-    peerDependencies:
-      grammy: ^1.7.1
+  '@grammyjs/ratelimiter@1.2.0':
+    resolution: {integrity: sha512-xBkH/ATJsuv5JgVYX9yQM9DNg75Qqjw+gh82lVsBn4j+d0DkxxC+kuy6WFoB96Cb6oifQfaBJL8CTikdYG4v0A==}
 
   '@grammyjs/types@3.11.0':
     resolution: {integrity: sha512-LBIH8VnSEoeOHJxfvNFQ8QEsRip7D6GhY7y0evMl9W5FQ8p3q3bcYrtO2awxo1rSpi9RcoCKX1icQ60kXkp7+w==}
@@ -5761,9 +5759,7 @@ snapshots:
 
   '@formkit/auto-animate@0.8.2': {}
 
-  '@grammyjs/emoji@1.2.0(grammy@1.27.0)':
-    dependencies:
-      grammy: 1.27.0
+  '@grammyjs/ratelimiter@1.2.0': {}
 
   '@grammyjs/types@3.11.0': {}
 

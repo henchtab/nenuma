@@ -17,7 +17,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@grammyjs/emoji": "^1.2.0",
+    "@grammyjs/ratelimiter": "^1.2.0",
     "dotenv": "^16.4.5",
     "grammy": "^1.27.0"
   }
