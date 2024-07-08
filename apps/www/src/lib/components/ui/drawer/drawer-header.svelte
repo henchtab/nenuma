@@ -12,7 +12,7 @@
 
 <div
   bind:this={el}
-  class={cn('grid gap-1.5 p-4 bg-ds-background-100 text-center sm:text-left border-b', className)}
+  class={cn('flex items-center gap-1.5 p-4 justify-between border-b', className)}
   {...$$restProps}
 >
   <slot />

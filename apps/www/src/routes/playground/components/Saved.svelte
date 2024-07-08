@@ -134,7 +134,7 @@
   }
 </script>
 
-<div class="container flex flex-col bg-ds-background-100 flex-1 gap-4 py-6 overflow-y-auto">
+<div class="container flex flex-col bg-ds-background-200 flex-1 gap-4 py-6 overflow-y-auto">
   <ul class="shadow-md">
     {#each items as item (item.id)}
       <li

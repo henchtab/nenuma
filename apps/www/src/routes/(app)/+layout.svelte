@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import { isConnected, isReconnecting } from '$lib/stores/ton-connect';
   import { KlineTopic, ws } from '$lib/stores/ws.svelte';
-  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { onMount } from 'svelte';
   import Header from './Header.svelte';
 
@@ -42,14 +40,6 @@
 
   // const options = writable<Option[]>([]);
   // setContext('options', options);
-
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        enabled: browser
-      }
-    }
-  });
 
   // options.subscribe((o) => console.log('Options', o));
 
@@ -162,9 +152,7 @@
     </div>
   </div>
 {:else if $isConnected}
-  <QueryClientProvider client={queryClient}>
-    <Header />
+  <Header />
 
-    {@render children()}
-  </QueryClientProvider>
+  {@render children()}
 {/if}

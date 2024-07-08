@@ -13,6 +13,7 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { Address } from '@ton/core';
   import Menu from 'lucide-svelte/icons/menu';
+  import X from 'lucide-svelte/icons/x';
   import TestTubes from 'lucide-svelte/icons/test-tubes';
   import { getContext } from 'svelte';
 
@@ -47,10 +48,10 @@
   }
 </script>
 
-<header class="border-b sticky h-16 top-0 z-50 bg-ds-background-200 border-ds-gray-400">
+<header class="border-b sticky h-16 top-0 z-50 bg-ds-background-200">
   <div class="container pr-0 flex justify-between items-center">
     <img src={logo} alt="Nenuma" class="w-8 h-8" />
-    <div class="flex items-center gap-2 border-l border-ds-gray-400 p-4">
+    <div class="flex items-center gap-2 p-4">
       <div class="inline-flex items-center gap-1">
         <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 17 18" width="17"
           ><g
@@ -80,41 +81,50 @@
         <Drawer.Content>
           <input type="checkbox" id="drawer" class="sr-only" aria-hidden="true" />
 
-          <Drawer.Header class="relative">
-            <Drawer.Title>Menu</Drawer.Title>
+          <Drawer.Header>
+            <Drawer.Title>Navigation</Drawer.Title>
 
-            <Drawer.Close class="absolute top-1/2 right-4 -translate-y-1/2">
-              <span class="text-ds-blue-700 font-semibold">Close</span>
+            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred('light')}>
+              <div
+                class="w-8 h-8 border border-ds-gray-400 transition-colors text-ds-gray-1000 hover:bg-ds-gray-200 bg-ds-gray-100 inline-flex items-center justify-center rounded-full"
+              >
+                <X class="overflow-visible" size="20" strokeWidth={2} />
+              </div>
             </Drawer.Close>
           </Drawer.Header>
 
-          <Drawer.Footer class="gap-0 m-0 overflow-auto">
-            <div class="grid gap-3 pb-3 border-b">
-              {#each items as item}
-                <Drawer.Close asChild let:builder>
-                  <a
-                    use:builder.action
-                    {...builder}
-                    class="flex justify-between items-center"
-                    href={item.href}
-                    onclick={() => $hapticFeedback.impactOccurred('light')}
-                  >
-                    <div class="flex flex-col items-baseline">
-                      <div class="flex items-center gap-1">
-                        <span class="text-ds-gray-1000 text-left text-lg tracking-tight font-medium">
-                          {item.symbol}
-                        </span>
-                        <span class="text-ds-gray-900 text-sm">/ USDT</span>
+          <nav class="gap-3 pt-4 pb-8 overflow-y-auto container">
+            <section>
+              <span class="text-base text-ds-gray-900">Trading Pairs</span>
+
+              <div class="pl-2">
+                {#each items as item}
+                  <Drawer.Close asChild let:builder>
+                    <a
+                      use:builder.action
+                      {...builder}
+                      class="flex justify-between items-center h-12"
+                      href={item.href}
+                      onclick={() => $hapticFeedback.impactOccurred('light')}
+                    >
+                      <div class="flex flex-col items-baseline">
+                        <div>
+                          <span
+                            class="text-ds-gray-1000 text-left text-lg tracking-tight font-medium"
+                          >
+                            {item.symbol}
+                          </span>
+                          <span class="text-ds-gray-900 text-sm">/ USDT</span>
+                        </div>
                       </div>
-                      <span class="text-base text-left text-ds-gray-900"> {item.name} </span>
-                    </div>
-                    <div class="text-ds-gray-1000 flex-1 text-lg justify-end flex font-medium">
-                      {$latestPrices[item.priceKey].toFixed(2)} $
-                    </div>
-                  </a>
-                </Drawer.Close>
-              {/each}
-            </div>
+                      <div class="text-ds-gray-1000 flex-1 text-lg justify-end flex font-medium">
+                        {$latestPrices[item.priceKey].toFixed(2)} $
+                      </div>
+                    </a>
+                  </Drawer.Close>
+                {/each}
+              </div>
+            </section>
             <div class="py-3 grid">
               <Drawer.Close asChild let:builder>
                 <a
@@ -129,7 +139,7 @@
                 </a>
               </Drawer.Close>
             </div>
-            <div class="py-3">
+            <div>
               <Button
                 class="w-full"
                 type="button"
@@ -146,7 +156,7 @@
                 </div>
               </Button>
             </div>
-          </Drawer.Footer>
+          </nav>
         </Drawer.Content>
       </Drawer.Root>
     </div>

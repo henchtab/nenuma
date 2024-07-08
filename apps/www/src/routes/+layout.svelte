@@ -6,14 +6,23 @@
   import { mediaQuery } from '$lib/utils';
   import { postEvent, retrieveLaunchParams } from '@tma.js/sdk';
   import { CHAIN, type ConnectedWallet } from '@tonconnect/ui';
+  import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
   import { onMount, setContext } from 'svelte';
   import { toast, Toaster } from 'svelte-sonner';
-  import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
-
+  import { browser } from '$app/environment';
+  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import '../app.css';
 
   let { children } = $props();
   let wrapper = $state<HTMLDivElement>();
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        enabled: browser
+      }
+    }
+  });
 
   const isDesktop = mediaQuery('(min-width: 768px)');
 
@@ -128,26 +137,28 @@
   }
 </script>
 
-<div
-  bind:this={wrapper}
-  class="group data-[sticky-app]:absolute data-[sticky-app]:inset-0 data-[sticky-app]:overflow-x-hidden data-[sticky-app]:overflow-y-auto"
->
-  <div class="group-data-[sticky-app]:h-[calc(100%+1px)]">
-    <div class="relative isolate min-h-screen flex flex-col">
-      <header
-        class="bg-ds-amber-100 border-b border-ds-amber-400 text-center text-ds-amber-900 p-2 font-medium flex items-center justify-center min-h-10"
-      >
-        <div class="max-w-[60%] flex items-center gap-2">
-          <TriangleAlert size={16} strokeWidth={1.5} />
-          Testnet Only
-        </div>
-      </header>
-      {@render children()}
-    </div>
+<QueryClientProvider client={queryClient}>
+  <div
+    bind:this={wrapper}
+    class="group data-[sticky-app]:absolute data-[sticky-app]:inset-0 data-[sticky-app]:overflow-x-hidden data-[sticky-app]:overflow-y-auto"
+  >
+    <div class="group-data-[sticky-app]:h-[calc(100%+1px)]">
+      <div class="relative isolate min-h-screen flex flex-col">
+        <header
+          class="bg-ds-amber-100 border-b border-ds-amber-400 text-center text-ds-amber-900 p-2 font-medium flex items-center justify-center min-h-10"
+        >
+          <div class="max-w-[60%] flex items-center gap-2">
+            <TriangleAlert size={16} strokeWidth={1.5} />
+            Testnet Only
+          </div>
+        </header>
+        {@render children()}
+      </div>
 
-    <div id="portalled-content"></div>
+      <div id="portalled-content"></div>
+    </div>
   </div>
-</div>
+</QueryClientProvider>
 
 <Toaster
   position={$isDesktop ? 'bottom-right' : 'top-center'}

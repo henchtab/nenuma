@@ -139,9 +139,9 @@
       <Tabs.Trigger class="flex-1" value="trade">Trade</Tabs.Trigger>
     </Tabs.List>
   </div>
-  <Tabs.Content class="mt-6" value="chart">
-    <div class="pb-6">
-      <div class="container grid gap-1 mb-4">
+  <Tabs.Content class="pt-8 mt-0" value="chart">
+    <div class="pb-4">
+      <div class="container grid gap-1">
         <h1 class="text-2xl tracking-tight font-semibold">
           <!-- FIXME: Hack -->
           <!-- {data.topic} -->
@@ -159,8 +159,8 @@
       />
     {/key}
   </Tabs.Content>
-  <Tabs.Content class="mt-6" value="trade">
-    <div class="container mb-4">
+  <Tabs.Content class="pt-8 mt-0" value="trade">
+    <div class="container">
       <h1 class="text-ds-gray-900 font-medium">Mark Price</h1>
       <span
         class={cn('text-2xl tracking-tight font-semibold', {
