@@ -141,7 +141,7 @@
               </Drawer.Close>
 
               <section class="flex flex-col">
-                <span class="text-base text-ds-gray-900">Streams API</span>
+                <span class="text-base mb-2 text-ds-gray-900">Streams API</span>
                 <ul class="pl-2">
                   <li>
                     <Drawer.Close asChild let:builder>
@@ -199,7 +199,7 @@
               </section>
 
               <section class="flex flex-col">
-                <span class="text-base text-ds-gray-900">Derivatives API</span>
+                <span class="text-base mb-2 text-ds-gray-900">Derivatives API</span>
                 <ul class="pl-2">
                   <li>
                     <Drawer.Close asChild let:builder>
