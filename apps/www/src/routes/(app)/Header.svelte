@@ -67,7 +67,7 @@
 
         <Skeleton show={$accountInfo.isLoading}>
           <div class="font-medium min-w-10 text-center">
-            {$accountInfo.data?.balance.slice(0, 6)}
+            {$accountInfo.data?.balance.slice(0, 5)}
           </div>
         </Skeleton>
       </div>
