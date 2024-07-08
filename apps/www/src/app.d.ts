@@ -6,7 +6,13 @@ declare global {
     interface Locals {
       isAuthenticated: boolean;
     }
-    // interface PageData {}
+    interface PageData {
+      topic?: string;
+      result?: {
+        list: CandlestickData[];
+        latest: CandlestickData;
+      };
+    }
     // interface PageState {}
     // interface Platform {}
   }

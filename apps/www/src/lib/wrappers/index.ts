@@ -249,6 +249,11 @@ type BrokerMethods = {
     nominator: bigint;
     denominator: bigint;
   }>;
+  getPayoutRatio: () => Promise<{
+    $$type: 'Fraction';
+    nominator: bigint;
+    denominator: bigint;
+  }>;
   getNextOptionId: () => Promise<bigint>;
   deploy: (args: { queryId: bigint }) => Promise<void>;
   deposit: (args: { queryId: bigint; deposit: bigint }) => Promise<void>;
@@ -269,72 +274,42 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
     [sender, tonConnectUI, brokerAddress],
     ([$sender, $tonConnectUI, $brokerAddress], set) => {
       const getBalance = async () => {
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getBalance();
       };
 
       const getStorageReserve = async () => {
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getStorageReserve();
       };
 
       const getOptionAddress = async (optionId: bigint) => {
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getOptionAddress(optionId);
       };
 
       const getStream = async () => {
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getStream();
       };
 
       const getPayout = async () => {
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getPayout();
       };
 
+      const getPayoutRatio = async () => {
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
+
+        return await broker.getPayoutRatio();
+      };
+
       const getNextOptionId = async () => {
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getNextOptionId();
@@ -345,12 +320,6 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
 
         if (!owner) {
           throw new Error('No account connected. Did you connect to the wallet?');
-        }
-
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
@@ -371,12 +340,6 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
           throw new Error('No account connected. Did you connect to the wallet?');
         }
 
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
-        }
-
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         console.log("toNano('0.05') + toNano(args.deposit)", toNano('0.05') + args.deposit);
@@ -395,12 +358,6 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
 
         if (!owner) {
           throw new Error('No account connected. Did you connect to the wallet?');
-        }
-
-        const brokerageAddress = localStorage.getItem('brokerage');
-
-        if (!brokerageAddress) {
-          throw new Error('No brokerage found. Did you deploy a brokerage?');
         }
 
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
@@ -459,6 +416,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         deposit,
         getStream,
         getPayout,
+        getPayoutRatio,
         getNextOptionId,
         getOptionAddress,
         deployOption,

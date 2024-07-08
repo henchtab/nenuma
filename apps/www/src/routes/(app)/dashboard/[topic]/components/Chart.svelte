@@ -1,16 +1,14 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { ws } from '$lib/stores/ws.svelte';
-  import {
-    createChart,
-    CrosshairMode,
-    LineStyle,
-    type CandlestickData,
-    type IChartApi
-  } from 'lightweight-charts';
+  import { createChart, CrosshairMode, LineStyle, type IChartApi } from 'lightweight-charts';
   import { onMount } from 'svelte';
 
-  let { initialData }: { initialData: CandlestickData[] } = $props();
+  let initialChartData = $page.data?.result?.list.length
+    ? [...$page.data.result.list, $page.data.result.latest]
+    : [$page.data?.result?.latest];
+
+  console.log('initialChartData', initialChartData);
 
   let chartContainer = $state() as HTMLDivElement;
   let candlestickSeries: ReturnType<IChartApi['addCandlestickSeries']> | undefined = $state();
@@ -74,10 +72,6 @@
       wickDownColor: '#E2162A'
     });
 
-    if (initialData) {
-      candlestickSeries.setData(initialData);
-    }
-
     candlestickSeries.priceScale().applyOptions({
       borderColor: '#2E2E2E',
       ticksVisible: true,
@@ -87,6 +81,8 @@
       },
       alignLabels: true
     });
+
+    candlestickSeries.setData(initialChartData);
 
     // chart.subscribeCrosshairMove(() => $hapticFeedback.selectionChanged());
   });
