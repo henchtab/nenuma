@@ -95,7 +95,7 @@
 
           <nav class="gap-3 pt-4 pb-8 overflow-y-auto container">
             <section>
-              <span class="text-base text-ds-gray-900">Trading Pairs</span>
+              <span class="text-base mb-2 text-ds-gray-900">Trading Pairs</span>
 
               <div class="pl-2">
                 {#each items as item}
