@@ -12,9 +12,7 @@
   import { Address, fromNano, toNano } from '@ton/core';
   import { ChevronDown, TrendingDown, TrendingUp } from 'lucide-svelte';
   import { getContext, onMount } from 'svelte';
-  import { elasticOut, quintOut } from 'svelte/easing';
   import { derived, writable } from 'svelte/store';
-  import { fade, fly } from 'svelte/transition';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -170,7 +168,7 @@
           id="investment"
           type="number"
           name="investment"
-          placeholder="1"
+          placeholder="1 - {maxInvestment}"
           min="1"
           max={maxInvestment}
           step={0.01}
