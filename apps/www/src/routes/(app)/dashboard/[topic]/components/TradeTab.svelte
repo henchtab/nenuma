@@ -32,15 +32,22 @@
 
   const broker = useBroker(writable(PUBLIC_BROKER_ADDRESS));
 
+  // Form state
+
   let initiation = $state(initiationTime(3));
-  let maxInvestment = $state(0);
+
+  let minInvestment = $state('1.00');
+  let maxInvestment = $state('0.00');
+
   let optionType: boolean;
+
+  // End of form state
 
   let isInvestmentValid = $state(true);
 
   onMount(async () => {
     try {
-      maxInvestment = Number(await getMaxInvestment());
+      maxInvestment = await getMaxInvestment();
     } catch (error) {
       console.error(error);
     }
@@ -65,7 +72,7 @@
 
     return fromNano(
       ((balance - storageReserve) * coefficient.nominator) / coefficient.denominator
-    ).slice(0, 5);
+    ).slice(0, 4);
   }
 
   async function handleSubmit(
@@ -168,13 +175,25 @@
           id="investment"
           type="number"
           name="investment"
-          placeholder="1 - {maxInvestment}"
-          min="1"
+          placeholder="1.00 — {maxInvestment}"
+          min={minInvestment}
           max={maxInvestment}
           step={0.01}
-          oninput={(e) =>
-            (isInvestmentValid =
-              Number(e.currentTarget.value) >= 1 && Number(e.currentTarget.value) <= maxInvestment)}
+          oninput={(e) => {
+            const value = Number(e.currentTarget.value);
+
+            if (!value) {
+              // Reset the validation state
+              isInvestmentValid = true;
+              return;
+            }
+
+            if (value < Number(minInvestment) || value > Number(maxInvestment)) {
+              isInvestmentValid = false;
+            } else {
+              isInvestmentValid = true;
+            }
+          }}
           required
         />
         <span class="absolute right-3 select-none text-sm font-medium text-ds-gray-1000">TON</span>
@@ -182,7 +201,7 @@
 
       {#if !isInvestmentValid}
         <p class="text-sm text-ds-red-900">
-          Investment must be between 1 and {maxInvestment} TON
+          The investment must be {minInvestment} to {maxInvestment} TON.
         </p>
       {/if}
     </div>
