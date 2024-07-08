@@ -43,7 +43,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@sentry/sveltekit": "^8.15.0",
     "@tanstack/svelte-query": "^5.49.0",
-    "@tma.js/sdk": "^2.5.1",
+    "@telegram-apps/sdk": "^1.1.0",
     "@ton/core": "^0.56.3",
     "@ton/crypto": "^3.2.0",
     "@ton/ton": "^13.11.2",

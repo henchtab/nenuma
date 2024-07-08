@@ -1,6 +1,6 @@
 import { readable } from 'svelte/store';
 import { browser } from '$app/environment';
-import { BackButton, HapticFeedback, MainButton, initBackButton, initHapticFeedback, initMainButton } from '@tma.js/sdk';
+import { BackButton, HapticFeedback, MainButton, initBackButton, initHapticFeedback, initMainButton } from '@telegram-apps/sdk';
 
 export const hapticFeedback = readable<HapticFeedback>(undefined, (set) => {
   if (!browser) {

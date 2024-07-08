@@ -4,7 +4,7 @@
   import { checkProofAndRedirect, removeAccessTokenCookie } from '$lib/data';
   import { tonConnect, tonConnectUI } from '$lib/stores/ton-connect';
   import { mediaQuery } from '$lib/utils';
-  import { postEvent, retrieveLaunchParams } from '@tma.js/sdk';
+  import { postEvent, retrieveLaunchParams } from '@telegram-apps/sdk';
   import { CHAIN, type ConnectedWallet } from '@tonconnect/ui';
   import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
   import { onMount, setContext } from 'svelte';
@@ -30,7 +30,11 @@
   let isFirstProofLoading = $state(true);
 
   onMount(async () => {
-    expandApp();
+    try {
+      const lp = retrieveLaunchParams();
+
+      expandApp(lp.platform);
+    } catch (error) {}
 
     tonConnectUI.subscribe(async (tonConnectUI) => {
       if (!tonConnectUI) {
@@ -70,12 +74,10 @@
     });
   });
 
-  function expandApp() {
+  function expandApp(platform: string) {
     try {
-      const lp = retrieveLaunchParams();
-
       // Some versions of Telegram don't need the classes above.
-      if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(lp.platform)) {
+      if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(platform)) {
         return;
       }
 
