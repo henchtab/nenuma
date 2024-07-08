@@ -1,8 +1,8 @@
 import { PUBLIC_API_URL } from '$env/static/public';
 import { timeToLocal } from '$lib/utils';
+import { error } from '@sveltejs/kit';
 import type { CandlestickData, UTCTimestamp } from 'lightweight-charts';
 import type { PageLoad } from './$types';
-import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ fetch, params, data }) => {
   const topic = params.topic;
@@ -30,12 +30,10 @@ export const load: PageLoad = async ({ fetch, params, data }) => {
       topic,
       result
     };
-  } catch (error) {
-    throw new Error(
-      'Something went wrong! We are already notified about this issue. Please try again later.',
-      {
-        cause: error
-      }
+  } catch (e) {
+    error(
+      500,
+      'Something went wrong! We are already notified about this issue. Please try again later.'
     );
   }
 };
