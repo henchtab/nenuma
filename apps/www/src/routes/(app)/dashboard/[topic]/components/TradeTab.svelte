@@ -13,6 +13,7 @@
   import { ChevronDown, TrendingDown, TrendingUp } from 'lucide-svelte';
   import { getContext, onMount } from 'svelte';
   import { derived, writable } from 'svelte/store';
+  import { Note } from '$lib/components/ui/note';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -231,5 +232,7 @@
         <TrendingDown size="20" strokeWidth={1.5} />
       </Button>
     </div>
+
+    <Note class="border-ds-amber-400 text-ds-amber-900 selection:bg-amber-500 selection:text-white">An additional 2 TON will be reserved for fees, with any excess refunded to you.</Note>
   </form>
 </div>

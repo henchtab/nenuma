@@ -145,7 +145,7 @@
     class="group data-[sticky-app]:absolute data-[sticky-app]:inset-0 data-[sticky-app]:overflow-x-hidden data-[sticky-app]:overflow-y-auto"
   >
     <div class="group-data-[sticky-app]:h-[calc(100%+1px)]">
-      <div class="relative isolate min-h-screen flex flex-col">
+      <div class="relative isolate min-h-screen flex bg-ds-background-200 flex-col">
         <header
           class="bg-ds-amber-100 border-b border-ds-amber-400 text-center text-ds-amber-900 p-2 font-medium flex items-center justify-center min-h-10"
         >
