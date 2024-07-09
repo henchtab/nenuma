@@ -8,8 +8,6 @@
     ? [...$page.data.result.list, $page.data.result.latest]
     : [$page.data?.result?.latest];
 
-  console.log('initialChartData', initialChartData);
-
   let chartContainer = $state() as HTMLDivElement;
   let candlestickSeries: ReturnType<IChartApi['addCandlestickSeries']> | undefined = $state();
 
