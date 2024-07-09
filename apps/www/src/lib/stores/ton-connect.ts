@@ -1,17 +1,18 @@
-import { TonConnectUI, Wallet } from '@tonconnect/ui';
+import { THEME, TonConnectUI, Wallet } from '@tonconnect/ui';
 import { Writable, derived, readable, writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { SenderArguments } from '@ton/core';
 
 export const tonConnectUI = readable<TonConnectUI>(undefined, (set) => {
-  console.log('tonConnectUI');
-
   const update = () => {
     if (!browser) return;
 
     const sdk = new TonConnectUI({
       manifestUrl: 'https://nenuma.telegram-mini-apps.manuvantara.com/tonconnect-manifest.json',
-      widgetRootId: 'ton-connect'
+      widgetRootId: 'ton-connect',
+      uiPreferences: {
+        theme: THEME.DARK
+      }
     });
 
     set(sdk);
