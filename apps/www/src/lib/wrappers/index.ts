@@ -242,6 +242,7 @@ export const createBrokerage = (): Readable<BrokerageMethods> => {
 type BrokerMethods = {
   getStorageReserve: () => Promise<bigint>;
   getOptionAddress: (optionId: bigint) => Promise<Address>;
+  getOwner: () => Promise<Address>;
   getStream: () => Promise<Address>;
   getBalance: () => Promise<bigint>;
   getPayout: () => Promise<{
@@ -289,6 +290,12 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
 
         return await broker.getOptionAddress(optionId);
+      };
+
+      const getOwner = async () => {
+        const broker = provider.open(Broker.fromAddress(Address.parse($brokerAddress)));
+
+        return await broker.getOwner();
       };
 
       const getStream = async () => {
@@ -414,6 +421,7 @@ export const useBroker = (brokerAddress: Writable<string>): Readable<BrokerMetho
         deploy,
         withdraw,
         deposit,
+        getOwner,
         getStream,
         getPayout,
         getPayoutRatio,

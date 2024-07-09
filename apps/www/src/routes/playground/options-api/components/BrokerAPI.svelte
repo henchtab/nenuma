@@ -27,7 +27,19 @@
     const formData = new FormData(e.currentTarget);
     const optionId = BigInt(formData.get('optionId') as string);
 
-    await $broker.getOptionAddress(optionId);
+    const optionAddress = await $broker.getOptionAddress(optionId);
+
+    output.unshift({
+      date: formatOutputDate(new Date()),
+      message: JSON.stringify(
+        optionAddress.toString({
+          testOnly: true,
+          bounceable: false
+        }),
+        null,
+        2
+      )
+    });
   }
 </script>
 
@@ -92,10 +104,22 @@
       }}>Get Balance</Button
     >
 
+    <Button
+      class="bg-ds-blue-800 text-white hover:bg-ds-blue-700 snap-start"
+      disabled={$shouldDisableActions}
+      onclick={async () => {
+        const result = await $broker.getOwner();
+        output.unshift({
+          date: formatOutputDate(new Date()),
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+        });
+      }}>Get Owner</Button
+    >
+
     <form class="flex flex-col gap-4 w-max snap-start" onsubmit={handleOptionAddressSubmit}>
       <div class="grid gap-2">
         <Label for="optionId">Option ID</Label>
-        <Input type="number" id="optionId" placeholder="777" required min="0" />
+        <Input type="number" name="optionId" id="optionId" placeholder="777" required min="0" />
       </div>
 
       <Button
