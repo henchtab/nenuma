@@ -147,7 +147,7 @@
     <div class="group-data-[sticky-app]:h-[calc(100%+1px)]">
       <div class="relative isolate min-h-screen flex bg-ds-background-200 flex-col">
         <header
-          class="bg-ds-amber-100 border-b border-ds-amber-400 text-center text-ds-amber-900 p-2 font-medium flex items-center justify-center min-h-10"
+          class="bg-ds-amber-100 border-b border-ds-amber-400 text-center text-ds-amber-900 p-2 font-medium flex items-center justify-center min-h-10 select-none cursor-default"
         >
           <div class="max-w-[60%] flex items-center gap-2">
             <TriangleAlert size={16} strokeWidth={1.5} />
