@@ -19,7 +19,7 @@ const routes: FastifyPluginAsync = async (server) => {
     apiKey: server.config.RPC_PROVIDER_API_KEY,
   });
 
-  const keyPair = await mnemonicToPrivateKey(server.config.MNEMONIC.split(' '));
+  const keyPair = await mnemonicToPrivateKey(server.config.MNEMONIC.split(','));
 
   const workchain = 0; // Usually you need a workchain 0
   const wallet = WalletContractV4.create({ workchain, publicKey: keyPair.publicKey });
@@ -58,8 +58,7 @@ const routes: FastifyPluginAsync = async (server) => {
                 return;
               }
 
-              // Create a transfer
-              let seqno: number = await btcCandlestickPublisherWallet.getSeqno();
+              const seqno = await btcCandlestickPublisherWallet.getSeqno();
 
               const candlestickToPublish = {
                 $$type: 'Candlestick' as const,
@@ -99,7 +98,9 @@ const routes: FastifyPluginAsync = async (server) => {
                   }),
                 ],
               });
-            } catch (error) {}
+            } catch (error) {
+              log.error('Error: %s', error);
+            }
           } else {
             redis.set(RedisKey.KlineBTC1m, JSON.stringify(candlestick));
           }
