@@ -3,6 +3,7 @@
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import { Note } from '$lib/components/ui/note';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { hapticFeedback } from '$lib/stores/tma';
   import type { TonConnectStore } from '$lib/stores/ton-connect';
@@ -13,7 +14,6 @@
   import { ChevronDown, TrendingDown, TrendingUp } from 'lucide-svelte';
   import { getContext, onMount } from 'svelte';
   import { derived, writable } from 'svelte/store';
-  import { Note } from '$lib/components/ui/note';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -46,9 +46,9 @@
 
   let isInvestmentValid = $state(true);
 
-  onMount(async () => {
+  onMount(() => {
     try {
-      maxInvestment = await getMaxInvestment();
+      getMaxInvestment().then((x) => (maxInvestment = x));
     } catch (error) {
       console.error(error);
     }
@@ -59,7 +59,7 @@
       }
     }, 1000 * 30);
 
-    return clearTimeout(interval);
+    return () => clearInterval(interval);
   });
 
   function initiationTime(numberOfMinutes: number) {
@@ -233,6 +233,8 @@
       </Button>
     </div>
 
-    <Note class="border-ds-amber-400 text-ds-amber-900 selection:bg-amber-500 selection:text-white">An additional 2 TON will be reserved for fees, with any excess refunded to you.</Note>
+    <Note class="border-ds-amber-400 text-ds-amber-900 selection:bg-amber-500 selection:text-white"
+      >An additional 2 TON will be reserved for fees, with any excess refunded to you.</Note
+    >
   </form>
 </div>
