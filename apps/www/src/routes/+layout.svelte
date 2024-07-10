@@ -4,7 +4,7 @@
   import { checkProofAndRedirect, removeAccessTokenCookie } from '$lib/data';
   import { tonConnect, tonConnectUI } from '$lib/stores/ton-connect';
   import { mediaQuery } from '$lib/utils';
-  import { postEvent, retrieveLaunchParams } from '@telegram-apps/sdk';
+  import { createPostEvent, postEvent, retrieveLaunchParams } from '@telegram-apps/sdk';
   import { CHAIN, type ConnectedWallet } from '@tonconnect/ui';
   import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
   import { onMount, setContext } from 'svelte';
@@ -34,7 +34,13 @@
       const lp = retrieveLaunchParams();
 
       expandApp(lp.platform);
-    } catch (error) {}
+
+      const postEvent = createPostEvent('7.1');
+      postEvent('web_app_set_header_color', { color: '#000000' });
+      postEvent('web_app_set_background_color', { color: '#000000' });
+    } catch (error) {
+      console.error(error);
+    }
 
     tonConnectUI.subscribe(async (tonConnectUI) => {
       if (!tonConnectUI) {
