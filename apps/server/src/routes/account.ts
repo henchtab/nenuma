@@ -90,6 +90,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
       port: server.config.REDIS_PORT,
       username: server.config.REDIS_USER,
       password: server.config.REDIS_PASSWORD,
+      tls: {},
     },
   });
 
@@ -212,6 +213,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
           port: server.config.REDIS_PORT,
           username: server.config.REDIS_USER,
           password: server.config.REDIS_PASSWORD,
+          tls: {},
         },
       },
     );
