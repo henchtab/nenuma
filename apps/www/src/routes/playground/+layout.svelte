@@ -1,19 +1,14 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import logo from '$lib/assets/logo.svg';
-  import Ton from '$lib/components/Ton.svelte';
+  import { AccountBalance, TonLogo } from '$lib/components';
   import { Button } from '$lib/components/ui/button';
   import * as Drawer from '$lib/components/ui/drawer';
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
-  import { getAccountInfo } from '$lib/data';
+  import { shortenAddress } from '$lib/shorten-address';
   import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
-  import { createQuery } from '@tanstack/svelte-query';
-  import { Address } from '@ton/core';
-  import Bookmark from 'lucide-svelte/icons/bookmark';
-  import Menu from 'lucide-svelte/icons/menu';
-  import X from 'lucide-svelte/icons/x';
+  import { isConnected, isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
+  import { Bookmark, Menu, Wallet, X } from 'lucide-svelte';
   import { getContext, onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
   import Saved from './components/Saved.svelte';
@@ -21,12 +16,6 @@
   let { children } = $props();
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
-
-  const accountInfo = createQuery({
-    queryKey: ['accountInfo'],
-    queryFn: getAccountInfo,
-    refetchInterval: 5000
-  });
 
   let isSavedOpen = $state(false);
 
@@ -40,15 +29,6 @@
     window.onunhandledrejection = (e) =>
       toast.error(`An unhandled promise rejection occurred - ${e.reason}`);
   });
-
-  function formatWalletAddress(address: string) {
-    const formattedAddress = Address.parse(address).toString({
-      testOnly: true,
-      bounceable: false
-    });
-
-    return `${formattedAddress.slice(0, 6)}...${formattedAddress.slice(-4)}`;
-  }
 </script>
 
 <header class="border-b sticky top-0 h-16 overflow-hidden bg-ds-background-200 z-50">
@@ -56,23 +36,9 @@
     <img src={logo} alt="Nenuma" class="w-8 h-8" />
     <div class="py-4 flex">
       <div class="inline-flex items-center gap-1">
-        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 17 18" width="17"
-          ><g
-            fill="none"
-            fill-rule="evenodd"
-            stroke="var(--ds-gray-1000, '#000')"
-            stroke-width="1.5"
-            ><path
-              d="m1.84 3h13.3c.28 0 .5.22.5.5 0 .09-.02.17-.06.25l-6.33 11.18c-.27.48-.88.65-1.36.38-.16-.09-.3-.23-.38-.39l-6.11-11.18c-.13-.24-.04-.55.2-.68.08-.04.16-.06.24-.06z"
-            /><path d="m8.5 15v-12" /></g
-          ></svg
-        >
-
-        <Skeleton show={$accountInfo.isLoading}>
-          <div class="font-medium min-w-10 text-center">
-            {$accountInfo.data?.balance.slice(0, 5)}
-          </div>
-        </Skeleton>
+        {#if $isConnected}
+          <AccountBalance />
+        {/if}
       </div>
 
       <Drawer.Root onOpenChange={(v) => (isSavedOpen = v)}>
@@ -259,21 +225,29 @@
 
             <div class="pt-6">
               <Skeleton class="w-full" show={$isReconnecting}>
-                <Button
-                  class="w-full"
-                  type="button"
-                  size="lg"
-                  onclickcapture={() => {
-                    $tonConnect.disconnectWallet();
-                    $hapticFeedback.impactOccurred('medium');
-                    goto('/');
-                  }}
-                >
-                  <div class="flex gap-2 items-center">
-                    <Ton />
-                    {formatWalletAddress($tonConnect.connection.wallet!.account.address)}
-                  </div>
-                </Button>
+                {#if $isConnected}
+                  <Button
+                    class="w-full gap-2"
+                    onclickcapture={() => {
+                      $tonConnect.disconnectWallet();
+                      $hapticFeedback.impactOccurred('medium');
+                    }}
+                  >
+                    <TonLogo />
+                    {shortenAddress($tonConnect.connection.wallet!.account.address)}
+                  </Button>
+                {:else}
+                  <Button
+                    class="w-full gap-2"
+                    onclickcapture={() => {
+                      $tonConnect.connectWallet();
+                      $hapticFeedback.impactOccurred('medium');
+                    }}
+                  >
+                    <Wallet size={16} />
+                    Connect Wallet
+                  </Button>
+                {/if}
               </Skeleton>
             </div>
           </div>

@@ -63,6 +63,11 @@ export const isConnected = derived(
   ($tonConnect) => $tonConnect.connection.status === 'connected'
 );
 
+export const isDisconnected = derived(
+  tonConnect,
+  ($tonConnect) => $tonConnect.connection.status === 'disconnected'
+);
+
 export const sender = derived(tonConnectUI, ($tonConnectUI) => {
   return {
     send: async (args: SenderArguments) => {

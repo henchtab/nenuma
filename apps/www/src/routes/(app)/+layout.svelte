@@ -1,175 +1,126 @@
 <script lang="ts">
-  import { isConnected, isReconnecting } from '$lib/stores/ton-connect';
+  import { PUBLIC_BROKER_ADDRESS } from '$env/static/public';
+  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
+  import { isConnected, isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
   import { KlineTopic, ws } from '$lib/stores/ws.svelte';
-  import { onMount } from 'svelte';
+  import { useBroker } from '$lib/wrappers';
+  import { getContext, onMount } from 'svelte';
+  import { writable } from 'svelte/store';
   import Header from './Header.svelte';
 
   let { children } = $props();
 
-  interface BaseOption {
-    optionId: number;
-  }
+  const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
+  const broker = useBroker(writable(PUBLIC_BROKER_ADDRESS));
 
-  interface PendingOption extends BaseOption {
-    status: 'pending';
-    draft: CashOrNothingOptionDraftAgreement;
-  }
-
-  interface DeployedOption extends BaseOption {
-    status: 'deployed';
-    address: Address;
-    agreement: CashOrNothingOptionAgreement;
-  }
-
-  interface InitiatedOption extends Omit<DeployedOption, 'status'> {
-    status: 'initiated';
-    strikePrice: number;
-  }
-
-  interface SettledOption extends Omit<InitiatedOption, 'status'> {
-    status: 'settled';
-  }
-
-  interface ExpiredOption extends Omit<DeployedOption, 'status'> {
-    status: 'expired';
-  }
-
-  type Option = PendingOption | DeployedOption | InitiatedOption | SettledOption | ExpiredOption;
-
-  // const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
-
-  // type BaseOption = {
-  //   optionId: number;
-  // };
-
-  // type PendingOption = BaseOption & {
-  //   status: 'pending';
-  //   draft: CashOrNothingOptionDraftAgreement;
-  // };
-
-  // type DeployedOption = BaseOption & {
-  //   status: 'deployed';
-  //   address: Address;
-  //   agreement: CashOrNothingOptionAgreement;
-  // };
-
-  // type InitiatedOption = Omit<DeployedOption, 'status'> & {
-  //   status: 'initiated';
-  //   strikePrice: number;
-  // };
-
-  // type SettledOption = Omit<InitiatedOption, 'status'> & {
-  //   status: 'settled';
-  // };
-
-  // type ExpiredOption = Omit<DeployedOption, 'status'> & {
-  //   status: 'expired';
-  // };
-
-  // type Option = PendingOption | DeployedOption | InitiatedOption | SettledOption | ExpiredOption;
-
-  // const options = writable<Option[]>([]);
-  // setContext('options', options);
-
-  // options.subscribe((o) => console.log('Options', o));
+  // options.subscribe(console.log);
 
   onMount(() => {
-    // const interval = setInterval(() => {
-    //   options.subscribe(async (_options) => {
-    //     for (const option of _options) {
-    //       if (option.status === 'pending') {
-    //         for (let i = 0; i < 32; i++) {
-    //           const contract = $publicClient.open(
-    //             await CashOrNothingOption.fromInit(
-    //               Address.parse(PUBLIC_BROKER_ADDRESS),
-    //               BigInt(option.optionId + i)
-    //             )
-    //           );
+    // $cloudStorage.getKeys().then((keys) => {
+    //   $cloudStorage.delete(keys);
+    // });
 
-    //           try {
-    //             const agreement = await contract.getAgreement();
+    /*
+    options.subscribe(async (_options) => {
+      for (const option of _options) {
+        if (option.status === 'pending') {
+          // if (option.draft.initiation < BigInt(Math.ceil(Date.now() / 1000))) {
+          //   await $cloudStorage.delete(`option-${option.optionId}`);
+          //   continue;
+          // }
 
-    //             if (
-    //               agreement &&
-    //               agreement.holder === Address.parse($tonConnect.connection.wallet!.account.address)
-    //             ) {
-    //               const updatedOption: DeployedOption = {
-    //                 ...option,
-    //                 status: 'deployed',
-    //                 address: contract.address,
-    //                 agreement
-    //               };
+          for (let i = 0n; i < 32n; i++) {
+            console.log(`Checking option ${option.optionId + i}...`);
+            
+            const optionAddress = await $broker.getOptionAddress(option.optionId + i);
 
-    //               options.update((_options) =>
-    //                 _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
-    //               );
-    //             }
-    //           } catch (error) {
-    //             console.error(error);
-    //             break;
-    //           }
-    //         }
+            console.log(`Option address: ${optionAddress}`);
 
-    //         continue;
-    //       }
+            const contract = $publicClient.open(CashOrNothingOption.fromAddress(optionAddress));
 
-    //       const contract = $publicClient.open(CashOrNothingOption.fromAddress(option.address));
+            try {
+              const agreement = await contract.getAgreement();
 
-    //       if (option.status === 'deployed') {
-    //         const strikePrice = await contract.getStrikePrice();
+              if (
+                agreement &&
+                agreement.holder.toRawString() === $tonConnect.connection.wallet!.account.address
+              ) {
+                console.log(`Option ${option.optionId + i} has been deployed!`);
+                const updatedOption: DeployedOption = {
+                  ...option,
+                  status: 'deployed',
+                  address: contract.address,
+                  agreement
+                };
 
-    //         if (!strikePrice) {
-    //           continue;
-    //         }
+                options.set(updatedOption);
+              }
+            } catch (error) {
+              if (error instanceof Error && error.message.includes('-256')) {
+                console.error(
+                  `Option with address ${contract.address.toString({ testOnly: true })} has not been deployed. Full error: ${error}`
+                );
+              }
 
-    //         const updatedOption: InitiatedOption = {
-    //           ...option,
-    //           status: 'initiated',
-    //           strikePrice: Number(strikePrice)
-    //         };
+              // console.error(error);
+              break;
+            }
+          }
 
-    //         options.update((_options) =>
-    //           _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
-    //         );
-    //       } else if (option.status === 'initiated') {
-    //         try {
-    //           const expiration = await contract.getExpiration();
+          continue;
+        }
 
-    //           // @ts-expect-error
-    //           if (expiration < BigInt(Date.now() / 1000)) {
-    //             const updatedOption: ExpiredOption = {
-    //               ...option,
-    //               status: 'expired'
-    //             };
+        const contract = $publicClient.open(CashOrNothingOption.fromAddress(option.address));
 
-    //             options.update((_options) =>
-    //               _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
-    //             );
-    //           }
-    //         } catch (error) {
-    //           const updatedOption: SettledOption = {
-    //             ...option,
-    //             status: 'settled'
-    //           };
+        if (option.status === 'deployed') {
+          const strikePrice = await contract.getStrikePrice();
 
-    //           options.update((_options) =>
-    //             _options.map((o) => (o.optionId === option.optionId ? updatedOption : o))
-    //           );
-    //         }
-    //       }
+          console.log(`Strike price: ${strikePrice}`);
 
-    //       await new Promise((resolve) => setTimeout(resolve, 2000));
-    //     }
-    //   });
+          if (!strikePrice) {
+            continue;
+          }
 
-    //   console.log('Options 2', $options);
-    // }, 1000 * 5);
+          const updatedOption: InitiatedOption = {
+            ...option,
+            status: 'initiated',
+            strikePrice: Number(strikePrice)
+          };
+
+          options.set(updatedOption);
+        } else if (option.status === 'initiated') {
+          try {
+            const expiration = await contract.getExpiration();
+
+            if (expiration && expiration + 3600n < BigInt(Math.ceil(Date.now() / 1000))) {
+              console.log('Option has expired!');
+              const updatedOption: ExpiredOption = {
+                ...option,
+                status: 'expired'
+              };
+
+              options.set(updatedOption);
+            }
+          } catch (error) {
+            console.log(error);
+
+            const updatedOption: SettledOption = {
+              ...option,
+              status: 'settled'
+            };
+
+            options.set(updatedOption);
+          }
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    });
+    */
 
     $ws.addEventListener('open', () => {
       $ws.send(JSON.stringify({ op: 'subscribe', args: [KlineTopic.BTCUSDT] }));
     });
-
-    // return () => clearInterval(interval);
   });
 </script>
 
@@ -181,7 +132,7 @@
       ></div>
     </div>
   </div>
-{:else if $isConnected}
+{:else}
   <Header />
 
   {@render children()}

@@ -15,7 +15,8 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        'mona-sans': ['Mona Sans', ...fontFamily.sans]
+        'mona-sans': ['Mona Sans', ...fontFamily.sans],
+        'hubot-sans': ['Hubot Sans', ...fontFamily.mono]
       },
       colors: {
         border: 'hsl(var(--border) / <alpha-value>)',
@@ -177,11 +178,32 @@ const config: Config = {
         rotate: {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' }
+        },
+        'loading-dots': {
+          '0%': {
+            opacity: '0.2'
+          },
+          '20%': {
+            opacity: '1'
+          },
+          '100%': {
+            opacity: '0.2'
+          }
+        },
+        "spinner-spin": {
+          '0%': {
+            opacity: '1'
+          },
+          '100%': {
+            opacity: '0.15'
+          }
         }
       },
       animation: {
         skeleton: 'skeleton 8s infinite ease-in-out',
-        rotate: 'rotate 1s linear infinite'
+        rotate: 'rotate 1s linear infinite',
+        dots: 'loading-dots 1.4s infinite',
+        spinner: 'spinner-spin 1.2s infinite linear'
       }
     }
   }

@@ -7,6 +7,7 @@
   import { createDataStream } from '$lib/wrappers';
   import { onMount } from 'svelte';
   import { toast } from 'svelte-sonner';
+  import { withWalletConnection } from '$lib/with-wallet-connection';
 
   const stream = createDataStream();
 
@@ -60,7 +61,7 @@
 <form
   bind:this={form}
   class="flex container py-6 flex-col gap-4 overflow-auto"
-  onsubmit={handleDeploySubmit}
+  onsubmit={(e) => withWalletConnection(() => handleDeploySubmit(e))}
 >
   <div class="grid gap-2">
     <Label class="w-fit">Topic</Label>

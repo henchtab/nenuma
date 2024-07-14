@@ -77,21 +77,24 @@ export async function checkProofAndRedirect(
  * Get account info
  *
  * @returns {Promise<{ balance: string; address: string }>}
+ * @throws {Error}
  */
 export async function getAccountInfo(): Promise<{
   balance: string;
   address: string;
 }> {
-  const response = await (
-    await fetch(`${PUBLIC_API_URL}/api/account-info`, {
-      headers: {
-        Authorization: `Bearer ${cookie.get(ACCESS_TOKEN_COOKIE)}`,
-        'Content-Type': 'application/json'
-      }
-    })
-  ).json();
+  const response = await fetch(`${PUBLIC_API_URL}/api/account-info`, {
+    headers: {
+      Authorization: `Bearer ${cookie.get(ACCESS_TOKEN_COOKIE)}`,
+      'Content-Type': 'application/json'
+    }
+  });
 
-  return response;
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return await response.json();
 }
 
 /**

@@ -1,19 +1,23 @@
 <script lang="ts">
-  import { PUBLIC_BROKER_ADDRESS } from '$env/static/public';
+  import { PUBLIC_API_URL, PUBLIC_BROKER_ADDRESS } from '$env/static/public';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { Note } from '$lib/components/ui/note';
-  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
+  import { Spinner } from '$lib/components/ui/spinner';
+  import { ACCESS_TOKEN_COOKIE, TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { hapticFeedback } from '$lib/stores/tma';
   import type { TonConnectStore } from '$lib/stores/ton-connect';
   import { latestPrices } from '$lib/stores/ws.svelte';
   import { cn, formatTime } from '$lib/utils';
+  import { withWalletConnection } from '$lib/with-wallet-connection';
   import { useBroker } from '$lib/wrappers';
   import { Address, fromNano, toNano } from '@ton/core';
+  import cookie from 'js-cookie';
   import { ChevronDown, TrendingDown, TrendingUp } from 'lucide-svelte';
   import { getContext, onMount } from 'svelte';
   import { derived, writable } from 'svelte/store';
+  import { formState } from './stores';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -40,11 +44,15 @@
   let minInvestment = $state('1.00');
   let maxInvestment = $state('0.00');
 
-  let optionType: boolean;
+  let optionType: boolean | undefined = $state();
 
   // End of form state
 
   let isInvestmentValid = $state(true);
+
+  $effect(() => {
+    console.log($formState);
+  });
 
   onMount(() => {
     try {
@@ -99,24 +107,59 @@
         initiation,
         expiration,
         investment: toNano(formData.get('investment') as string),
-        optionType
+        optionType: optionType as boolean
       }
     };
 
-    // const optionId = await $broker.getNextOptionId();
-    // options.update((prev) => [
-    //   ...prev,
-    //   {
-    //     status: 'pending',
-    //     optionId: Number(optionId),
-    //     draft: {
-    //       $$type: 'CashOrNothingOptionDraftAgreement',
-    //       ...args.draft
-    //     }
-    //   }
-    // ]);
+    const optionId = await $broker.getNextOptionId();
+
+    await fetch(`${PUBLIC_API_URL}/api/options`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cookie.get(ACCESS_TOKEN_COOKIE)}`
+      },
+      body: JSON.stringify(
+        {
+          pendingOption: {
+            status: 'pending',
+            optionId,
+            draft: {
+              $$type: 'CashOrNothingOptionDraftAgreement',
+              ...args.draft
+            }
+          },
+          trader: $tonConnect.connection.wallet!.account.address
+        },
+        (_, v) => {
+          if (typeof v === 'bigint') {
+            return v.toString();
+          }
+
+          if (v instanceof Address) {
+            return v.toString();
+          }
+
+          return v;
+        }
+      )
+    });
 
     await $broker.deployOption(args);
+
+    formState.set({
+      isSubmitDisabled: true,
+      buttonWithSpinner: optionType ? 'call' : 'put',
+      expiration: Date.now() + 1000 * 60
+    });
+
+    setTimeout(() => {
+      formState.set({
+        isSubmitDisabled: false,
+        buttonWithSpinner: undefined,
+        expiration: undefined
+      });
+    }, 1000 * 60);
   }
 </script>
 
@@ -133,7 +176,7 @@
 </div>
 
 <div class="w-full p-4 gap-2">
-  <form class="grid gap-4" onsubmit={handleSubmit}>
+  <form class="grid gap-4" onsubmit={(e) => withWalletConnection(() => handleSubmit(e))}>
     <div class="grid grid-cols-2 gap-4">
       <div class="grid gap-2">
         <Label for="initiation" class="w-fit">Initiation</Label>
@@ -207,29 +250,39 @@
       {/if}
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-2 relative gap-4">
       <Button
-        class="bg-ds-green-800 flex gap-2 text-base font-medium text-white hover:bg-ds-green-700"
+        class="bg-ds-green-800 flex gap-2 text-white hover:bg-ds-green-700"
         onclick={() => {
           optionType = true;
           $hapticFeedback.impactOccurred('medium');
         }}
         type="submit"
+        disabled={$formState.isSubmitDisabled}
       >
+        {#if $formState.isSubmitDisabled && $formState.buttonWithSpinner === 'call'}
+          <Spinner />
+        {:else}
+          <TrendingUp size="16" />
+        {/if}
         Call
-        <TrendingUp size="20" strokeWidth={1.5} />
       </Button>
       <Button
-        class="flex gap-2 text-base font-medium"
+        class="flex gap-2"
         variant="destructive"
         onclick={() => {
           optionType = false;
           $hapticFeedback.impactOccurred('medium');
         }}
         type="submit"
+        disabled={$formState.isSubmitDisabled}
       >
+        {#if $formState.isSubmitDisabled && $formState.buttonWithSpinner === 'put'}
+          <Spinner />
+        {:else}
+          <TrendingDown size="16" />
+        {/if}
         Put
-        <TrendingDown size="20" strokeWidth={1.5} />
       </Button>
     </div>
 

@@ -6,13 +6,8 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params, data }) => {
   const topic = params.topic;
-  const accessToken = data.accessToken || '';
 
-  const res = await fetch(`${PUBLIC_API_URL}/api/kline/${topic}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  });
+  const res = await fetch(`${PUBLIC_API_URL}/api/kline/${topic}`);
   const result: {
     list: CandlestickData[];
     latest: CandlestickData;

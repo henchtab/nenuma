@@ -13,7 +13,9 @@ declare global {
         latest: CandlestickData;
       };
     }
-    // interface PageState {}
+    interface PageState {
+      activeTab?: string;
+    }
     // interface Platform {}
   }
 }

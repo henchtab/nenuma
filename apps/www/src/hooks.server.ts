@@ -23,21 +23,21 @@ const myHandle: Handle = async ({ event, resolve }) => {
     throw error(404, 'The route does not exist');
   }
 
-  let canAccess = false;
+  // let canAccess = false;
 
-  if (routeId.startsWith(PROTECTED_ROUTES_PREFIX)) {
-    const accessToken = event.cookies.get(ACCESS_TOKEN_COOKIE);
+  // if (routeId.startsWith(PROTECTED_ROUTES_PREFIX)) {
+  //   const accessToken = event.cookies.get(ACCESS_TOKEN_COOKIE);
 
-    // TODO: Validate access token
+  //   // TODO: Validate access token
 
-    canAccess = !!accessToken;
-  } else {
-    canAccess = true;
-  }
+  //   canAccess = !!accessToken;
+  // } else {
+  //   canAccess = true;
+  // }
 
-  if (!canAccess) {
-    redirect(307, AUTH_ROUTE);
-  }
+  // if (!canAccess) {
+  //   redirect(307, AUTH_ROUTE);
+  // }
 
   return resolve(event);
 };
