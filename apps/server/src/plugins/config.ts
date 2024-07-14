@@ -1,3 +1,4 @@
+import { Address } from '@ton/ton';
 import 'dotenv/config';
 import type { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
@@ -16,11 +17,15 @@ const configSchema = z.object({
   API_PORT: z.string(),
   ALLOWED_ORIGINS: z.string(),
   REDIS_URI: z.string(),
-  REDIS_TOKEN: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.coerce.number(),
+  REDIS_PASSWORD: z.string(),
+  REDIS_USER: z.string(),
   COOKIE_SECRET: z.string(),
   JWT_SECRET: z.string(),
   RPC_PROVIDER_API_KEY: z.string(),
   DATA_STREAM_ADDRESS: z.string(),
+  BTC_BROKER_ADDRESS: z.string().transform(v => Address.parse(v)),
   MNEMONIC: z.string(),
 });
 

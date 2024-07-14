@@ -174,13 +174,6 @@ const routes: FastifyPluginAsync = async (server) => {
           })
           .optional(),
       },
-      preHandler: async (request, reply) => {
-        try {
-          await request.jwtVerify();
-        } catch (err) {
-          reply.send(err);
-        }
-      },
     },
     handleKlineTopic,
   );
@@ -189,17 +182,6 @@ const routes: FastifyPluginAsync = async (server) => {
     '/kline',
     {
       websocket: true,
-      preHandler: async (request, reply) => {
-        try {
-          if (request.query && typeof request.query === 'object' && 'token' in request.query) {
-            const { token } = request.query as { token: string };
-            request.headers.authorization = `Bearer ${token}`;
-          }
-          await request.jwtVerify();
-        } catch (err) {
-          reply.send(err);
-        }
-      },
     },
     handleKlineTopicWS,
   );
