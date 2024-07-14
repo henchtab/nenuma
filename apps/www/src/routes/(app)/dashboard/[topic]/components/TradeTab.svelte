@@ -113,6 +113,8 @@
 
     const optionId = await $broker.getNextOptionId();
 
+    await $broker.deployOption(args);
+
     await fetch(`${PUBLIC_API_URL}/api/options`, {
       method: 'POST',
       headers: {
@@ -144,8 +146,6 @@
         }
       )
     });
-
-    await $broker.deployOption(args);
 
     formState.set({
       isSubmitDisabled: true,
