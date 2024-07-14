@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
 const LOCAL_STORAGE_KEY = 'formState';
@@ -21,25 +22,27 @@ function setInitialState(set: (value: FormState) => void) {
 
 export function createFormState() {
   const state = writable(initialState, (set) => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (browser) {
+      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-    if (stored) {
-      const parsed = JSON.parse(stored) as FormState;
+      if (stored) {
+        const parsed = JSON.parse(stored) as FormState;
 
-      if (parsed.expiration && parsed.expiration < Date.now()) {
-        console.log('formState | expiration | expired');
-        setInitialState(set);
-      } else {
-        console.log('formState | get', parsed);
-        set(parsed);
+        if (parsed.expiration && parsed.expiration < Date.now()) {
+          console.log('formState | expiration | expired');
+          setInitialState(set);
+        } else {
+          console.log('formState | get', parsed);
+          set(parsed);
 
-        setTimeout(
-          () => {
-            console.log('formState | expiration');
-            setInitialState(set);
-          },
-          parsed.expiration ? parsed.expiration - Date.now() : 0
-        );
+          setTimeout(
+            () => {
+              console.log('formState | expiration');
+              setInitialState(set);
+            },
+            parsed.expiration ? parsed.expiration - Date.now() : 0
+          );
+        }
       }
     }
 
