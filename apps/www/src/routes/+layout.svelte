@@ -1,7 +1,7 @@
 <script lang="ts">
   import { recreateTonProofPayload } from '$lib';
   import { TON_CONNECT_UI_CONTEXT, TON_PROOF_REFRESH_INTERVAL_MS } from '$lib/constants';
-  import { checkProofAndRedirect, removeAccessTokenCookie } from '$lib/data';
+  import { checkProof, removeAccessTokenCookie } from '$lib/data';
   import { tonConnect, tonConnectUI } from '$lib/stores/ton-connect';
   import { mediaQuery } from '$lib/utils';
   import { createPostEvent, postEvent, retrieveLaunchParams } from '@telegram-apps/sdk';
@@ -109,7 +109,7 @@
     }
 
     if (wallet.connectItems?.tonProof && 'proof' in wallet.connectItems.tonProof) {
-      await checkProofAndRedirect(wallet.connectItems.tonProof.proof, wallet.account);
+      await checkProof(wallet.connectItems.tonProof.proof, wallet.account);
     }
   }
 
