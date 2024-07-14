@@ -4,12 +4,13 @@
   import * as Drawer from '$lib/components/ui/drawer';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { hapticFeedback } from '$lib/stores/tma';
-  import { isConnected, type TonConnectStore } from '$lib/stores/ton-connect';
+  import { isConnected, isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
   import { KlineTopic, latestPrices } from '$lib/stores/ws.svelte';
   import { shortenAddress } from '$lib/shorten-address';
   import { Menu, TestTubes, X, Wallet } from 'lucide-svelte';
   import { getContext } from 'svelte';
   import { AccountBalance, TonLogo } from '$lib/components';
+  import { Skeleton } from '$lib/components/ui/skeleton';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -26,14 +27,17 @@
 <header class="border-b sticky h-16 top-0 z-50 bg-ds-background-200">
   <div class="container pr-0 flex justify-between items-center">
     <img src={logo} alt="Nenuma" class="w-8 h-8" />
-    <div class="flex items-center gap-2 p-4">
+    <div class="flex items-center p-4">
       {#if $isConnected}
         <AccountBalance />
       {/if}
 
       <Drawer.Root>
+        <!-- Drawer creates a hidden div for its body at the initial render, which causes the header to jump a
+        little if the parent element has gap property as in this case it will also add gap between drawer trigger
+        and this hidden div. To avoid this, we add margin directly to the trigger element. -->
         <Drawer.Trigger
-          class="w-8 h-8 border border-ds-gray-400 rounded-full"
+          class="w-8 h-8 border border-ds-gray-400 ml-2 rounded-full"
           onclick={() => $hapticFeedback.impactOccurred('light')}
         >
           <Menu class="overflow-visible m-auto" size="16" /></Drawer.Trigger
@@ -99,7 +103,7 @@
                 </a>
               </Drawer.Close>
             </div>
-            <div>
+            <Skeleton class="w-full" show={$isReconnecting}>
               {#if $isConnected}
                 <Button
                   class="w-full gap-2"
@@ -123,7 +127,7 @@
                   Connect Wallet
                 </Button>
               {/if}
-            </div>
+            </Skeleton>
           </nav>
         </Drawer.Content>
       </Drawer.Root>

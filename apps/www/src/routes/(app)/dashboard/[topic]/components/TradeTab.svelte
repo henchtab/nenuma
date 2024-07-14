@@ -50,10 +50,6 @@
 
   let isInvestmentValid = $state(true);
 
-  $effect(() => {
-    console.log($formState);
-  });
-
   onMount(() => {
     try {
       getMaxInvestment().then((x) => (maxInvestment = x));
