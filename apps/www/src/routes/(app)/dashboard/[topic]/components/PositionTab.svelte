@@ -4,6 +4,7 @@
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
+  import { hapticFeedback } from '$lib/stores/tma';
   import { shortenAddress } from '$lib/shorten-address';
   import { isConnected, isDisconnected, type TonConnectStore } from '$lib/stores/ton-connect';
   import { cn } from '$lib/utils';
@@ -166,7 +167,8 @@
               <a
                 class="text-ds-blue-700 font-hubot-sans"
                 href="https://testnet.tonviewer.com/{option?.agreement?.writer}"
-                target="_blank">{option?.agreement?.writer ? shortenAddress(option?.agreement?.writer) : 'N/A'}</a
+                target="_blank"
+                >{option?.agreement?.writer ? shortenAddress(option?.agreement?.writer) : 'N/A'}</a
               >
             </div>
           </Accordion.Content>
@@ -189,7 +191,13 @@
         </p>
       </div>
 
-      <Button variant="secondary" onclick={() => activeTab.set('trade')}>Trade Options</Button>
+      <Button
+        variant="secondary"
+        onclick={() => {
+          activeTab.set('trade');
+          $hapticFeedback.impactOccurred('light');
+        }}>Trade Options</Button
+      >
     </div>
   {/if}
 </div>
