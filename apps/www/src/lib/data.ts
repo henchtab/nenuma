@@ -1,8 +1,7 @@
-import { goto } from '$app/navigation';
 import { PUBLIC_API_URL } from '$env/static/public';
-import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES, REDIRECT_URL_COOKIE } from './constants';
 import type { Account, ConnectAdditionalRequest, TonProofItemReplySuccess } from '@tonconnect/ui';
 import cookie from 'js-cookie';
+import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES } from './constants';
 
 /**
  * Generate a new proof payload
@@ -23,14 +22,14 @@ export async function generatePayload(): Promise<ConnectAdditionalRequest | null
 }
 
 /**
- * Check the proof and redirect to the requested page
+ * Check the proof
  *
  * @param {TonProofItemReplySuccess['proof']} proof
  * @param {Account} account
  
  * @returns {Promise<void>}
  */
-export async function checkProofAndRedirect(
+export async function checkProof(
   proof: TonProofItemReplySuccess['proof'],
   account: Account
 ): Promise<void> {
@@ -60,13 +59,6 @@ export async function checkProofAndRedirect(
         expires: COOKIE_EXPIRES,
         sameSite: 'Lax'
       });
-      const redirectUrl = cookie.get(REDIRECT_URL_COOKIE);
-
-      if (redirectUrl) {
-        await goto(redirectUrl, {
-          replaceState: true
-        });
-      }
     }
   } catch (e) {
     console.log('checkProof error:', e);
