@@ -54,6 +54,7 @@
     "lightweight-charts": "^4.1.7",
     "lucide-svelte": "^0.408.0",
     "nenuma-contracts": "workspace:*",
+    "posthog-js": "^1.147.0",
     "svelte-sonner": "^0.3.27",
     "tailwind-merge": "^2.4.0",
     "tailwind-variants": "^0.2.1",

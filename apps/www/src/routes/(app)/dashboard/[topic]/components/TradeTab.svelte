@@ -18,6 +18,7 @@
   import { getContext, onMount } from 'svelte';
   import { derived, writable } from 'svelte/store';
   import { formState } from './stores';
+  import posthog from 'posthog-js';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -141,6 +142,16 @@
           return v;
         }
       )
+    });
+
+    posthog.capture('option_draft_created', {
+      queryId: args.queryId.toString(),
+      optionId: optionId.toString(),
+      optionType: optionType ? 'call' : 'put',
+      holder: args.draft.holder.toString(),
+      initiation: args.draft.initiation.toString(),
+      expiration: args.draft.expiration.toString(),
+      investment: args.draft.investment.toString()
     });
 
     formState.set({

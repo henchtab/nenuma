@@ -11,10 +11,18 @@
   import { toast, Toaster } from 'svelte-sonner';
   import { browser } from '$app/environment';
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import posthog from 'posthog-js';
+  
   import '../app.css';
 
   let { children } = $props();
   let wrapper = $state<HTMLDivElement>();
+
+  if (browser) {
+    beforeNavigate(() => posthog.capture('$pageleave'));
+    afterNavigate(() => posthog.capture('$pageview'));
+  }
 
   const queryClient = new QueryClient({
     defaultOptions: {
