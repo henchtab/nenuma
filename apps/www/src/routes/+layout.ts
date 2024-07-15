@@ -14,10 +14,16 @@ export const load = async () => {
     });
 
     try {
-      const { initData } = retrieveLaunchParams();
+      const { initData, version } = retrieveLaunchParams();
 
       if (initData && initData.user) {
+        console.log('User', {
+          version,
+          ...initData.user
+        });
+
         posthog.identify(initData.user.id.toString(), {
+          version,
           ...initData.user
         });
       }
