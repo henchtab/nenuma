@@ -16,7 +16,7 @@
 </script>
 
 <Skeleton show={$accountInfo.isLoading}>
-  <div class="inline-flex items-center gap-1">
+  <div class="inline-flex items-center min-w-10 gap-1">
     <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 17 18" width="17"
       ><g fill="none" fill-rule="evenodd" stroke="var(--ds-gray-1000, '#000')" stroke-width="1.5"
         ><path
@@ -25,7 +25,7 @@
       ></svg
     >
 
-    <div class="font-medium min-w-10 text-center">
+    <div class="font-medium text-center">
       {$accountInfo?.data?.balance?.slice(0, 5)}
     </div>
   </div>
