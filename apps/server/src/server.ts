@@ -80,6 +80,7 @@ await server.register(websocket, {
 });
 await server.register(redis, {
   url: server.config.REDIS_URI,
+  maxRetriesPerRequest: null,
 });
 await server.register(plugins.bybit);
 

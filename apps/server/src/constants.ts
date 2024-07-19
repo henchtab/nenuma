@@ -23,4 +23,5 @@ export enum RedisKey {
   KlineBNB24H = 'kline:BNB:24h',
   KlineBNB1m = 'kline:BNB:1m',
   SubcribeRequest = 'subscribe:request',
+  BrokerBTCStartUtime = 'broker:BTC:start_utime',
 }
