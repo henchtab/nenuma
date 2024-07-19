@@ -1,5 +1,12 @@
 import { RedisKey } from '@/constants';
-import type { DeployedOption, TransactionList, Option, InitiatedOption, SettledOption, ExpiredOption } from '@/dtos/account.dto';
+import type {
+  DeployedOption,
+  TransactionList,
+  Option,
+  InitiatedOption,
+  SettledOption,
+  ExpiredOption,
+} from '@/dtos/account.dto';
 import { Address, Cell, TonClient4, generateMerkleProof } from '@ton/ton';
 import { Queue, Worker } from 'bullmq';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
@@ -20,6 +27,7 @@ const INDEXER_BASE_URL = 'https://testnet.toncenter.com/api/v3';
 const OPCODE_CASH_OR_NOTHING_OPTION_DEPLOY = '0xc74f6284';
 const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_IN_MONEY = '0x1800dc14';
 const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_OUT_MONEY = '0xff379604';
+const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_AT_MONEY = '0x50240b79';
 
 const ERROR_CODE_CONTRACT_UNINIT = 'Exit code: -256';
 
@@ -255,7 +263,13 @@ const routes: FastifyPluginAsyncZod = async (server) => {
               ),
             );
 
-            if (!settledInMoneyMessage && !settledOutMoneyMessage) {
+            const settledAtMoneyMessage = transactions.find((tx) =>
+              tx.out_msgs.some(
+                (msg) => msg?.opcode === OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_AT_MONEY,
+              ),
+            );
+
+            if (!settledInMoneyMessage && !settledOutMoneyMessage && !settledAtMoneyMessage) {
               return;
             }
 
