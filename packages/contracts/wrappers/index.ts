@@ -1,4 +1,10 @@
-export { Broker, storeBRGDeploy, type CashOrNothingOptionDraftAgreement, storeBrokerDeployOption } from './Broker';
+export {
+  Broker,
+  storeBRGDeploy,
+  type CashOrNothingOptionDraftAgreement,
+  storeBrokerDeployOption,
+  loadCashOrNothingOptionDeploy,
+} from './Broker';
 export { Brokerage } from './Brokerage';
 export { BrokerageAccount } from './BrokerageAccount';
 export {
@@ -12,6 +18,7 @@ export {
   storeDSTDeployBatch,
   storeDSTDeploySession,
   storeStateInit,
+  loadStateInit,
   storeSESSubscribe,
   storeSESUnsubscribe,
   storeSESDestroy,
