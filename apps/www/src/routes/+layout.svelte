@@ -65,6 +65,12 @@
       tonConnectUI.onStatusChange((w) => {
         handleStatusChange(w);
 
+        if (w) {
+          const result = posthog.capture('Wallet Connected', w);
+
+          console.log('Posthog capture result: ', result);
+        }
+
         tonConnect.update((value) => ({
           ...value,
           connection: {
