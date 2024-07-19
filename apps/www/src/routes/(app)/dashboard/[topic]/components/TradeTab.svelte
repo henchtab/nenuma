@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { PUBLIC_API_URL, PUBLIC_BROKER_ADDRESS } from '$env/static/public';
+  import { PUBLIC_BROKER_ADDRESS } from '$env/static/public';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { Note } from '$lib/components/ui/note';
-  import { Spinner } from '$lib/components/ui/spinner';
-  import { ACCESS_TOKEN_COOKIE, TON_CONNECT_UI_CONTEXT } from '$lib/constants';
+  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
   import { hapticFeedback } from '$lib/stores/tma';
   import type { TonConnectStore } from '$lib/stores/ton-connect';
   import { latestPrices } from '$lib/stores/ws.svelte';
@@ -13,12 +12,10 @@
   import { withWalletConnection } from '$lib/with-wallet-connection';
   import { useBroker } from '$lib/wrappers';
   import { Address, fromNano, toNano } from '@ton/core';
-  import cookie from 'js-cookie';
   import { ChevronDown, TrendingDown, TrendingUp } from 'lucide-svelte';
+  import posthog from 'posthog-js';
   import { getContext, onMount } from 'svelte';
   import { derived, writable } from 'svelte/store';
-  import { formState } from './stores';
-  import posthog from 'posthog-js';
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
@@ -64,7 +61,9 @@
       }
     }, 1000 * 30);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   });
 
   function initiationTime(numberOfMinutes: number) {
@@ -108,65 +107,16 @@
       }
     };
 
-    const optionId = await $broker.getNextOptionId();
-
     await $broker.deployOption(args);
-
-    await fetch(`${PUBLIC_API_URL}/api/options`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${cookie.get(ACCESS_TOKEN_COOKIE)}`
-      },
-      body: JSON.stringify(
-        {
-          pendingOption: {
-            status: 'pending',
-            optionId,
-            draft: {
-              $$type: 'CashOrNothingOptionDraftAgreement',
-              ...args.draft
-            }
-          },
-          trader: $tonConnect.connection.wallet!.account.address
-        },
-        (_, v) => {
-          if (typeof v === 'bigint') {
-            return v.toString();
-          }
-
-          if (v instanceof Address) {
-            return v.toString();
-          }
-
-          return v;
-        }
-      )
-    });
 
     posthog.capture('option_draft_created', {
       queryId: args.queryId.toString(),
-      optionId: optionId.toString(),
       optionType: optionType ? 'call' : 'put',
       holder: args.draft.holder.toString(),
       initiation: args.draft.initiation.toString(),
       expiration: args.draft.expiration.toString(),
       investment: args.draft.investment.toString()
     });
-
-    formState.set({
-      isSubmitDisabled: true,
-      buttonWithSpinner: optionType ? 'call' : 'put',
-      expiration: Date.now() + 1000 * 60
-    });
-
-    setTimeout(() => {
-      formState.set({
-        isSubmitDisabled: false,
-        buttonWithSpinner: undefined,
-        expiration: undefined
-      });
-    }, 1000 * 60);
   }
 </script>
 
@@ -265,13 +215,8 @@
           $hapticFeedback.impactOccurred('medium');
         }}
         type="submit"
-        disabled={$formState.isSubmitDisabled}
       >
-        {#if $formState.isSubmitDisabled && $formState.buttonWithSpinner === 'call'}
-          <Spinner />
-        {:else}
-          <TrendingUp size="16" />
-        {/if}
+        <TrendingUp size="16" />
         Call
       </Button>
       <Button
@@ -282,13 +227,8 @@
           $hapticFeedback.impactOccurred('medium');
         }}
         type="submit"
-        disabled={$formState.isSubmitDisabled}
       >
-        {#if $formState.isSubmitDisabled && $formState.buttonWithSpinner === 'put'}
-          <Spinner />
-        {:else}
-          <TrendingDown size="16" />
-        {/if}
+        <TrendingDown size="16" />
         Put
       </Button>
     </div>

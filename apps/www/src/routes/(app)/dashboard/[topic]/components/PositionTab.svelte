@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_API_URL } from '$env/static/public';
+  import { PUBLIC_API_URL, PUBLIC_BROKER_ADDRESS } from '$env/static/public';
   import * as Accordion from '$lib/components/ui/accordion';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
@@ -23,7 +23,7 @@
       queryKey: ['positions'],
       queryFn: async () => {
         const res = await fetch(
-          `${PUBLIC_API_URL}/api/${$tonConnect.connection.wallet?.account.address}/options`
+          `${PUBLIC_API_URL}/api/${$tonConnect.connection.wallet?.account.address}/${PUBLIC_BROKER_ADDRESS}/options`
         );
 
         if (!res.ok) {
@@ -50,8 +50,8 @@
 
 <div class="pb-6 container">
   {#if $options.data && !$options.isError && $isConnected}
-    <Accordion.Root class="grid gap-3">
-      {#each $options.data.sort((a, b) => b.optionId - a.optionId) as option}
+    <Accordion.Root class="grid gap-3" multiple>
+      {#each $options.data.sort((a, b) => b.optionId - a.optionId) as option (option.optionId)}
         <Accordion.Item
           value={option.optionId}
           class="grid gap-2 overflow-hidden border bg-ds-background-100 break-all rounded-md grid-cols-1"
@@ -59,7 +59,7 @@
           <Accordion.Trigger class="p-3 gap-2">
             <div class="flex flex-1 gap-3 items-center">
               <div class="w-14 flex justify-start">
-                {#if option.draft.optionType}
+                {#if option.agreement.optionType}
                   <span
                     class="text-ds-green-700 flex-row-reverse inline-flex font-medium items-center gap-1"
                     >Call <TrendingUp size={20} /></span
@@ -78,97 +78,77 @@
               </div>
             </div>
 
-            {#if option.status === 'pending'}
-              <Badge class="text-ds-gray-1000 bg-ds-gray-200 gap-1">
-                {option.status}
-                <span class="inline-flex items-center h-auto">
-                  <span
-                    class="animate-dots rounded-full size-1 bg-ds-gray-900 inline-block mx-[1px]"
-                  ></span>
-                  <span
-                    class="animate-dots [animation-delay:200ms] rounded-full size-1 bg-ds-gray-900 inline-block mx-[1px]"
-                  ></span>
-                  <span
-                    class="animate-dots [animation-delay:400ms] rounded-full size-1 bg-ds-gray-900 inline-block mx-[1px]"
-                  ></span>
-                </span>
-              </Badge>
-            {:else}
-              <Badge
-                class={cn({
-                  'text-ds-teal-900 bg-ds-teal-200': option.status === 'deployed',
-                  'text-ds-green-900 bg-ds-green-200': option.status === 'initiated',
-                  'text-ds-amber-900 bg-ds-amber-200': option.status === 'expired',
-                  'text-ds-blue-900 bg-ds-blue-200': option.status === 'settled'
-                })}
-              >
-                {option.status}
-              </Badge>
-            {/if}
+            <Badge
+              class={cn({
+                'text-ds-teal-900 bg-ds-teal-200': option.status === 'deployed',
+                'text-ds-green-900 bg-ds-green-200': option.status === 'initiated',
+                'text-ds-amber-900 bg-ds-amber-200': option.status === 'expired',
+                'text-ds-blue-900 bg-ds-blue-200': option.status === 'settled'
+              })}
+            >
+              {option.status}
+            </Badge>
           </Accordion.Trigger>
           <Accordion.Content class="px-3 grid gap-4 grid-cols-2">
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Initiation Time</span>
-              <span class="text-ds-gray-1000"
-                >{new Date(Number(option?.draft?.initiation) * 1000).toLocaleString()}</span
+              <span class="text-ds-gray-900">Initiation Time</span>
+              <span class="text-ds-gray-1000 font-medium"
+                >{new Date(Number(option?.agreement?.initiation) * 1000).toLocaleString()}</span
               >
             </div>
 
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Expiration Time</span>
-              <span class="text-ds-gray-1000"
-                >{new Date(Number(option?.draft?.expiration) * 1000).toLocaleString()}</span
+              <span class="text-ds-gray-900">Expiration Time</span>
+              <span class="text-ds-gray-1000 font-medium"
+                >{new Date(Number(option?.agreement?.expiration) * 1000).toLocaleString()}</span
               >
             </div>
 
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Investment Amount</span>
-              <span class="text-ds-gray-1000"
+              <span class="text-ds-gray-900">Investment Amount</span>
+              <span class="text-ds-gray-1000 font-medium"
                 >{Number(fromNano(option?.agreement?.investment || 0n)).toFixed(2)} TON</span
               >
             </div>
 
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Payout Amount</span>
-              <span class="text-ds-gray-1000"
+              <span class="text-ds-gray-900">Payout Amount</span>
+              <span class="text-ds-gray-1000 font-medium"
                 >{Number(fromNano(option?.agreement?.payout || 0n)).toFixed(2)} TON</span
               >
             </div>
 
             <div class="grid gap-1 grid-cols-1">
-              <span class="text-ds-gray-900 font-medium">Option</span>
+              <span class="text-ds-gray-900">Option</span>
               <a
-                class="text-ds-blue-700 font-hubot-sans"
+                class="text-ds-blue-700 font-hubot-sans font-medium"
                 href="https://testnet.tonviewer.com/{option.address}"
-                target="_blank">{option.address ? shortenAddress(option.address) : 'N/A'}</a
+                target="_blank">{shortenAddress(option.address)}</a
               >
             </div>
 
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Strike Price</span>
-              <span class="text-ds-gray-1000"
+              <span class="text-ds-gray-900">Strike Price</span>
+              <span class="text-ds-gray-1000 font-medium"
                 >{option?.strikePrice ? Number(option?.strikePrice) / 100 : 'N/A'}</span
               >
             </div>
 
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Holder</span>
+              <span class="text-ds-gray-900">Holder</span>
               <a
-                class="text-ds-blue-700 font-hubot-sans"
-                href="https://testnet.tonviewer.com/{option?.agreement?.holder ||
-                  option.draft.holder}"
-                target="_blank"
-                >{shortenAddress(option?.agreement?.holder || option.draft.holder)}</a
+                class="text-ds-blue-700 font-hubot-sans font-medium"
+                href="https://testnet.tonviewer.com/{option?.agreement?.holder}"
+                target="_blank">{shortenAddress(option?.agreement?.holder)}</a
               >
             </div>
 
             <div class="grid gap-1">
-              <span class="text-ds-gray-900 font-medium">Writer</span>
+              <span class="text-ds-gray-900">Writer</span>
               <a
-                class="text-ds-blue-700 font-hubot-sans"
+                class="text-ds-blue-700 font-hubot-sans font-medium"
                 href="https://testnet.tonviewer.com/{option?.agreement?.writer}"
-                target="_blank"
-                >{option?.agreement?.writer ? shortenAddress(option?.agreement?.writer) : 'N/A'}</a
+                target="_blank">{shortenAddress(option?.agreement?.writer)}</a
               >
             </div>
           </Accordion.Content>

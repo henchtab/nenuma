@@ -1,9 +1,7 @@
 import { browser } from '$app/environment';
 import { PUBLIC_API_URL } from '$env/static/public';
-import cookie from 'js-cookie';
 import type { UTCTimestamp } from 'lightweight-charts';
 import { writable } from 'svelte/store';
-import { ACCESS_TOKEN_COOKIE } from '../constants';
 import { timeToLocal } from '../utils';
 
 const WS_DISCONNECT_RETRY_INTERVAL = 1000;
@@ -53,7 +51,7 @@ export const ws = writable(initialState, (set) => {
     }
 
     ws = new WebSocket(
-      `${PUBLIC_API_URL.replace('https', 'wss')}/api/kline?token=${cookie.get(ACCESS_TOKEN_COOKIE)}`
+      `${PUBLIC_API_URL.replace('https', 'wss')}/api/kline`
     );
 
     ws?.addEventListener('open', () => {
