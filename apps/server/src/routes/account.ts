@@ -7,7 +7,7 @@ import type {
   SettledOption,
   ExpiredOption,
 } from '@/dtos/account.dto';
-import { Address, Cell, TonClient4, generateMerkleProof } from '@ton/ton';
+import { Address, Cell, TonClient4 } from '@ton/ton';
 import { Queue, Worker } from 'bullmq';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import {
@@ -16,6 +16,7 @@ import {
   loadStateInit,
 } from 'nenuma-contracts';
 import z from 'zod';
+import * as Sentry from '@sentry/node';
 
 const QUEUE_BROKERS = 'brokers';
 const QUEUE_OPTIONS = 'options';
@@ -100,10 +101,13 @@ const routes: FastifyPluginAsyncZod = async (server) => {
       });
 
       if (!response.ok) {
+        const error = await response.json();
         log.error(
           `Failed to get transactions for ${job.data.address}. Error: ${response.statusText}`,
         );
-        // TODO: Log to Sentry
+        Sentry.captureException(
+          new Error(`Failed to get transactions for ${job.data.address}. Error: ${error}`),
+        );
       }
 
       const { transactions } = (await response.json()) as TransactionList;
@@ -236,11 +240,15 @@ const routes: FastifyPluginAsyncZod = async (server) => {
             );
 
             if (!response.ok) {
+              const error = await response.json();
               log.error(
                 `Could not fetch option transactions for ${option.address.toString()}. Error: ${response.statusText}`,
               );
-
-              // TODO: Log to Sentry
+              Sentry.captureException(
+                new Error(
+                  `Could not fetch option transactions for ${option.address.toString()}. Error: ${error}`,
+                ),
+              );
 
               return;
             }

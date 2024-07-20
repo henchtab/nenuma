@@ -1,3 +1,4 @@
+import './instrument';
 import server from './server';
 
 process.on('unhandledRejection', (err) => {

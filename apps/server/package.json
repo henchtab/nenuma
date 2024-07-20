@@ -5,7 +5,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "tsup",
+    "clean": "rimraf dist",
+    "build": "pnpm run clean && node build.js",
     "build:docker:prod": "docker build . -t my-fastify-app --build-arg APP_ENV=production",
     "check:types": "tsc --noEmit",
     "dev": "tsx --watch src .env .tsconfig.json | pino-pretty --colorize",
@@ -26,6 +27,7 @@
     "@fastify/websocket": "^10.0.1",
     "@orbs-network/ton-access": "^2.3.3",
     "@scalar/fastify-api-reference": "^1.23.4",
+    "@sentry/node": "^8.18.0",
     "@ton/core": "^0.56.3",
     "@ton/crypto": "^3.2.0",
     "@ton/ton": "^13.11.1",
@@ -43,12 +45,13 @@
   "devDependencies": {
     "@types/node": "^20.12.12",
     "@types/ws": "^8.5.10",
-    "esbuild": "^0.21.3",
+    "esbuild": "^0.21.5",
+    "@sentry/esbuild-plugin": "^2.21.1",
     "eslint": "^9.3.0",
     "nenuma-contracts": "workspace:*",
     "pino-pretty": "^11.1.0",
     "prettier": "^3.2.5",
-    "tsup": "^8.1.0",
+    "rimraf": "^6.0.1",
     "tsx": "^4.11.0",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"

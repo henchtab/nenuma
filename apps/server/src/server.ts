@@ -13,6 +13,7 @@ import {
 } from 'fastify-type-provider-zod';
 import * as plugins from './plugins';
 import routes from './routes';
+import * as Sentry from '@sentry/node';
 
 const server = fastify({
   // http2: true,
@@ -20,6 +21,8 @@ const server = fastify({
     level: process.env.LOG_LEVEL,
   },
 }).withTypeProvider<ZodTypeProvider>();
+
+Sentry.setupFastifyErrorHandler(server);
 
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);

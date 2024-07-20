@@ -21,3 +21,5 @@ production.env
 
 package-lock.json
 pnpm-lock.yaml
+# Sentry Config File
+.env.sentry-build-plugin

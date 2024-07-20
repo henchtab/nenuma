@@ -15,7 +15,6 @@ const configSchema = z.object({
   LOG_LEVEL: z.string(),
   API_HOST: z.string(),
   API_PORT: z.string(),
-  ALLOWED_ORIGINS: z.string(),
   REDIS_URI: z.string(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.coerce.number(),
