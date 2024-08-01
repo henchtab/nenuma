@@ -80,10 +80,18 @@ type AddressBook = {
   };
 };
 
+export enum OptionStatus {
+  DEPLOYED = 'deployed',
+  INITIATED = 'initiated',
+  SETTLED = 'settled',
+  EXPIRED = 'expired',
+}
+
 interface BaseOption {
   optionId: bigint;
 }
 
+// TODO: Use enum
 export interface DeployedOption extends BaseOption {
   status: 'deployed';
   address: Address;

@@ -1,11 +1,12 @@
 import { RedisKey } from '@/constants';
-import type {
-  DeployedOption,
-  TransactionList,
-  Option,
-  InitiatedOption,
-  SettledOption,
-  ExpiredOption,
+import {
+  type DeployedOption,
+  type TransactionList,
+  type Option,
+  type InitiatedOption,
+  type SettledOption,
+  type ExpiredOption,
+  OptionStatus,
 } from '@/dtos/account.dto';
 import { Address, Cell, TonClient4 } from '@ton/ton';
 import { Queue, Worker } from 'bullmq';
@@ -342,6 +343,8 @@ const routes: FastifyPluginAsyncZod = async (server) => {
     '/:trader/:broker/options',
     {
       schema: {
+        description: 'Get trader options for the provided broker',
+        summary: 'Get trader options',
         params: z
           .object({
             trader: z.string().transform((v, ctx) => {
@@ -366,6 +369,34 @@ const routes: FastifyPluginAsyncZod = async (server) => {
             }),
           })
           .required(),
+        response: {
+          200: z
+            .array(
+              z.object({
+                optionId: z.string(),
+                status: z.nativeEnum(OptionStatus),
+                address: z.string(),
+                agreement: z.object({
+                  $$type: z.literal('CashOrNothingOptionAgreement'),
+                  holder: z.string(),
+                  writer: z.string(),
+                  initiation: z.string(),
+                  expiration: z.string(),
+                  optionType: z.boolean(),
+                  investment: z.string(),
+                  payout: z.string(),
+                }),
+                strikePrice: z.number().optional(),
+              }),
+            )
+            .describe(
+              'OK - Field `strikePrice` will be present for options with status `initiated`',
+            ),
+          404: z.object({
+            statusCode: z.literal(404),
+            message: z.string(),
+          }),
+        },
       },
     },
     async (request, reply) => {
@@ -374,6 +405,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
       const keys = await server.redis.keys(`${trader!.toString()}:${broker!.toString()}:option:*`);
 
       if (!keys.length) {
+        // TODO: Add proper error message
         return reply.code(404).send({
           statusCode: 404,
           message: 'No options found for the provided trader',
@@ -381,12 +413,10 @@ const routes: FastifyPluginAsyncZod = async (server) => {
       }
 
       const options = await server.redis.mget(keys);
+      const parsedOptions = options.filter((v) => v !== null).map((v) => JSON.parse(v));
 
-      const response = new Response(`[${options.filter((v) => v !== null).join(',')}]`, {
-        headers: { 'content-type': 'application/json' },
-      });
-
-      return reply.code(200).send(response);
+      // TODO: Add proper (general) OK response
+      return reply.code(200).send(parsedOptions);
     },
   );
 };

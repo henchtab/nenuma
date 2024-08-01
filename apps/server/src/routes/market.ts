@@ -1,5 +1,10 @@
 import { BybitKlineTopic, RedisKey } from '@/constants';
-import { KlineTopic, type BybitResponseDto } from '@/dtos/market.dto';
+import {
+  candlestickResponseSchema,
+  candlesticksResponseSchema,
+  KlineTopic,
+  type BybitResponseDto,
+} from '@/dtos/market.dto';
 import { handleKlineTopic, handleKlineTopicWS } from '@/handlers/market';
 import { mnemonicToPrivateKey } from '@ton/crypto';
 import { Address, TonClient, WalletContractV4, beginCell, internal } from '@ton/ton';
@@ -165,14 +170,29 @@ const routes: FastifyPluginAsync = async (server) => {
     '/kline/:topic',
     {
       schema: {
+        description: 'Get historical klines (also known as candles/candlesticks)',
+        summary: 'Get historical klines',
         params: z.object({
           topic: KlineTopic,
         }),
-        querystring: z
-          .object({
-            token: z.string().optional(),
-          })
-          .optional(),
+        response: {
+          200: z
+            .object({
+              // TODO: Remove `response` from the names of schemas
+              list: candlesticksResponseSchema,
+              latest: candlestickResponseSchema.nullable(),
+            })
+            .describe('Successful response'),
+          // TODO: Create error schema
+          400: z
+            .object({
+              statusCode: z.number(),
+              code: z.string(),
+              error: z.string(),
+              message: z.string(),
+            })
+            .describe('Bad Request'),
+        },
       },
     },
     handleKlineTopic,
@@ -181,6 +201,9 @@ const routes: FastifyPluginAsync = async (server) => {
   server.get(
     '/kline',
     {
+      schema: {
+        hide: true,
+      },
       websocket: true,
     },
     handleKlineTopicWS,

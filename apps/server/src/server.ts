@@ -1,3 +1,4 @@
+import fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
@@ -5,16 +6,17 @@ import redis from '@fastify/redis';
 import swagger from '@fastify/swagger';
 import websocket from '@fastify/websocket';
 import scalar from '@scalar/fastify-api-reference';
-import fastify from 'fastify';
+import * as Sentry from '@sentry/node';
 import {
   serializerCompiler,
   validatorCompiler,
+  jsonSchemaTransform,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import * as plugins from './plugins';
 import routes from './routes';
-import * as Sentry from '@sentry/node';
 
+// Initialize Fastify server
 const server = fastify({
   // http2: true,
   logger: {
@@ -22,58 +24,48 @@ const server = fastify({
   },
 }).withTypeProvider<ZodTypeProvider>();
 
+// Root route
+server.get('/', async (_, reply) =>
+  reply.send({ message: 'You are on the root route. To see the API documentation, visit /docs' }),
+);
+
+// Sentry error handler setup
 Sentry.setupFastifyErrorHandler(server);
 
+// Set validator and serializer compilers
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);
 
+// Register plugins
 await server.register(plugins.config);
-await server.register(cors, {
-  origin: '*',
-});
+await server.register(cors, { origin: '*' });
 await server.register(helmet);
-await server.register(jwt, {
-  secret: server.config.JWT_SECRET,
-});
+await server.register(jwt, { secret: server.config.JWT_SECRET });
 await server.register(swagger, {
   openapi: {
     openapi: '3.0.0',
     info: {
-      title: 'Test swagger',
-      description: 'Testing the Fastify swagger API',
+      title: 'Nenuma API',
+      description: '',
       version: '0.1.0',
     },
-    servers: [
-      {
-        url: 'http://localhost:3000',
-        description: 'Development server',
-      },
-    ],
-    tags: [
-      { name: 'user', description: 'User related end-points' },
-      { name: 'code', description: 'Code related end-points' },
-    ],
     components: {
       securitySchemes: {
         apiKey: {
           type: 'apiKey',
-          name: 'apiKey',
+          name: 'Authorization',
           in: 'header',
         },
       },
     },
-    externalDocs: {
-      url: 'https://swagger.io',
-      description: 'Find more info here',
-    },
   },
+  transform: jsonSchemaTransform,
 });
 await server.register(scalar, {
-  routePrefix: '/reference',
+  routePrefix: '/docs',
   configuration: {
-    spec: {
-      content: () => server.swagger(),
-    },
+    theme: 'deepSpace',
+    
   },
 });
 await server.register(websocket, {
@@ -87,9 +79,10 @@ await server.register(redis, {
 });
 await server.register(plugins.bybit);
 
-server.get('/', (_, reply) => reply.code(418).send({ message: 'I am a teapot' }));
-await server.register(routes);
+// Register routes with prefix
+await server.register(routes, { prefix: '/api' });
 
+// Wait until the server is ready
 await server.ready();
 
 export default server;
