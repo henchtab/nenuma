@@ -64,8 +64,11 @@ await server.register(swagger, {
 await server.register(scalar, {
   routePrefix: '/docs',
   configuration: {
+    metaData: {
+      title: 'Nenuma API Reference',
+      description: 'OpenAPI documentation for Nenuma API endpoints',
+    },
     theme: 'deepSpace',
-    
   },
 });
 await server.register(websocket, {
