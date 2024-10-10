@@ -7,7 +7,7 @@ import {
 } from '@/dtos/market.dto';
 import { handleKlineTopic, handleKlineTopicWS } from '@/handlers/market';
 import { mnemonicToPrivateKey } from '@ton/crypto';
-import { Address, TonClient, WalletContractV4, beginCell, internal } from '@ton/ton';
+import { Address, beginCell, internal, TonClient4, WalletContractV4 } from '@ton/ton';
 import type { FastifyPluginAsync } from 'fastify';
 
 import { DataStream, storeDSTPublishCandlestick } from 'nenuma-contracts';
@@ -19,9 +19,8 @@ const routes: FastifyPluginAsync = async (server) => {
 
   bybit.ws.subscribeV5(BybitKlineTopic.BTCUSDT, 'spot');
 
-  const publicClient = new TonClient({
-    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    apiKey: server.config.RPC_PROVIDER_API_KEY,
+  const publicClient = new TonClient4({
+    endpoint: 'https://testnet-v4.tonhubapi.com/',
   });
 
   const keyPair = await mnemonicToPrivateKey(server.config.MNEMONIC.split(','));
