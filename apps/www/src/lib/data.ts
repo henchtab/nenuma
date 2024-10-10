@@ -10,11 +10,7 @@ import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES } from './constants';
  */
 export async function generatePayload(): Promise<ConnectAdditionalRequest | null> {
   try {
-    const response = await (
-      await fetch(`${PUBLIC_API_URL}/api/generate-proof-payload`, {
-        method: 'POST'
-      })
-    ).json();
+    const response = await (await fetch(`${PUBLIC_API_URL}/api/generate-proof-payload`)).json();
     return { tonProof: response.proofToken as string };
   } catch {
     return null;
