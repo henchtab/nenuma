@@ -1,0 +1,8 @@
+{
+	"name": "@nenuma/prettier-config",
+	"version": "1.0.0",
+	"description": "Prettier configuration for Nenuma",
+	"main": "index.json",
+	"private": true,
+	"license": "MIT"
+}
