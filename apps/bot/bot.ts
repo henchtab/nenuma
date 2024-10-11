@@ -1,11 +1,11 @@
-import 'dotenv/config';
-import { limit } from '@grammyjs/ratelimiter';
-import { Bot } from 'grammy';
+import "dotenv/config";
+import { limit } from "@grammyjs/ratelimiter";
+import { Bot } from "grammy";
 
 // Create an instance of the `Bot` class and pass your bot token to it.
 const bot = new Bot(`${process.env.BOT_TOKEN}`, {
   client: {
-    environment: process.env.NODE_ENV === 'production' ? 'prod' : 'test',
+    environment: process.env.NODE_ENV === "production" ? "prod" : "test",
   },
 });
 
@@ -15,7 +15,7 @@ bot.use(limit());
 // grammY will call the listeners when users send messages to your bot.
 
 // Handle the /start command.
-bot.command('start', async (ctx) => {
+bot.command("start", async (ctx) => {
   await ctx.reply(
     `⚠️ <b>Message from the CEO:</b>
 
@@ -31,12 +31,12 @@ bot.command('start', async (ctx) => {
 
 🌷 Thank you for your support and feedback. 🍿`,
     {
-      parse_mode: 'HTML',
+      parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: [
           [
             {
-              text: '📈 Start Trading',
+              text: "📈 Start Trading",
               web_app: {
                 url: `${process.env.WEB_APP_URL}`,
               },
@@ -44,7 +44,7 @@ bot.command('start', async (ctx) => {
           ],
           [
             {
-              text: '🍭 Play with Smart Contracts',
+              text: "🍭 Play with Smart Contracts",
               web_app: {
                 url: `${process.env.WEB_APP_URL}/?redirectUrl=playground`,
               },
@@ -52,12 +52,12 @@ bot.command('start', async (ctx) => {
           ],
         ],
       },
-    }
+    },
   );
 });
 
-bot.command('ping', async (ctx) => {
-  await ctx.reply('Pong 🏓');
+bot.command("ping", async (ctx) => {
+  await ctx.reply("Pong 🏓");
 });
 
 // Start the bot.
