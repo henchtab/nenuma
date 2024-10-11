@@ -7,14 +7,17 @@
   "type": "module",
   "scripts": {
     "dev": "tsx --watch bot.ts | pino-pretty --colorize",
-    "build": "tsup"
+    "build": "tsup",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "tsup": "^8.1.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "prettier": "^3.3.3",
+    "@nenuma/prettier-config": "workspace:*"
   },
   "dependencies": {
     "@grammyjs/ratelimiter": "^1.2.0",
