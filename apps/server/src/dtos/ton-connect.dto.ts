@@ -1,5 +1,5 @@
-import z from 'zod';
-import { CHAIN } from '@/constants';
+import z from "zod";
+import { CHAIN } from "@/constants";
 
 export const checkProofRequestSchema = z.object({
   address: z.string(),

@@ -1,4 +1,4 @@
-import { RedisKey } from '@/constants';
+import { RedisKey } from "@/constants";
 import {
   KlineTopic,
   klineMessageSchema,
@@ -6,12 +6,12 @@ import {
   type CandlestickDto,
   type CandlesticksResponseDto,
   type TKlineTopic,
-} from '@/dtos/market.dto';
-import type { WebSocket } from '@fastify/websocket';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+} from "@/dtos/market.dto";
+import type { WebSocket } from "@fastify/websocket";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { ZodError } from 'zod';
-import { MarketService } from '../services';
+import { ZodError } from "zod";
+import { MarketService } from "../services";
 
 const isKlineOfInterest = (topic: string, data: BybitResponseDto) => data.topic === topic;
 
@@ -137,13 +137,13 @@ export const handleKlineTopic = async (
 export const handleKlineTopicWS = async (socket: WebSocket, request: FastifyRequest) => {
   const { bybit } = request.server;
 
-  socket.on('message', async (message) => {
+  socket.on("message", async (message) => {
     try {
       const data = klineMessageSchema.parse(JSON.parse(message.toString()));
 
       const topics = data.args;
 
-      bybit.ws.on('update', (data: BybitResponseDto) => handleBybitResponse(socket, data, topics));
+      bybit.ws.on("update", (data: BybitResponseDto) => handleBybitResponse(socket, data, topics));
     } catch (error) {
       if (error instanceof ZodError) {
         socket.send(
@@ -158,7 +158,7 @@ export const handleKlineTopicWS = async (socket: WebSocket, request: FastifyRequ
       if (error instanceof Error) {
         socket.send(
           JSON.stringify({
-            error: 'Invalid JSON payload',
+            error: "Invalid JSON payload",
           }),
         );
       }

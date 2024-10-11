@@ -1,39 +1,39 @@
-import { config } from 'dotenv';
-import { build } from 'esbuild';
-import { sentryEsbuildPlugin } from '@sentry/esbuild-plugin';
+import { config } from "dotenv";
+import { build } from "esbuild";
+import { sentryEsbuildPlugin } from "@sentry/esbuild-plugin";
 
 config({
-  path: '.env.sentry-build-plugin',
+  path: ".env.sentry-build-plugin",
 });
 
 if (!process.env.SENTRY_AUTH_TOKEN) {
   throw new Error(
-    'Did you forget to set SENTRY_AUTH_TOKEN? Make sure that .env.sentry-build-plugin exists and contains SENTRY_AUTH_TOKEN',
+    "Did you forget to set SENTRY_AUTH_TOKEN? Make sure that .env.sentry-build-plugin exists and contains SENTRY_AUTH_TOKEN",
   );
 }
 
 try {
   await build({
-    entryPoints: ['src/index.ts'],
+    entryPoints: ["src/index.ts"],
     bundle: true,
-    format: 'esm',
+    format: "esm",
     splitting: false,
-    packages: 'external',
+    packages: "external",
     minify: true,
     sourcemap: true,
-    outdir: 'dist',
-    platform: 'node',
+    outdir: "dist",
+    platform: "node",
     plugins: [
       sentryEsbuildPlugin({
         authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: 'vlad-chuchupak',
-        project: 'nenuma-api',
+        org: "vlad-chuchupak",
+        project: "nenuma-api",
         debug: true,
       }),
     ],
   });
 } catch (error) {
-  console.error('Build failed:', error);
+  console.error("Build failed:", error);
   process.exit(1);
 }
 

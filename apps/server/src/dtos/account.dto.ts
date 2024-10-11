@@ -1,5 +1,5 @@
-import type { Address } from '@ton/ton';
-import type { CashOrNothingOptionAgreement } from 'nenuma-contracts';
+import type { Address } from "@ton/ton";
+import type { CashOrNothingOptionAgreement } from "nenuma-contracts";
 
 export type TransactionList = {
   transactions: Transaction[];
@@ -11,8 +11,8 @@ type Transaction = {
   hash: string;
   lt: string;
   now: number;
-  orig_status: 'uninit' | 'frozen' | 'active' | 'nonexist';
-  end_status: 'uninit' | 'frozen' | 'active' | 'nonexist';
+  orig_status: "uninit" | "frozen" | "active" | "nonexist";
+  end_status: "uninit" | "frozen" | "active" | "nonexist";
   total_fees: string;
   prev_trans_hash: string;
   prev_trans_lt: string;
@@ -56,12 +56,12 @@ type MessageContent = {
 export type DecodedComment = TextComment | BinaryComment | null;
 
 export type TextComment = {
-  type: 'text_comment';
+  type: "text_comment";
   // Add additional properties specific to TextComment if any
 };
 
 export type BinaryComment = {
-  type: 'binary_comment';
+  type: "binary_comment";
   // Add additional properties specific to BinaryComment if any
 };
 
@@ -81,10 +81,10 @@ type AddressBook = {
 };
 
 export enum OptionStatus {
-  DEPLOYED = 'deployed',
-  INITIATED = 'initiated',
-  SETTLED = 'settled',
-  EXPIRED = 'expired',
+  DEPLOYED = "deployed",
+  INITIATED = "initiated",
+  SETTLED = "settled",
+  EXPIRED = "expired",
 }
 
 interface BaseOption {
@@ -93,22 +93,22 @@ interface BaseOption {
 
 // TODO: Use enum
 export interface DeployedOption extends BaseOption {
-  status: 'deployed';
+  status: "deployed";
   address: Address;
   agreement: CashOrNothingOptionAgreement;
 }
 
-export interface InitiatedOption extends Omit<DeployedOption, 'status'> {
-  status: 'initiated';
+export interface InitiatedOption extends Omit<DeployedOption, "status"> {
+  status: "initiated";
   strikePrice: number;
 }
 
-export interface SettledOption extends Omit<InitiatedOption, 'status'> {
-  status: 'settled';
+export interface SettledOption extends Omit<InitiatedOption, "status"> {
+  status: "settled";
 }
 
-export interface ExpiredOption extends Omit<DeployedOption, 'status'> {
-  status: 'expired';
+export interface ExpiredOption extends Omit<DeployedOption, "status"> {
+  status: "expired";
 }
 
 export type Option = DeployedOption | InitiatedOption | SettledOption | ExpiredOption;

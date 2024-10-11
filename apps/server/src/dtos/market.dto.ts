@@ -1,6 +1,6 @@
-import z from 'zod';
+import z from "zod";
 
-export const KlineTopic = z.enum(['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'TONUSDT']);
+export const KlineTopic = z.enum(["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "TONUSDT"]);
 
 export type TKlineTopic = z.infer<typeof KlineTopic>;
 
@@ -43,7 +43,7 @@ export type CandlestickResponseDto = z.infer<typeof candlestickResponseSchema>;
 export type CandlesticksResponseDto = z.infer<typeof candlesticksResponseSchema>;
 
 export const klineMessageSchema = z.object({
-  op: z.enum(['subscribe']),
+  op: z.enum(["subscribe"]),
   args: z.array(KlineTopic),
 });
 

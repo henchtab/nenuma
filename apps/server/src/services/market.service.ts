@@ -1,7 +1,7 @@
-import { RedisKey } from '@/constants.js';
-import { candlestickSchema, type CandlestickDto } from '@/dtos/market.dto.js';
-import type { FastifyRedis } from '@fastify/redis';
-import z from 'zod';
+import { RedisKey } from "@/constants.js";
+import { candlestickSchema, type CandlestickDto } from "@/dtos/market.dto.js";
+import type { FastifyRedis } from "@fastify/redis";
+import z from "zod";
 
 export class MarketService {
   /**
@@ -22,7 +22,7 @@ export class MarketService {
     const results = await pipeline.exec();
 
     if (!results) {
-      throw new Error('Failed to fetch data from Redis');
+      throw new Error("Failed to fetch data from Redis");
     }
 
     const topic24h = (results[0]?.[1] as string[]).map((item: string) => JSON.parse(item));

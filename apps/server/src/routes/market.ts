@@ -1,29 +1,29 @@
-import { BybitKlineTopic, RedisKey } from '@/constants';
+import { BybitKlineTopic, RedisKey } from "@/constants";
 import {
   candlestickResponseSchema,
   candlesticksResponseSchema,
   KlineTopic,
   type BybitResponseDto,
-} from '@/dtos/market.dto';
-import { handleKlineTopic, handleKlineTopicWS } from '@/handlers/market';
-import { mnemonicToPrivateKey } from '@ton/crypto';
-import { Address, beginCell, internal, TonClient4, WalletContractV4 } from '@ton/ton';
-import type { FastifyPluginAsync } from 'fastify';
+} from "@/dtos/market.dto";
+import { handleKlineTopic, handleKlineTopicWS } from "@/handlers/market";
+import { mnemonicToPrivateKey } from "@ton/crypto";
+import { Address, beginCell, internal, TonClient4, WalletContractV4 } from "@ton/ton";
+import type { FastifyPluginAsync } from "fastify";
 
-import { DataStream, storeDSTPublishCandlestick } from 'nenuma-contracts';
+import { DataStream, storeDSTPublishCandlestick } from "nenuma-contracts";
 
-import z from 'zod';
+import z from "zod";
 
 const routes: FastifyPluginAsync = async (server) => {
   const { redis, bybit, log } = server;
 
-  bybit.ws.subscribeV5(BybitKlineTopic.BTCUSDT, 'spot');
+  bybit.ws.subscribeV5(BybitKlineTopic.BTCUSDT, "spot");
 
   const publicClient = new TonClient4({
-    endpoint: 'https://testnet-v4.tonhubapi.com/',
+    endpoint: "https://testnet-v4.tonhubapi.com/",
   });
 
-  const keyPair = await mnemonicToPrivateKey(server.config.MNEMONIC.split(','));
+  const keyPair = await mnemonicToPrivateKey(server.config.MNEMONIC.split(","));
 
   const workchain = 0; // Usually you need a workchain 0
   const wallet = WalletContractV4.create({ workchain, publicKey: keyPair.publicKey });
@@ -33,7 +33,7 @@ const routes: FastifyPluginAsync = async (server) => {
     DataStream.fromAddress(Address.parse(server.config.DATA_STREAM_ADDRESS)),
   );
 
-  bybit.ws.on('update', async (data: BybitResponseDto) => {
+  bybit.ws.on("update", async (data: BybitResponseDto) => {
     switch (data.topic) {
       case BybitKlineTopic.BTCUSDT:
         for (const candlestick of data.data) {
@@ -50,7 +50,7 @@ const routes: FastifyPluginAsync = async (server) => {
               let shouldSkip = false;
               // Check if every batch is empty
               for (const [_, info] of batches) {
-                log.debug('Batch Info: %s', info.subscriptionsCount.toString());
+                log.debug("Batch Info: %s", info.subscriptionsCount.toString());
                 if (info.subscriptionsCount > 0) {
                   shouldSkip = false;
                 } else {
@@ -65,20 +65,20 @@ const routes: FastifyPluginAsync = async (server) => {
               const seqno = await btcCandlestickPublisherWallet.getSeqno();
 
               const candlestickToPublish = {
-                $$type: 'Candlestick' as const,
-                open: BigInt(candlestick.open.split('.').join('')),
-                high: BigInt(candlestick.high.split('.').join('')),
-                low: BigInt(candlestick.low.split('.').join('')),
-                close: BigInt(candlestick.close.split('.').join('')),
+                $$type: "Candlestick" as const,
+                open: BigInt(candlestick.open.split(".").join("")),
+                high: BigInt(candlestick.high.split(".").join("")),
+                low: BigInt(candlestick.low.split(".").join("")),
+                close: BigInt(candlestick.close.split(".").join("")),
                 start: BigInt(candlestick.start.toString().slice(0, -3)),
                 end: BigInt(candlestick.end.toString().slice(0, -3)) + 1n,
               };
 
               log.debug(
-                'Publishing Candlestick: %s',
+                "Publishing Candlestick: %s",
                 JSON.stringify(
                   candlestickToPublish,
-                  (_, v) => (typeof v === 'bigint' ? v.toString() : v),
+                  (_, v) => (typeof v === "bigint" ? v.toString() : v),
                   2,
                 ),
               );
@@ -88,12 +88,12 @@ const routes: FastifyPluginAsync = async (server) => {
                 secretKey: keyPair.secretKey,
                 messages: [
                   internal({
-                    value: '5',
+                    value: "5",
                     to: server.config.DATA_STREAM_ADDRESS,
                     body: beginCell()
                       .store(
                         storeDSTPublishCandlestick({
-                          $$type: 'DSTPublishCandlestick',
+                          $$type: "DSTPublishCandlestick",
                           queryId: 777n,
                           candlestick: candlestickToPublish,
                         }),
@@ -103,7 +103,7 @@ const routes: FastifyPluginAsync = async (server) => {
                 ],
               });
             } catch (error) {
-              log.error('Error: %s', error);
+              log.error("Error: %s", error);
             }
           } else {
             redis.set(RedisKey.KlineBTC1m, JSON.stringify(candlestick));
@@ -166,11 +166,11 @@ const routes: FastifyPluginAsync = async (server) => {
   });
 
   server.get(
-    '/kline/:topic',
+    "/kline/:topic",
     {
       schema: {
-        description: 'Get historical klines (also known as candles/candlesticks)',
-        summary: 'Get historical klines',
+        description: "Get historical klines (also known as candles/candlesticks)",
+        summary: "Get historical klines",
         params: z.object({
           topic: KlineTopic,
         }),
@@ -181,7 +181,7 @@ const routes: FastifyPluginAsync = async (server) => {
               list: candlesticksResponseSchema,
               latest: candlestickResponseSchema.nullable(),
             })
-            .describe('Successful response'),
+            .describe("Successful response"),
           // TODO: Create error schema
           400: z
             .object({
@@ -190,7 +190,7 @@ const routes: FastifyPluginAsync = async (server) => {
               error: z.string(),
               message: z.string(),
             })
-            .describe('Bad Request'),
+            .describe("Bad Request"),
         },
       },
     },
@@ -198,7 +198,7 @@ const routes: FastifyPluginAsync = async (server) => {
   );
 
   server.get(
-    '/kline',
+    "/kline",
     {
       schema: {
         hide: true,

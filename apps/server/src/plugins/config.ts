@@ -1,13 +1,13 @@
-import { Address } from '@ton/ton';
-import 'dotenv/config';
-import type { FastifyPluginAsync } from 'fastify';
-import fp from 'fastify-plugin';
-import z from 'zod';
+import { Address } from "@ton/ton";
+import "dotenv/config";
+import type { FastifyPluginAsync } from "fastify";
+import fp from "fastify-plugin";
+import z from "zod";
 
 export enum NodeEnv {
-  development = 'development',
-  test = 'test',
-  production = 'production',
+  development = "development",
+  test = "test",
+  production = "production",
 }
 
 const configSchema = z.object({
@@ -24,7 +24,7 @@ const configSchema = z.object({
   JWT_SECRET: z.string(),
   RPC_PROVIDER_API_KEY: z.string(),
   DATA_STREAM_ADDRESS: z.string(),
-  BTC_BROKER_ADDRESS: z.string().transform(v => Address.parse(v)),
+  BTC_BROKER_ADDRESS: z.string().transform((v) => Address.parse(v)),
   MNEMONIC: z.string(),
 });
 
@@ -34,12 +34,12 @@ const configPlugin: FastifyPluginAsync = async (server) => {
   const config = configSchema.safeParse(process.env);
 
   if (!config.success) {
-    throw new Error('.env file validation failed - ' + JSON.stringify(config.error, null, 2));
+    throw new Error(".env file validation failed - " + JSON.stringify(config.error, null, 2));
   }
-  server.decorate('config', config.data);
+  server.decorate("config", config.data);
 };
 
-declare module 'fastify' {
+declare module "fastify" {
   interface FastifyInstance {
     config: Config;
   }

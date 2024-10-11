@@ -1,4 +1,4 @@
-import { RedisKey } from '@/constants';
+import { RedisKey } from "@/constants";
 import {
   type DeployedOption,
   type TransactionList,
@@ -7,34 +7,34 @@ import {
   type SettledOption,
   type ExpiredOption,
   OptionStatus,
-} from '@/dtos/account.dto';
-import { Address, Cell, TonClient4 } from '@ton/ton';
-import { Queue, Worker } from 'bullmq';
-import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+} from "@/dtos/account.dto";
+import { Address, Cell, TonClient4 } from "@ton/ton";
+import { Queue, Worker } from "bullmq";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import {
   CashOrNothingOption,
   loadCashOrNothingOptionDeploy,
   loadStateInit,
-} from 'nenuma-contracts';
-import z from 'zod';
-import * as Sentry from '@sentry/node';
+} from "nenuma-contracts";
+import z from "zod";
+import * as Sentry from "@sentry/node";
 
-const QUEUE_BROKERS = 'brokers';
-const QUEUE_OPTIONS = 'options';
+const QUEUE_BROKERS = "brokers";
+const QUEUE_OPTIONS = "options";
 
 const SUBSCRIBER_GRACE_PERIOD = 3600n;
 
-const INDEXER_BASE_URL = 'https://testnet.toncenter.com/api/v3';
+const INDEXER_BASE_URL = "https://testnet.toncenter.com/api/v3";
 
-const OPCODE_CASH_OR_NOTHING_OPTION_DEPLOY = '0xc74f6284';
-const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_IN_MONEY = '0x1800dc14';
-const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_OUT_MONEY = '0xff379604';
-const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_AT_MONEY = '0x50240b79';
+const OPCODE_CASH_OR_NOTHING_OPTION_DEPLOY = "0xc74f6284";
+const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_IN_MONEY = "0x1800dc14";
+const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_OUT_MONEY = "0xff379604";
+const OPCODE_CASH_OR_NOTHING_OPTION_SETTLED_AT_MONEY = "0x50240b79";
 
-const ERROR_CODE_CONTRACT_UNINIT = 'Exit code: -256';
+const ERROR_CODE_CONTRACT_UNINIT = "Exit code: -256";
 
 const jsonReplacer = (_: string, v: any) => {
-  if (typeof v === 'bigint') {
+  if (typeof v === "bigint") {
     return v.toString();
   }
 
@@ -46,14 +46,14 @@ const jsonReplacer = (_: string, v: any) => {
 };
 
 const jsonReviver = (k: string, v: any) => {
-  const bigintKeys = ['optionId', 'initiation', 'expiration', 'investment'];
-  const addressKeys = ['address', 'holder', 'writer'];
+  const bigintKeys = ["optionId", "initiation", "expiration", "investment"];
+  const addressKeys = ["address", "holder", "writer"];
 
-  if (bigintKeys.includes(k) && typeof v === 'string') {
+  if (bigintKeys.includes(k) && typeof v === "string") {
     return BigInt(v);
   }
 
-  if (addressKeys.includes(k) && typeof v === 'string') {
+  if (addressKeys.includes(k) && typeof v === "string") {
     return Address.parse(v);
   }
 
@@ -76,7 +76,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
     {
       address: server.config.BTC_BROKER_ADDRESS.toString(),
     },
-    { repeatJobKey: 'btc-broker', repeat: { every: 5000 } },
+    { repeatJobKey: "btc-broker", repeat: { every: 5000 } },
   );
 
   const brokerWorker = new Worker<{ address: string }>(
@@ -85,19 +85,19 @@ const routes: FastifyPluginAsyncZod = async (server) => {
       const startUtime = await server.redis.get(RedisKey.BrokerBTCStartUtime);
 
       const searchParams = new URLSearchParams();
-      searchParams.set('account', job.data.address);
-      searchParams.set('limit', '20');
-      searchParams.set('offset', '0');
+      searchParams.set("account", job.data.address);
+      searchParams.set("limit", "20");
+      searchParams.set("offset", "0");
 
       if (startUtime) {
         log.debug(`Fetching transactions for ${job.data.address} starting from ${startUtime}`);
 
-        searchParams.set('start_utime', startUtime);
+        searchParams.set("start_utime", startUtime);
       }
 
       const response = await fetch(`${INDEXER_BASE_URL}/transactions?${searchParams.toString()}`, {
         headers: {
-          'X-API-KEY': server.config.RPC_PROVIDER_API_KEY,
+          "X-API-KEY": server.config.RPC_PROVIDER_API_KEY,
         },
       });
 
@@ -155,7 +155,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
 
         const option: DeployedOption = {
           optionId,
-          status: 'deployed',
+          status: "deployed",
           address: Address.parse(msg.destination),
           agreement,
         };
@@ -182,34 +182,34 @@ const routes: FastifyPluginAsyncZod = async (server) => {
     },
   );
 
-  brokerWorker.on('completed', (job) => {
+  brokerWorker.on("completed", (job) => {
     log.info(`${job?.id} has completed!`);
   });
 
-  brokerWorker.on('failed', (job, err) => {
+  brokerWorker.on("failed", (job, err) => {
     log.error(`${job?.id} has failed with ${err.stack}`);
   });
 
   const publicClient = new TonClient4({
-    endpoint: 'https://testnet-v4.tonhubapi.com/',
+    endpoint: "https://testnet-v4.tonhubapi.com/",
   });
 
   const worker = new Worker<{ redisKey: string }>(
     QUEUE_OPTIONS,
     async (job) => {
       const option: Option = JSON.parse(
-        (await server.redis.get(job.data.redisKey)) || '{}',
+        (await server.redis.get(job.data.redisKey)) || "{}",
         jsonReviver,
       );
 
-      if (option.status === 'settled' && job.repeatJobKey) {
+      if (option.status === "settled" && job.repeatJobKey) {
         optionsQueue.removeRepeatableByKey(job.repeatJobKey);
         log.info(`Removed repeatable job with key ${job.repeatJobKey}`);
       }
 
       const contract = publicClient.open(CashOrNothingOption.fromAddress(option.address));
 
-      if (option.status === 'deployed') {
+      if (option.status === "deployed") {
         try {
           const strikePrice = await contract.getStrikePrice();
 
@@ -219,7 +219,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
 
           const updatedOption: InitiatedOption = {
             ...option,
-            status: 'initiated',
+            status: "initiated",
             strikePrice: Number(strikePrice),
           };
 
@@ -227,15 +227,15 @@ const routes: FastifyPluginAsyncZod = async (server) => {
         } catch (error) {
           if (error instanceof Error && error.message.includes(ERROR_CODE_CONTRACT_UNINIT)) {
             const searchParams = new URLSearchParams();
-            searchParams.set('account', option.address.toString());
-            searchParams.set('limit', '20');
-            searchParams.set('offset', '0');
+            searchParams.set("account", option.address.toString());
+            searchParams.set("limit", "20");
+            searchParams.set("offset", "0");
 
             const response = await fetch(
               `${INDEXER_BASE_URL}/transactions?${searchParams.toString()}`,
               {
                 headers: {
-                  'X-API-KEY': server.config.RPC_PROVIDER_API_KEY,
+                  "X-API-KEY": server.config.RPC_PROVIDER_API_KEY,
                 },
               },
             );
@@ -285,7 +285,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
             const settledOption: SettledOption = {
               ...option,
               strikePrice: 0,
-              status: 'settled',
+              status: "settled",
             };
 
             await server.redis.set(job.data.redisKey, JSON.stringify(settledOption, jsonReplacer));
@@ -297,7 +297,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
             }
           }
         }
-      } else if (option.status === 'initiated') {
+      } else if (option.status === "initiated") {
         try {
           const expiration = await contract.getExpiration();
 
@@ -308,7 +308,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
             log.info(`Option ${option.optionId} has expired`);
             const updatedOption: ExpiredOption = {
               ...option,
-              status: 'expired',
+              status: "expired",
             };
 
             await server.redis.set(job.data.redisKey, JSON.stringify(updatedOption, jsonReplacer));
@@ -318,7 +318,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
 
           const updatedOption: SettledOption = {
             ...option,
-            status: 'settled',
+            status: "settled",
           };
 
           await server.redis.set(job.data.redisKey, JSON.stringify(updatedOption, jsonReplacer));
@@ -331,20 +331,20 @@ const routes: FastifyPluginAsyncZod = async (server) => {
     },
   );
 
-  worker.on('completed', (job) => {
+  worker.on("completed", (job) => {
     log.info(`${job.name} has completed!`);
   });
 
-  worker.on('failed', (job, err) => {
+  worker.on("failed", (job, err) => {
     log.error(`${job?.id} has failed with ${err.stack}`);
   });
 
   server.get(
-    '/:trader/:broker/options',
+    "/:trader/:broker/options",
     {
       schema: {
-        description: 'Get trader options for the provided broker',
-        summary: 'Get trader options',
+        description: "Get trader options for the provided broker",
+        summary: "Get trader options",
         params: z
           .object({
             trader: z.string().transform((v, ctx) => {
@@ -353,7 +353,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
               } catch {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
-                  message: 'Provided trader address is not valid',
+                  message: "Provided trader address is not valid",
                 });
               }
             }),
@@ -363,7 +363,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
               } catch {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
-                  message: 'Provided broker address is not valid',
+                  message: "Provided broker address is not valid",
                 });
               }
             }),
@@ -377,7 +377,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
                 status: z.nativeEnum(OptionStatus),
                 address: z.string(),
                 agreement: z.object({
-                  $$type: z.literal('CashOrNothingOptionAgreement'),
+                  $$type: z.literal("CashOrNothingOptionAgreement"),
                   holder: z.string(),
                   writer: z.string(),
                   initiation: z.string(),
@@ -390,7 +390,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
               }),
             )
             .describe(
-              'OK - Field `strikePrice` will be present for options with status `initiated`',
+              "OK - Field `strikePrice` will be present for options with status `initiated`",
             ),
           404: z.object({
             statusCode: z.literal(404),
@@ -408,7 +408,7 @@ const routes: FastifyPluginAsyncZod = async (server) => {
         // TODO: Add proper error message
         return reply.code(404).send({
           statusCode: 404,
-          message: 'No options found for the provided trader',
+          message: "No options found for the provided trader",
         });
       }
 

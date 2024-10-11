@@ -1,13 +1,13 @@
-import type { CheckProofRequestDto } from '@/dtos/ton-connect.dto';
-import { tryParsePublicKey } from '@/helpers/wallets-data.helper';
-import { sha256 } from '@ton/crypto';
-import { Address, Cell, contractAddress, loadStateInit } from '@ton/ton';
-import { Buffer } from 'node:buffer';
+import type { CheckProofRequestDto } from "@/dtos/ton-connect.dto";
+import { tryParsePublicKey } from "@/helpers/wallets-data.helper";
+import { sha256 } from "@ton/crypto";
+import { Address, Cell, contractAddress, loadStateInit } from "@ton/ton";
+import { Buffer } from "node:buffer";
 // TODO: Replace with node.js native crypto module
-import tweetnacl from 'tweetnacl';
+import tweetnacl from "tweetnacl";
 
-const tonProofPrefix = 'ton-proof-item-v2/';
-const tonConnectPrefix = 'ton-connect';
+const tonProofPrefix = "ton-proof-item-v2/";
+const tonConnectPrefix = "ton-connect";
 const validAuthTime = 15 * 60; // 15 minutes
 
 export class TonProofService {
@@ -15,7 +15,7 @@ export class TonProofService {
    * Generate a random payload.
    */
   public generatePayload(): string {
-    return Buffer.from(tweetnacl.randomBytes(32)).toString('hex');
+    return Buffer.from(tweetnacl.randomBytes(32)).toString("hex");
   }
 
   /**
@@ -39,7 +39,7 @@ export class TonProofService {
       }
 
       // 2.2. Check that TonAddressItemReply.publicKey equals to obtained public key
-      const wantedPublicKey = Buffer.from(payload.public_key, 'hex');
+      const wantedPublicKey = Buffer.from(payload.public_key, "hex");
       if (!publicKey.equals(wantedPublicKey)) {
         return false;
       }
@@ -69,7 +69,7 @@ export class TonProofService {
           lengthBytes: payload.proof.domain.lengthBytes,
           value: payload.proof.domain.value,
         },
-        signature: Buffer.from(payload.proof.signature, 'base64'),
+        signature: Buffer.from(payload.proof.signature, "base64"),
         payload: payload.proof.payload,
         stateInit: payload.proof.state_init,
         timestamp: payload.proof.timestamp,

@@ -4,12 +4,14 @@
 [![Sync Vulnerabilities Status](https://app.snyk.io/test/github/yonathan06/fastify-typescript-boilerplate/badge.svg)](https://snyk.io/test/github/yonathan06/fastify-typescript-boilerplate)
 
 Create a new server:
+
 ```bash
 pnpx degit yonathan06/fastify-typescript-starter my-server
 ```
+
 or `npx`.
 
-See [degit](https://github.com/Rich-Harris/degit) docs for detailed explaination 
+See [degit](https://github.com/Rich-Harris/degit) docs for detailed explaination
 
 ## Included in the boilerplate
 
@@ -50,15 +52,15 @@ Loaded from `.env` file, with schema validation
 
 There are a number of handy commands you can run to help with development.
 
-|Command | Action |
-|---|---|
-|`pnpm run dev` | Run the server in dev mode, automatically restarts on file change |
-|`pnpm build`| Compile TypeScript to JavaScript |
-|`pnpm start`| Start JavaScript from 'build' directory |
-|`pnpm test`| Run unit tests (run `pnpm build` before) |
-|`pnpm test:watch`| Run backend tests in watch mode, running on changed test files |
-|`pnpm lint`| Run eslint |
-|`pnpm lint:fix`| Run eslint in fix mode |
+| Command           | Action                                                            |
+| ----------------- | ----------------------------------------------------------------- |
+| `pnpm run dev`    | Run the server in dev mode, automatically restarts on file change |
+| `pnpm build`      | Compile TypeScript to JavaScript                                  |
+| `pnpm start`      | Start JavaScript from 'build' directory                           |
+| `pnpm test`       | Run unit tests (run `pnpm build` before)                          |
+| `pnpm test:watch` | Run backend tests in watch mode, running on changed test files    |
+| `pnpm lint`       | Run eslint                                                        |
+| `pnpm lint:fix`   | Run eslint in fix mode                                            |
 
 ## CI
 
