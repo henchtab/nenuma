@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
   import {
     Building,
     User,
@@ -8,30 +8,30 @@
     Database,
     BriefcaseBusiness,
     UserCheck,
-    CreditCard
-  } from 'lucide-svelte';
-  import { toast } from 'svelte-sonner';
-  import { DrawerClose } from '$lib/components/ui/drawer';
-  import { onMount } from 'svelte';
-  import { type AddressData, loadData } from '$lib/wrappers/utils';
+    CreditCard,
+  } from "lucide-svelte";
+  import { toast } from "svelte-sonner";
+  import { DrawerClose } from "$lib/components/ui/drawer";
+  import { onMount } from "svelte";
+  import { type AddressData, loadData } from "$lib/wrappers/utils";
   import {
     DATA_STREAM_STORAGE_KEY,
     SESSION_STORAGE_KEY,
     SIMPLE_SUBSCRIBER_STORAGE_KEY,
-    SUBSCRIPTION_BATCHES_STORAGE_KEY
-  } from '$lib/constants';
+    SUBSCRIPTION_BATCHES_STORAGE_KEY,
+  } from "$lib/constants";
 
   let { isOpened = false }: { isOpened: boolean } = $props();
 
   const ItemType = {
-    Stream: 'stream',
-    SubscriptionBatch: 'subscription_batch',
-    Session: 'session',
-    SimpleSubscriber: 'simple_subscriber',
-    Brokerage: 'brokerage',
-    Broker: 'broker',
-    BrokerageAccount: 'brokerage_account',
-    CashOrNothingOption: 'cash-or-nothing_option'
+    Stream: "stream",
+    SubscriptionBatch: "subscription_batch",
+    Session: "session",
+    SimpleSubscriber: "simple_subscriber",
+    Brokerage: "brokerage",
+    Broker: "broker",
+    BrokerageAccount: "brokerage_account",
+    CashOrNothingOption: "cash-or-nothing_option",
   } as const;
 
   const ItemIcon = {
@@ -42,7 +42,7 @@
     [ItemType.Brokerage]: Building,
     [ItemType.Broker]: BriefcaseBusiness,
     [ItemType.BrokerageAccount]: UserCheck,
-    [ItemType.CashOrNothingOption]: CreditCard
+    [ItemType.CashOrNothingOption]: CreditCard,
   };
 
   type Item = {
@@ -62,12 +62,12 @@
     const stream = toItem(loadData<AddressData>(DATA_STREAM_STORAGE_KEY), ItemType.Stream);
     const subscriptionBatch = toItem(
       loadData<AddressData[]>(SUBSCRIPTION_BATCHES_STORAGE_KEY),
-      ItemType.SubscriptionBatch
+      ItemType.SubscriptionBatch,
     );
     const session = toItem(loadData<AddressData>(SESSION_STORAGE_KEY), ItemType.Session);
     const simpleSubscriber = toItem(
       loadData<AddressData>(SIMPLE_SUBSCRIBER_STORAGE_KEY),
-      ItemType.SimpleSubscriber
+      ItemType.SimpleSubscriber,
     );
 
     const temp = [stream, subscriptionBatch, session, simpleSubscriber]
@@ -89,7 +89,7 @@
       | { address: string; timestamp: number }
       | { address: string; timestamp: number }[]
       | null,
-    type: (typeof ItemType)[keyof typeof ItemType]
+    type: (typeof ItemType)[keyof typeof ItemType],
   ) {
     if (!target) {
       return;
@@ -100,7 +100,7 @@
         id: Symbol(),
         address: item.address,
         type,
-        timestamp: item.timestamp
+        timestamp: item.timestamp,
       }));
     }
 
@@ -108,7 +108,7 @@
       id: Symbol(),
       address: target.address,
       type,
-      timestamp: target.timestamp
+      timestamp: target.timestamp,
     };
   }
 
@@ -119,17 +119,17 @@
   async function handleCopyAddress(
     e: MouseEvent & {
       currentTarget: EventTarget & HTMLButtonElement;
-    }
+    },
   ) {
-    const address = e.currentTarget.getAttribute('data-address');
+    const address = e.currentTarget.getAttribute("data-address");
 
     try {
       if (address) {
         await navigator.clipboard.writeText(address);
-        $hapticFeedback.impactOccurred('medium');
+        $hapticFeedback.impactOccurred("medium");
       }
     } catch (error) {
-      toast.error('Something went wrong while copying the address.');
+      toast.error("Something went wrong while copying the address.");
     }
   }
 </script>
@@ -163,7 +163,7 @@
             >
               <span class="text-sm">{shortenAddress(item.address)}</span>
               <span class="text-ds-gray-900 capitalize text-xs"
-                >{item.type.split('_').join(' ')}</span
+                >{item.type.split("_").join(" ")}</span
               >
             </div>
           </button>

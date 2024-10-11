@@ -1,6 +1,6 @@
 <script lang="ts">
-  import OctagonAlert from 'lucide-svelte/icons/octagon-alert';
-  import { page } from '$app/stores';
+  import OctagonAlert from "lucide-svelte/icons/octagon-alert";
+  import { page } from "$app/stores";
 </script>
 
 <div class="container py-10">

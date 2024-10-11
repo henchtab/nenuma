@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import * as ToggleGroup from '$lib/components/ui/toggle-group';
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { formatTime, randomize } from '$lib/utils';
-  import { createCashOrNothingOption } from '$lib/wrappers';
-  import { Address, toNano } from '@ton/core';
-  import ChevronDown from 'lucide-svelte/icons/chevron-down';
-  import TrendingDown from 'lucide-svelte/icons/trending-down';
-  import TrendingUp from 'lucide-svelte/icons/trending-up';
-  import { onMount } from 'svelte';
-  import { toast } from 'svelte-sonner';
-  import { page } from '$app/stores';
-  import { writable } from 'svelte/store';
-  import { tonConnectUI } from '$lib/stores/ton-connect';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import * as ToggleGroup from "$lib/components/ui/toggle-group";
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
+  import { formatTime, randomize } from "$lib/utils";
+  import { createCashOrNothingOption } from "$lib/wrappers";
+  import { Address, toNano } from "@ton/core";
+  import ChevronDown from "lucide-svelte/icons/chevron-down";
+  import TrendingDown from "lucide-svelte/icons/trending-down";
+  import TrendingUp from "lucide-svelte/icons/trending-up";
+  import { onMount } from "svelte";
+  import { toast } from "svelte-sonner";
+  import { page } from "$app/stores";
+  import { writable } from "svelte/store";
+  import { tonConnectUI } from "$lib/stores/ton-connect";
 
   const searchParams = $page.url.searchParams;
-  const stream = searchParams.get('stream') || '';
+  const stream = searchParams.get("stream") || "";
 
   const option = createCashOrNothingOption(writable(stream));
 
@@ -31,11 +31,11 @@
 
   $effect(() => {
     if ($mainButton && form) {
-      $mainButton.setText('Deploy Option').enable().show();
+      $mainButton.setText("Deploy Option").enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => {
+      const unsubscribe = $mainButton.on("click", () => {
         form?.requestSubmit();
-        $hapticFeedback.impactOccurred('heavy');
+        $hapticFeedback.impactOccurred("heavy");
       });
 
       return unsubscribe;
@@ -46,7 +46,7 @@
 
   onMount(() => {
     if (!$option) {
-      toast.error('There is no option. Please try again');
+      toast.error("There is no option. Please try again");
     }
 
     $tonConnectUI.connectionRestored.then(() => {
@@ -55,7 +55,7 @@
       if (account) {
         writer = Address.parse(account.address).toString({
           testOnly: true,
-          bounceable: false
+          bounceable: false,
         });
       }
     });
@@ -79,48 +79,50 @@
   async function handleSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    formData.set('optionType', optionType as string);
+    formData.set("optionType", optionType as string);
 
     for (const [_, value] of formData) {
       if (!value) {
-        $hapticFeedback.notificationOccurred('error');
-        toast.error('Please fill in all the fields');
+        $hapticFeedback.notificationOccurred("error");
+        toast.error("Please fill in all the fields");
         return;
       }
     }
 
-    const intitiationTime = formData.get('initiation') as string;
-    const initiation = BigInt(new Date(`${new Date().toDateString()} ${intitiationTime}`).getTime() / 1000);
+    const intitiationTime = formData.get("initiation") as string;
+    const initiation = BigInt(
+      new Date(`${new Date().toDateString()} ${intitiationTime}`).getTime() / 1000,
+    );
 
     try {
       const args = {
-        optionId: BigInt(formData.get('optionId') as string),
-        queryId: BigInt(formData.get('queryId') as string),
+        optionId: BigInt(formData.get("optionId") as string),
+        queryId: BigInt(formData.get("queryId") as string),
         agreement: {
-          holder: Address.parse((formData.get('holder') as string).trim()),
-          writer: Address.parse((formData.get('writer') as string).trim()),
+          holder: Address.parse((formData.get("holder") as string).trim()),
+          writer: Address.parse((formData.get("writer") as string).trim()),
           initiation,
-          expiration: BigInt(initiation + BigInt(formData.get('expiration') as string) * 60n),
-          optionType: Boolean(formData.get('optionType') as string),
-          investment: toNano(formData.get('investment') as string),
-          payout: toNano(formData.get('payout') as string)
-        }
+          expiration: BigInt(initiation + BigInt(formData.get("expiration") as string) * 60n),
+          optionType: Boolean(formData.get("optionType") as string),
+          investment: toNano(formData.get("investment") as string),
+          payout: toNano(formData.get("payout") as string),
+        },
       };
 
       await $option.deploy(args);
     } catch (error) {
-      $hapticFeedback.notificationOccurred('error');
+      $hapticFeedback.notificationOccurred("error");
 
       console.log(error);
 
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('An error occurred while deploying the option');
+        toast.error("An error occurred while deploying the option");
       }
     }
   }

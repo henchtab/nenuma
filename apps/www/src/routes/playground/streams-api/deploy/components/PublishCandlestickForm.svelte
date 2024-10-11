@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { page } from '$app/stores';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { mainButton } from '$lib/stores/tma';
-  import { randomize } from '$lib/utils';
-  import { createDataStream } from '$lib/wrappers';
-  import { onDestroy } from 'svelte';
-  import { writable } from 'svelte/store';
+  import { browser } from "$app/environment";
+  import { page } from "$app/stores";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { mainButton } from "$lib/stores/tma";
+  import { randomize } from "$lib/utils";
+  import { createDataStream } from "$lib/wrappers";
+  import { onDestroy } from "svelte";
+  import { writable } from "svelte/store";
 
   const searchParams = $page.url.searchParams;
 
-  const streamAddress = searchParams.get('streamAddress') || '';
+  const streamAddress = searchParams.get("streamAddress") || "";
   const stream = createDataStream(writable(streamAddress));
 
   let form = $state<HTMLFormElement>();
@@ -20,9 +20,9 @@
 
   $effect(() => {
     if ($mainButton && form) {
-      $mainButton.setText('Publish Candlestick').enable().show();
+      $mainButton.setText("Publish Candlestick").enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => form?.requestSubmit());
+      const unsubscribe = $mainButton.on("click", () => form?.requestSubmit());
 
       return unsubscribe;
     } else {
@@ -39,17 +39,17 @@
   async function handlePublishCandlestickSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const start = formData.get('start');
-    const end = formData.get('end');
-    const open = formData.get('open');
-    const high = formData.get('high');
-    const low = formData.get('low');
-    const close = formData.get('close');
+    const start = formData.get("start");
+    const end = formData.get("end");
+    const open = formData.get("open");
+    const high = formData.get("high");
+    const low = formData.get("low");
+    const close = formData.get("close");
 
     if (start && end && open && high && low && close) {
       const candlestick = {
@@ -58,12 +58,12 @@
         open: BigInt(open as string),
         high: BigInt(high as string),
         low: BigInt(low as string),
-        close: BigInt(close as string)
+        close: BigInt(close as string),
       };
 
       const args = {
         candlestick,
-        queryId: BigInt(formData.get('queryId') as string)
+        queryId: BigInt(formData.get("queryId") as string),
       };
 
       await $stream.publishCandlestick(args);

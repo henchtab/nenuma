@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { randomize } from '$lib/utils';
-  import { createDataStream } from '$lib/wrappers';
-  import { onMount } from 'svelte';
-  import { toast } from 'svelte-sonner';
-  import { withWalletConnection } from '$lib/with-wallet-connection';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
+  import { randomize } from "$lib/utils";
+  import { createDataStream } from "$lib/wrappers";
+  import { onMount } from "svelte";
+  import { toast } from "svelte-sonner";
+  import { withWalletConnection } from "$lib/with-wallet-connection";
 
   const stream = createDataStream();
 
@@ -19,10 +19,10 @@
     let unsubscribe: (() => void) | undefined;
 
     if ($mainButton && form) {
-      $mainButton.setText('Deploy Stream').enable().show();
+      $mainButton.setText("Deploy Stream").enable().show();
 
-      unsubscribe = $mainButton.on('click', () => {
-        $hapticFeedback.impactOccurred('heavy');
+      unsubscribe = $mainButton.on("click", () => {
+        $hapticFeedback.impactOccurred("heavy");
         form?.requestSubmit();
       });
     }
@@ -36,20 +36,20 @@
   async function handleDeploySubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      topic: formData.get('topic') as string,
-      queryId: BigInt(formData.get('queryId') as string)
+      topic: formData.get("topic") as string,
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     try {
       await $stream.deploy(args);
-      toast.success('The stream deployment transaction is on its way');
+      toast.success("The stream deployment transaction is on its way");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

@@ -1,14 +1,14 @@
 import {
   DATA_STREAM_STORAGE_KEY,
   SESSION_STORAGE_KEY,
-  SES_SUBSCRIBE_DEPOSIT
-} from '$lib/constants';
-import { getValidUntil } from '$lib/utils';
-import { Address, beginCell, type TonClient4 } from '@ton/ton';
-import { CHAIN, type TonConnectUI } from '@tonconnect/ui';
-import { Session, storeSESDestroy, storeSESSubscribe, storeSESUnsubscribe } from 'nenuma-contracts';
-import type { OpenContract } from '.';
-import { loadData, saveContractAddress, type AddressData } from './utils';
+  SES_SUBSCRIBE_DEPOSIT,
+} from "$lib/constants";
+import { getValidUntil } from "$lib/utils";
+import { Address, beginCell, type TonClient4 } from "@ton/ton";
+import { CHAIN, type TonConnectUI } from "@tonconnect/ui";
+import { Session, storeSESDestroy, storeSESSubscribe, storeSESUnsubscribe } from "nenuma-contracts";
+import type { OpenContract } from ".";
+import { loadData, saveContractAddress, type AddressData } from "./utils";
 
 export default class SessionWrapper implements OpenContract<Session> {
   private readonly publicClient: TonClient4;
@@ -27,7 +27,7 @@ export default class SessionWrapper implements OpenContract<Session> {
     const streamAddress = loadData<AddressData>(DATA_STREAM_STORAGE_KEY)?.address;
 
     if (!streamAddress) {
-      throw new Error('No stream address found. Did you deploy the data stream?');
+      throw new Error("No stream address found. Did you deploy the data stream?");
     }
 
     const sessionAddress = loadData<AddressData>(SESSION_STORAGE_KEY)?.address;
@@ -38,7 +38,7 @@ export default class SessionWrapper implements OpenContract<Session> {
     } else {
       session = await Session.fromInit(
         Address.parse(streamAddress),
-        Address.parse(this.subscriberAddress)
+        Address.parse(this.subscriberAddress),
       );
       saveContractAddress(session, SESSION_STORAGE_KEY);
     }
@@ -55,20 +55,20 @@ export default class SessionWrapper implements OpenContract<Session> {
       payload: beginCell()
         .store(
           storeSESSubscribe({
-            $$type: 'SESSubscribe',
+            $$type: "SESSubscribe",
             notificationsCount: args.notificationsCount,
-            queryId: args.queryId
-          })
+            queryId: args.queryId,
+          }),
         )
         .endCell()
         .toBoc()
-        .toString('base64')
+        .toString("base64"),
     };
 
     await this.tonConnectUI.sendTransaction({
       validUntil: getValidUntil(),
       messages: [message],
-      network: CHAIN.TESTNET
+      network: CHAIN.TESTNET,
     });
 
     return this;
@@ -83,19 +83,19 @@ export default class SessionWrapper implements OpenContract<Session> {
       payload: beginCell()
         .store(
           storeSESUnsubscribe({
-            $$type: 'SESUnsubscribe',
-            queryId: args.queryId
-          })
+            $$type: "SESUnsubscribe",
+            queryId: args.queryId,
+          }),
         )
         .endCell()
         .toBoc()
-        .toString('base64')
+        .toString("base64"),
     };
 
     await this.tonConnectUI.sendTransaction({
       validUntil: getValidUntil(),
       messages: [message],
-      network: CHAIN.TESTNET
+      network: CHAIN.TESTNET,
     });
 
     return this;
@@ -106,23 +106,23 @@ export default class SessionWrapper implements OpenContract<Session> {
 
     const message = {
       address: contract.address.toString(),
-      amount: '0',
+      amount: "0",
       payload: beginCell()
         .store(
           storeSESDestroy({
-            $$type: 'SESDestroy',
-            queryId: args.queryId
-          })
+            $$type: "SESDestroy",
+            queryId: args.queryId,
+          }),
         )
         .endCell()
         .toBoc()
-        .toString('base64')
+        .toString("base64"),
     };
 
     await this.tonConnectUI.sendTransaction({
       validUntil: getValidUntil(),
       messages: [message],
-      network: CHAIN.TESTNET
+      network: CHAIN.TESTNET,
     });
 
     return this;

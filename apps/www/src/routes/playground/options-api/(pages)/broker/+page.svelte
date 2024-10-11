@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Broker } from '../../components';
+  import { Broker } from "../../components";
 </script>
 
 <svelte:head>

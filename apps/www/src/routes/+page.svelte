@@ -1,18 +1,18 @@
 <script lang="ts">
-  import logo from '$lib/assets/logo.svg';
-  import { getContext, onMount } from 'svelte';
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
-  import type { TonConnectStore } from '$lib/stores/ton-connect';
+  import logo from "$lib/assets/logo.svg";
+  import { getContext, onMount } from "svelte";
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
+  import { TON_CONNECT_UI_CONTEXT } from "$lib/constants";
+  import type { TonConnectStore } from "$lib/stores/ton-connect";
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
   onMount(() => {
-    $mainButton.setText('Connect Wallet').enable().show();
+    $mainButton.setText("Connect Wallet").enable().show();
 
-    const cleanup = $mainButton.on('click', () => {
+    const cleanup = $mainButton.on("click", () => {
       $tonConnect.connectWallet();
-      $hapticFeedback.impactOccurred('medium');
+      $hapticFeedback.impactOccurred("medium");
     });
 
     return () => {

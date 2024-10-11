@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Drawer as DrawerPrimitive } from 'vaul-svelte';
-  import DrawerOverlay from './drawer-overlay.svelte';
-  import { cn } from '$lib/utils.js';
+  import { Drawer as DrawerPrimitive } from "vaul-svelte";
+  import DrawerOverlay from "./drawer-overlay.svelte";
+  import { cn } from "$lib/utils.js";
 
   type $$Props = DrawerPrimitive.ContentProps;
 
-  let className: $$Props['class'] = undefined;
+  let className: $$Props["class"] = undefined;
   export { className as class };
 </script>
 
@@ -13,8 +13,8 @@
   <DrawerOverlay />
   <DrawerPrimitive.Content
     class={cn(
-      'fixed inset-x-0 bottom-0 top-[25%] z-50 flex flex-col rounded-t-[10px] border-t bg-ds-background-200',
-      className
+      "fixed inset-x-0 bottom-0 top-[25%] z-50 flex flex-col rounded-t-[10px] border-t bg-ds-background-200",
+      className,
     )}
     {...$$restProps}
   >

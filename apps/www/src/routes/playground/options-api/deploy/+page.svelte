@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { backButton } from '$lib/stores/tma';
-  import { page } from '$app/stores';
-  import { onMount } from 'svelte';
-  import { BrokerOptionForm, BrokerDepositForm, OptionForm } from './components';
-  import { derived } from 'svelte/store';
+  import { backButton } from "$lib/stores/tma";
+  import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import { BrokerOptionForm, BrokerDepositForm, OptionForm } from "./components";
+  import { derived } from "svelte/store";
 
   type ComponentKey = keyof ComponentMap;
 
@@ -17,24 +17,24 @@
   const contractToComponent: ComponentMap = {
     brokerOption: BrokerOptionForm,
     brokerDeposit: BrokerDepositForm,
-    option: OptionForm
+    option: OptionForm,
   };
 
   const contractType = derived(page, ($page) => {
-    const type = $page.url.searchParams.get('contract') || 'option';
+    const type = $page.url.searchParams.get("contract") || "option";
 
-    return (type in contractToComponent ? type : 'option') as ComponentKey;
+    return (type in contractToComponent ? type : "option") as ComponentKey;
   });
 
-  const title = $page.url.searchParams.get('title') || 'Fill out the form';
+  const title = $page.url.searchParams.get("title") || "Fill out the form";
   // TODO: What to do with subtitle?
-  const subtitle = $page.url.searchParams.get('subtitle') || '';
-  const shouldForceTitle = $page.url.searchParams.get('forceTitle') === 'true';
+  const subtitle = $page.url.searchParams.get("subtitle") || "";
+  const shouldForceTitle = $page.url.searchParams.get("forceTitle") === "true";
 
   onMount(() => {
     $backButton.show();
 
-    const unsubscribe = $backButton.on('click', () => {
+    const unsubscribe = $backButton.on("click", () => {
       history.back();
     });
 

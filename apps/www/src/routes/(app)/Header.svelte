@@ -1,26 +1,26 @@
 <script lang="ts">
-  import logo from '$lib/assets/logo.svg';
-  import { Button } from '$lib/components/ui/button';
-  import * as Drawer from '$lib/components/ui/drawer';
-  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
-  import { hapticFeedback } from '$lib/stores/tma';
-  import { isConnected, isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
-  import { KlineTopic, latestPrices } from '$lib/stores/ws.svelte';
-  import { shortenAddress } from '$lib/shorten-address';
-  import { Menu, TestTubes, X, Wallet } from 'lucide-svelte';
-  import { getContext } from 'svelte';
-  import { AccountBalance, TonLogo } from '$lib/components';
-  import { Skeleton } from '$lib/components/ui/skeleton';
+  import logo from "$lib/assets/logo.svg";
+  import { Button } from "$lib/components/ui/button";
+  import * as Drawer from "$lib/components/ui/drawer";
+  import { TON_CONNECT_UI_CONTEXT } from "$lib/constants";
+  import { hapticFeedback } from "$lib/stores/tma";
+  import { isConnected, isReconnecting, type TonConnectStore } from "$lib/stores/ton-connect";
+  import { KlineTopic, latestPrices } from "$lib/stores/ws.svelte";
+  import { shortenAddress } from "$lib/shorten-address";
+  import { Menu, TestTubes, X, Wallet } from "lucide-svelte";
+  import { getContext } from "svelte";
+  import { AccountBalance, TonLogo } from "$lib/components";
+  import { Skeleton } from "$lib/components/ui/skeleton";
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
 
   const items = [
     {
-      symbol: 'BTC',
-      href: '/dashboard/BTCUSDT',
-      name: 'Bitcoin',
-      priceKey: KlineTopic.BTCUSDT
-    }
+      symbol: "BTC",
+      href: "/dashboard/BTCUSDT",
+      name: "Bitcoin",
+      priceKey: KlineTopic.BTCUSDT,
+    },
   ];
 </script>
 
@@ -38,7 +38,7 @@
         and this hidden div. To avoid this, we add margin directly to the trigger element. -->
         <Drawer.Trigger
           class="w-8 h-8 border border-ds-gray-400 ml-2 rounded-full"
-          onclick={() => $hapticFeedback.impactOccurred('light')}
+          onclick={() => $hapticFeedback.impactOccurred("light")}
         >
           <Menu class="overflow-visible m-auto" size="16" /></Drawer.Trigger
         >
@@ -48,7 +48,7 @@
           <Drawer.Header>
             <Drawer.Title>Navigation</Drawer.Title>
 
-            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred('light')}>
+            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred("light")}>
               <div
                 class="w-8 h-8 border border-ds-gray-400 transition-colors text-ds-gray-1000 hover:bg-ds-gray-200 bg-ds-gray-100 inline-flex items-center justify-center rounded-full"
               >
@@ -69,7 +69,7 @@
                       {...builder}
                       class="flex justify-between items-center h-12"
                       href={item.href}
-                      onclick={() => $hapticFeedback.impactOccurred('light')}
+                      onclick={() => $hapticFeedback.impactOccurred("light")}
                     >
                       <div class="flex flex-col items-baseline">
                         <div>
@@ -96,7 +96,7 @@
                   {...builder}
                   class="flex h-12 justify-between items-center"
                   href="/playground"
-                  onclick={() => $hapticFeedback.impactOccurred('light')}
+                  onclick={() => $hapticFeedback.impactOccurred("light")}
                 >
                   <div class="font-medium text-ds-gray-1000 text-lg">Playground</div>
                   <TestTubes size="20" />
@@ -109,7 +109,7 @@
                   class="w-full gap-2"
                   onclickcapture={() => {
                     $tonConnect.disconnectWallet();
-                    $hapticFeedback.impactOccurred('medium');
+                    $hapticFeedback.impactOccurred("medium");
                   }}
                 >
                   <TonLogo />
@@ -120,7 +120,7 @@
                   class="w-full gap-2"
                   onclickcapture={() => {
                     $tonConnect.connectWallet();
-                    $hapticFeedback.impactOccurred('medium');
+                    $hapticFeedback.impactOccurred("medium");
                   }}
                 >
                   <Wallet size={16} />

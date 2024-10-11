@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { randomize } from '$lib/utils';
+  import { page } from "$app/stores";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { randomize } from "$lib/utils";
 
-  import { mainButton } from '$lib/stores/tma';
-  import { createDataStream } from '$lib/wrappers';
-  import { writable } from 'svelte/store';
-  import { onDestroy } from 'svelte';
-  import { browser } from '$app/environment';
+  import { mainButton } from "$lib/stores/tma";
+  import { createDataStream } from "$lib/wrappers";
+  import { writable } from "svelte/store";
+  import { onDestroy } from "svelte";
+  import { browser } from "$app/environment";
 
   const searchParams = $page.url.searchParams;
 
-  const streamAddress = searchParams.get('streamAddress') || '';
+  const streamAddress = searchParams.get("streamAddress") || "";
   const stream = createDataStream(writable(streamAddress));
 
   let form = $state<HTMLFormElement>();
@@ -21,9 +21,9 @@
 
   $effect(() => {
     if ($mainButton && form) {
-      $mainButton.setText('Deploy Session').enable().show();
+      $mainButton.setText("Deploy Session").enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => form?.requestSubmit());
+      const unsubscribe = $mainButton.on("click", () => form?.requestSubmit());
 
       return unsubscribe;
     } else {
@@ -40,13 +40,13 @@
   async function handleDeploySessionSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      queryId: BigInt(formData.get('queryId') as string)
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $stream.deploySession(args);

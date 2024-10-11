@@ -1,7 +1,7 @@
-import { PUBLIC_API_URL } from '$env/static/public';
-import type { Account, ConnectAdditionalRequest, TonProofItemReplySuccess } from '@tonconnect/ui';
-import cookie from 'js-cookie';
-import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES } from './constants';
+import { PUBLIC_API_URL } from "$env/static/public";
+import type { Account, ConnectAdditionalRequest, TonProofItemReplySuccess } from "@tonconnect/ui";
+import cookie from "js-cookie";
+import { ACCESS_TOKEN_COOKIE, COOKIE_EXPIRES } from "./constants";
 
 /**
  * Generate a new proof payload
@@ -26,8 +26,8 @@ export async function generatePayload(): Promise<ConnectAdditionalRequest | null
  * @returns {Promise<void>}
  */
 export async function checkProof(
-  proof: TonProofItemReplySuccess['proof'],
-  account: Account
+  proof: TonProofItemReplySuccess["proof"],
+  account: Account,
 ): Promise<void> {
   try {
     const reqBody = {
@@ -36,28 +36,28 @@ export async function checkProof(
       public_key: account.publicKey,
       proof: {
         ...proof,
-        state_init: account.walletStateInit
-      }
+        state_init: account.walletStateInit,
+      },
     };
 
     const response = await (
       await fetch(`${PUBLIC_API_URL}/api/check-proof`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(reqBody),
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       })
     ).json();
 
     if (response?.token) {
       cookie.set(ACCESS_TOKEN_COOKIE, response.token, {
         expires: COOKIE_EXPIRES,
-        sameSite: 'Lax'
+        sameSite: "Lax",
       });
     }
   } catch (e) {
-    console.log('checkProof error:', e);
+    console.log("checkProof error:", e);
   }
 }
 
@@ -74,8 +74,8 @@ export async function getAccountInfo(): Promise<{
   const response = await fetch(`${PUBLIC_API_URL}/api/account-info`, {
     headers: {
       Authorization: `Bearer ${cookie.get(ACCESS_TOKEN_COOKIE)}`,
-      'Content-Type': 'application/json'
-    }
+      "Content-Type": "application/json",
+    },
   });
 
   if (!response.ok) {

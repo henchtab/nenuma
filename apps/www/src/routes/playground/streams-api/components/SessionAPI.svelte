@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate } from '$lib/utils';
-  import { useSession } from '$lib/wrappers';
-  import { fromNano } from '@ton/core';
-  import { writable } from 'svelte/store';
-  import Output from '../../components/Output.svelte';
-  import Section from './Section.svelte';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { formatOutputDate } from "$lib/utils";
+  import { useSession } from "$lib/wrappers";
+  import { fromNano } from "@ton/core";
+  import { writable } from "svelte/store";
+  import Output from "../../components/Output.svelte";
+  import Section from "./Section.svelte";
 
-  const subscriberAddress = writable('');
+  const subscriberAddress = writable("");
   const session = useSession(subscriberAddress);
 
   let output = $state<{ date: string; message: string }[]>([]);
@@ -17,14 +17,14 @@
   async function handleSessionSubscriptionSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      notificationsCount: BigInt(formData.get('notificationsCount') as string),
-      queryId: BigInt(formData.get('queryId') as string)
+      notificationsCount: BigInt(formData.get("notificationsCount") as string),
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $session.subscribe(args);
@@ -33,13 +33,13 @@
   async function handleSessionUnsubscriptionSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      queryId: BigInt(formData.get('queryId') as string)
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $session.unsubscribe(args);
@@ -48,13 +48,13 @@
   async function handleSessionDestroySubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      queryId: BigInt(formData.get('queryId') as string)
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $session.destroy(args);
@@ -131,7 +131,7 @@
         const result = await $session.getStreamAddress();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Stream Address</Button
     >
@@ -143,7 +143,7 @@
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          message: JSON.stringify(`${fromNano(result)} TON`, null, 2),
         });
       }}>Get Balance</Button
     >
@@ -156,14 +156,14 @@
         if (!result) {
           output.unshift({
             date: formatOutputDate(new Date()),
-            message: 'No batch address found'
+            message: "No batch address found",
           });
           return;
         }
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Batch Address</Button
     >
@@ -175,7 +175,7 @@
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Subscriber Address</Button
     >

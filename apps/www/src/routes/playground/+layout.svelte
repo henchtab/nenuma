@@ -1,17 +1,17 @@
 <script lang="ts">
-  import logo from '$lib/assets/logo.svg';
-  import { AccountBalance, TonLogo } from '$lib/components';
-  import { Button } from '$lib/components/ui/button';
-  import * as Drawer from '$lib/components/ui/drawer';
-  import { Skeleton } from '$lib/components/ui/skeleton';
-  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
-  import { shortenAddress } from '$lib/shorten-address';
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { isConnected, isReconnecting, type TonConnectStore } from '$lib/stores/ton-connect';
-  import { Bookmark, Menu, Wallet, X } from 'lucide-svelte';
-  import { getContext, onMount } from 'svelte';
-  import { toast } from 'svelte-sonner';
-  import Saved from './components/Saved.svelte';
+  import logo from "$lib/assets/logo.svg";
+  import { AccountBalance, TonLogo } from "$lib/components";
+  import { Button } from "$lib/components/ui/button";
+  import * as Drawer from "$lib/components/ui/drawer";
+  import { Skeleton } from "$lib/components/ui/skeleton";
+  import { TON_CONNECT_UI_CONTEXT } from "$lib/constants";
+  import { shortenAddress } from "$lib/shorten-address";
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
+  import { isConnected, isReconnecting, type TonConnectStore } from "$lib/stores/ton-connect";
+  import { Bookmark, Menu, Wallet, X } from "lucide-svelte";
+  import { getContext, onMount } from "svelte";
+  import { toast } from "svelte-sonner";
+  import Saved from "./components/Saved.svelte";
 
   let { children } = $props();
 
@@ -44,7 +44,7 @@
       <Drawer.Root onOpenChange={(v) => (isSavedOpen = v)}>
         <Drawer.Trigger
           class="w-8 h-8 border border-ds-gray-400 rounded-full ml-2"
-          onclick={() => $hapticFeedback.impactOccurred('light')}
+          onclick={() => $hapticFeedback.impactOccurred("light")}
         >
           <Bookmark class="overflow-visible m-auto" size="16" strokeWidth={1.5} />
         </Drawer.Trigger>
@@ -54,7 +54,7 @@
           <Drawer.Header>
             <Drawer.Title>Deployed Accounts</Drawer.Title>
 
-            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred('light')}>
+            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred("light")}>
               <div
                 class="w-8 h-8 border border-ds-gray-400 transition-colors text-ds-gray-1000 hover:bg-ds-gray-200 bg-ds-gray-100 inline-flex items-center justify-center rounded-full"
               >
@@ -71,7 +71,7 @@
         <!-- To avoid excessive gap while drawer content being portalled, we need to add ml-2 here -->
         <Drawer.Trigger
           class="w-8 h-8 border border-ds-gray-400 rounded-full ml-2"
-          onclick={() => $hapticFeedback.impactOccurred('light')}
+          onclick={() => $hapticFeedback.impactOccurred("light")}
         >
           <Menu class="overflow-visible m-auto" size="16" strokeWidth={1.5} /></Drawer.Trigger
         >
@@ -81,7 +81,7 @@
           <Drawer.Header>
             <Drawer.Title>Navigation</Drawer.Title>
 
-            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred('light')}>
+            <Drawer.Close onclick={() => $hapticFeedback.impactOccurred("light")}>
               <div
                 class="w-8 h-8 border border-ds-gray-400 transition-colors text-ds-gray-1000 hover:bg-ds-gray-200 bg-ds-gray-100 inline-flex items-center justify-center rounded-full"
               >
@@ -100,7 +100,7 @@
                   {...builder}
                   class="flex justify-between items-center h-12 text-lg font-medium"
                   href="/dashboard"
-                  onclick={() => $hapticFeedback.impactOccurred('light')}
+                  onclick={() => $hapticFeedback.impactOccurred("light")}
                 >
                   Derivatives Exchange
                 </a>
@@ -116,7 +116,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/streams-api/data-stream"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Data Stream
                       </a>
@@ -129,7 +129,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/streams-api/subscription-batch"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Subscription Batch
                       </a>
@@ -142,7 +142,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/streams-api/session"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Session
                       </a>
@@ -155,7 +155,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/streams-api/simple-subscriber"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Simple Subscriber
                       </a>
@@ -174,7 +174,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/options-api/brokerage"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Brokerage
                       </a>
@@ -187,7 +187,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/options-api/broker"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Broker
                       </a>
@@ -200,7 +200,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/options-api/brokerage-account"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Brokerage Account
                       </a>
@@ -213,7 +213,7 @@
                         {...builder}
                         class="flex justify-between items-center h-12 text-lg font-medium"
                         href="/playground/options-api/cash-or-nothing-option"
-                        onclick={() => $hapticFeedback.impactOccurred('light')}
+                        onclick={() => $hapticFeedback.impactOccurred("light")}
                       >
                         Cash-or-Nothing Option
                       </a>
@@ -230,7 +230,7 @@
                     class="w-full gap-2"
                     onclickcapture={() => {
                       $tonConnect.disconnectWallet();
-                      $hapticFeedback.impactOccurred('medium');
+                      $hapticFeedback.impactOccurred("medium");
                     }}
                   >
                     <TonLogo />
@@ -241,7 +241,7 @@
                     class="w-full gap-2"
                     onclickcapture={() => {
                       $tonConnect.connectWallet();
-                      $hapticFeedback.impactOccurred('medium');
+                      $hapticFeedback.impactOccurred("medium");
                     }}
                   >
                     <Wallet size={16} />

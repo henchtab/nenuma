@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { formatTime, randomize } from '$lib/utils';
-  import { useBroker } from '$lib/wrappers';
-  import { toNano } from '@ton/core';
-  import { onMount } from 'svelte';
-  import { toast } from 'svelte-sonner';
-  import { writable } from 'svelte/store';
+  import { page } from "$app/stores";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
+  import { formatTime, randomize } from "$lib/utils";
+  import { useBroker } from "$lib/wrappers";
+  import { toNano } from "@ton/core";
+  import { onMount } from "svelte";
+  import { toast } from "svelte-sonner";
+  import { writable } from "svelte/store";
 
   const searchParams = $page.url.searchParams;
-  const brokerAddress = searchParams.get('broker') || '';
+  const brokerAddress = searchParams.get("broker") || "";
 
   const broker = useBroker(writable(brokerAddress));
 
@@ -24,11 +24,11 @@
 
   $effect(() => {
     if ($mainButton && form) {
-      $mainButton.setText('Deposit').enable().show();
+      $mainButton.setText("Deposit").enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => {
+      const unsubscribe = $mainButton.on("click", () => {
         form?.requestSubmit();
-        $hapticFeedback.impactOccurred('heavy');
+        $hapticFeedback.impactOccurred("heavy");
       });
 
       return unsubscribe;
@@ -57,36 +57,36 @@
   async function handleSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    formData.set('optionType', optionType as string);
+    formData.set("optionType", optionType as string);
 
     for (const [_, value] of formData) {
       if (!value) {
-        $hapticFeedback.notificationOccurred('error');
-        toast.error('Please fill in all the fields');
+        $hapticFeedback.notificationOccurred("error");
+        toast.error("Please fill in all the fields");
         return;
       }
     }
 
     try {
       const args = {
-        queryId: BigInt(formData.get('queryId') as string),
-        deposit : toNano(formData.get('deposit') as string)
+        queryId: BigInt(formData.get("queryId") as string),
+        deposit: toNano(formData.get("deposit") as string),
       };
 
       await $broker.deposit(args);
     } catch (error) {
-      $hapticFeedback.notificationOccurred('error');
+      $hapticFeedback.notificationOccurred("error");
 
       console.log(error);
 
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('An error occurred while deploying the option');
+        toast.error("An error occurred while deploying the option");
       }
     }
   }

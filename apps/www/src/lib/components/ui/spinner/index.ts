@@ -1,7 +1,7 @@
-import Root from './spinner.svelte';
+import Root from "./spinner.svelte";
 
 export {
   Root,
   //
-  Root as Spinner
+  Root as Spinner,
 };

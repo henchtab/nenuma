@@ -1,8 +1,8 @@
-import { DATA_STREAM_STORAGE_KEY, SUBSCRIPTION_BATCHES_STORAGE_KEY } from '$lib/constants';
-import { Address, OpenedContract, type TonClient4 } from '@ton/ton';
-import { SubscriptionBatch } from 'nenuma-contracts';
-import type { OpenContract } from '.';
-import { loadData, type AddressData } from './utils';
+import { DATA_STREAM_STORAGE_KEY, SUBSCRIPTION_BATCHES_STORAGE_KEY } from "$lib/constants";
+import { Address, OpenedContract, type TonClient4 } from "@ton/ton";
+import { SubscriptionBatch } from "nenuma-contracts";
+import type { OpenContract } from ".";
+import { loadData, type AddressData } from "./utils";
 
 export default class SubscriptionBatchWrapper implements OpenContract<SubscriptionBatch> {
   private readonly publicClient: TonClient4;
@@ -35,13 +35,13 @@ export default class SubscriptionBatchWrapper implements OpenContract<Subscripti
 
     const existingBatches = loadData<AddressData[]>(SUBSCRIPTION_BATCHES_STORAGE_KEY) || [];
     const existingBatch = existingBatches.findIndex(
-      (batch) => batch.address === newSubscriptionBatch.address.toString()
+      (batch) => batch.address === newSubscriptionBatch.address.toString(),
     );
 
     if (existingBatch === -1) {
       existingBatches.push({
         address: newSubscriptionBatch.address.toString(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
       localStorage.setItem(SUBSCRIPTION_BATCHES_STORAGE_KEY, JSON.stringify(existingBatches));
     }
@@ -53,7 +53,7 @@ export default class SubscriptionBatchWrapper implements OpenContract<Subscripti
     }
 
     if (!this.streamAddress) {
-      throw new Error('No stream address found. Did you deploy the data stream?');
+      throw new Error("No stream address found. Did you deploy the data stream?");
     }
 
     const subscriptionBatch = await SubscriptionBatch.fromInit(this.streamAddress, this.batchId);

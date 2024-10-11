@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SubscriptionBatch } from '../../components';
+  import { SubscriptionBatch } from "../../components";
 </script>
 
 <svelte:head>

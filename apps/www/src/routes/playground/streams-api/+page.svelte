@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DataStream, Session, SimpleSubscriber, SubscriptionBatch } from './components';
+  import { DataStream, Session, SimpleSubscriber, SubscriptionBatch } from "./components";
 </script>
 
 <svelte:head>

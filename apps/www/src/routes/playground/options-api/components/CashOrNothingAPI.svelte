@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate, formatTime } from '$lib/utils';
-  import { createCashOrNothingOption } from '$lib/wrappers';
-  import { Address, fromNano } from '@ton/core';
-  import clsx from 'clsx';
-  import { toast } from 'svelte-sonner';
-  import { derived, writable } from 'svelte/store';
-  import Output from '../../components/Output.svelte';
-  import Section from './Section.svelte';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { formatOutputDate, formatTime } from "$lib/utils";
+  import { createCashOrNothingOption } from "$lib/wrappers";
+  import { Address, fromNano } from "@ton/core";
+  import clsx from "clsx";
+  import { toast } from "svelte-sonner";
+  import { derived, writable } from "svelte/store";
+  import Output from "../../components/Output.svelte";
+  import Section from "./Section.svelte";
 
-  const streamAddress = writable('');
+  const streamAddress = writable("");
   const option = createCashOrNothingOption(streamAddress);
 
   const shouldDisableActions = derived([streamAddress], ([$streamAddress]) => !$streamAddress);
@@ -19,22 +19,22 @@
   let output = $state<{ date: string; message: string }[]>([]);
 
   function formatOutput(input: {
-    type: 'coins' | 'object' | 'address' | 'timestamp' | 'other';
+    type: "coins" | "object" | "address" | "timestamp" | "other";
     value: bigint | object | Address | null;
   }) {
     if (input.value === null) {
-      return 'Empty response.';
+      return "Empty response.";
     }
 
-    if (input.type === 'coins') {
+    if (input.type === "coins") {
       return fromNano(input.value as bigint).toString();
     }
 
-    if (input.type === 'timestamp') {
+    if (input.type === "timestamp") {
       return formatTime(new Date(Number(input.value) * 1000));
     }
 
-    if (input.type === 'object') {
+    if (input.type === "object") {
       return JSON.stringify(
         input.value,
         (_, v) => {
@@ -42,20 +42,20 @@
             return v.toString({ testOnly: true, bounceable: false });
           }
 
-          if (typeof v === 'bigint') {
+          if (typeof v === "bigint") {
             return v.toString();
           }
 
           return v;
         },
-        2
+        2,
       );
     }
 
-    if (input.type === 'address') {
+    if (input.type === "address") {
       return (input.value as Address).toString({
         testOnly: true,
-        bounceable: false
+        bounceable: false,
       });
     }
 
@@ -89,10 +89,10 @@
 
   <div class="flex mt-8 gap-4 items-end overflow-x-auto pb-6 snap-x snap-mandatory">
     <a
-      class={clsx('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
+      class={clsx("snap-start", $shouldDisableActions && "cursor-not-allowed")}
       href={$shouldDisableActions
         ? undefined
-        : `/playground/options-api/deploy?contract=option&title=${encodeURIComponent('Cash-or-Nothing Option')}&subtitle=option&stream=${$streamAddress}`}
+        : `/playground/options-api/deploy?contract=option&title=${encodeURIComponent("Cash-or-Nothing Option")}&subtitle=option&stream=${$streamAddress}`}
     >
       <Button
         class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white"
@@ -116,12 +116,12 @@
           const result = await $option.getOptionId();
           postToOutput(
             formatOutput({
-              type: 'other',
-              value: result
-            })
+              type: "other",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -136,12 +136,12 @@
           const result = await $option.getAgreement();
           postToOutput(
             formatOutput({
-              type: 'object',
-              value: result
-            })
+              type: "object",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -156,12 +156,12 @@
           const result = await $option.getStrikePrice();
           postToOutput(
             formatOutput({
-              type: 'other',
-              value: result
-            })
+              type: "other",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -176,12 +176,12 @@
           const result = await $option.getLatestCandlestick();
           postToOutput(
             formatOutput({
-              type: 'object',
-              value: result
-            })
+              type: "object",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -196,12 +196,12 @@
           const result = await $option.getExpiration();
           postToOutput(
             formatOutput({
-              type: 'timestamp',
-              value: result
-            })
+              type: "timestamp",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -216,12 +216,12 @@
           const result = await $option.getBalance();
           postToOutput(
             formatOutput({
-              type: 'coins',
-              value: result
-            })
+              type: "coins",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -236,12 +236,12 @@
           const result = await $option.getDeployerAddress();
           postToOutput(
             formatOutput({
-              type: 'address',
-              value: result
-            })
+              type: "address",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -256,12 +256,12 @@
           const result = await $option.getStreamAddress();
           postToOutput(
             formatOutput({
-              type: 'address',
-              value: result
-            })
+              type: "address",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -276,12 +276,12 @@
           const result = await $option.getSessionAddress();
           postToOutput(
             formatOutput({
-              type: 'address',
-              value: result
-            })
+              type: "address",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >
@@ -296,12 +296,12 @@
           const result = await $option.getNotificationsCount();
           postToOutput(
             formatOutput({
-              type: 'other',
-              value: result
-            })
+              type: "other",
+              value: result,
+            }),
           );
         } catch (error) {
-          toast.error('Option has not been deployed or it has expired.');
+          toast.error("Option has not been deployed or it has expired.");
         }
       }}
     >

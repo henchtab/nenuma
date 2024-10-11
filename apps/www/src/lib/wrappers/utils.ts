@@ -1,13 +1,10 @@
-import type { Contract, OpenedContract } from '@ton/core';
+import type { Contract, OpenedContract } from "@ton/core";
 
-export function saveContractAddress<C extends Contract>(
-  contract: string | C,
-  key: string
-) {
+export function saveContractAddress<C extends Contract>(contract: string | C, key: string) {
   try {
     let address: string;
 
-    if (typeof contract === 'string') {
+    if (typeof contract === "string") {
       address = contract;
     } else {
       address = contract.address.toString({ testOnly: true });
@@ -17,12 +14,12 @@ export function saveContractAddress<C extends Contract>(
       key,
       JSON.stringify({
         address,
-        timestamp: Date.now()
-      })
+        timestamp: Date.now(),
+      }),
     );
   } catch (error) {
-    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      console.error('Failed to save stream address: quota exceeded');
+    if (error instanceof DOMException && error.name === "QuotaExceededError") {
+      console.error("Failed to save stream address: quota exceeded");
     }
   }
 }

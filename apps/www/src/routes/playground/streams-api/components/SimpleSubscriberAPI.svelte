@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate } from '$lib/utils';
-  import { createSimpleSubscriber } from '$lib/wrappers';
-  import { fromNano } from '@ton/core';
-  import { writable } from 'svelte/store';
-  import Output from '../../components/Output.svelte';
-  import Section from './Section.svelte';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { formatOutputDate } from "$lib/utils";
+  import { createSimpleSubscriber } from "$lib/wrappers";
+  import { fromNano } from "@ton/core";
+  import { writable } from "svelte/store";
+  import Output from "../../components/Output.svelte";
+  import Section from "./Section.svelte";
 
-  const simpleSubscriberAddress = writable('');
+  const simpleSubscriberAddress = writable("");
   const simpleSubscriber = createSimpleSubscriber(simpleSubscriberAddress);
 
   let output = $state<{ date: string; message: string }[]>([]);
@@ -17,13 +17,13 @@
   async function handleCheckTimeoutSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      queryId: BigInt(formData.get('queryId') as string)
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $simpleSubscriber.checkTimeout(args);
@@ -54,7 +54,7 @@
   <div class="flex gap-4 items-end overflow-x-auto pb-6 snap-x snap-mandatory">
     <a
       class="snap-start"
-      href={`/playground/streams-api/deploy?contract=subscriber&title=${encodeURIComponent('Simple Subscriber')}&subtitle=simple subscriber`}
+      href={`/playground/streams-api/deploy?contract=subscriber&title=${encodeURIComponent("Simple Subscriber")}&subtitle=simple subscriber`}
     >
       <Button class="bg-ds-green-800 text-white hover:bg-ds-green-700"
         >Deploy Simple Subscriber
@@ -77,7 +77,7 @@
         const result = await $simpleSubscriber.getBalance();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          message: JSON.stringify(`${fromNano(result)} TON`, null, 2),
         });
       }}>Get Balance</Button
     >
@@ -88,7 +88,7 @@
         const result = await $simpleSubscriber.getOwnerAddress();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Owner Address</Button
     >
@@ -99,7 +99,7 @@
         const result = await $simpleSubscriber.getNotificationsCount();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result?.toString(), null, 2)
+          message: JSON.stringify(result?.toString(), null, 2),
         });
       }}>Get Notifications Count</Button
     >
@@ -110,7 +110,7 @@
         const result = await $simpleSubscriber.getExpiresAt();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result?.toString(), null, 2)
+          message: JSON.stringify(result?.toString(), null, 2),
         });
       }}>Get Expires At</Button
     >
@@ -121,7 +121,7 @@
         const result = await $simpleSubscriber.getStreamAddress();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result?.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result?.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Stream Address</Button
     >
@@ -132,7 +132,7 @@
         const result = await $simpleSubscriber.getSessionAddress();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result?.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result?.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Session Address</Button
     >
@@ -145,7 +145,7 @@
         if (!result) {
           output.unshift({
             date: formatOutputDate(new Date()),
-            message: 'No candlestick found'
+            message: "No candlestick found",
           });
           return;
         }
@@ -156,16 +156,16 @@
           open: result.open.toString(),
           high: result.high.toString(),
           low: result.low.toString(),
-          close: result.close.toString()
+          close: result.close.toString(),
         };
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(serialized, null, 2)
+          message: JSON.stringify(serialized, null, 2),
         });
       }}>Get Latest Candlestick</Button
     >
   </div>
-  
+
   <Output bind:output />
 </Section>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SimpleSubscriber } from '../../components';
+  import { SimpleSubscriber } from "../../components";
 </script>
 
 <svelte:head>

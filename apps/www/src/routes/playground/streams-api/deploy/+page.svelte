@@ -1,9 +1,15 @@
 <script lang="ts">
-  import { backButton } from '$lib/stores/tma';
-  import { page } from '$app/stores';
-  import { onMount } from 'svelte';
-  import { BatchForm, PublishCandlestickForm, SessionForm, SimpleSubscriberForm, StreamForm } from './components';
-  import { derived } from 'svelte/store';
+  import { backButton } from "$lib/stores/tma";
+  import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import {
+    BatchForm,
+    PublishCandlestickForm,
+    SessionForm,
+    SimpleSubscriberForm,
+    StreamForm,
+  } from "./components";
+  import { derived } from "svelte/store";
 
   type ComponentKey = keyof ComponentMap;
 
@@ -21,22 +27,22 @@
     batch: BatchForm,
     session: SessionForm,
     candlestick: PublishCandlestickForm,
-    subscriber: SimpleSubscriberForm
+    subscriber: SimpleSubscriberForm,
   };
 
   const contractType = derived(page, ($page) => {
-    const type = $page.url.searchParams.get('contract') || 'stream';
+    const type = $page.url.searchParams.get("contract") || "stream";
 
-    return (type in contractToComponent ? type : 'stream') as ComponentKey;
+    return (type in contractToComponent ? type : "stream") as ComponentKey;
   });
 
-  const title = $page.url.searchParams.get('title') || 'Fill out the form';
-  const subtitle = $page.url.searchParams.get('subtitle') || '';
+  const title = $page.url.searchParams.get("title") || "Fill out the form";
+  const subtitle = $page.url.searchParams.get("subtitle") || "";
 
   onMount(() => {
     $backButton.show();
 
-    const unsubscribe = $backButton.on('click', () => {
+    const unsubscribe = $backButton.on("click", () => {
       history.back();
     });
 

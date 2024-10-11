@@ -1,6 +1,6 @@
 <script lang="ts">
-  import autoAnimate from '@formkit/auto-animate';
-  import { Button } from '$lib/components/ui/button';
+  import autoAnimate from "@formkit/auto-animate";
+  import { Button } from "$lib/components/ui/button";
 
   type OutputMessage = { date: string; message: string };
 

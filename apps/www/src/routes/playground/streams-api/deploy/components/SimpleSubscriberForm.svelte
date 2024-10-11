@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { page } from '$app/stores';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { hapticFeedback, mainButton } from '$lib/stores/tma';
-  import { randomize } from '$lib/utils';
-  import { createSimpleSubscriber } from '$lib/wrappers';
-  import { onDestroy } from 'svelte';
-  import { writable } from 'svelte/store';
+  import { browser } from "$app/environment";
+  import { page } from "$app/stores";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { hapticFeedback, mainButton } from "$lib/stores/tma";
+  import { randomize } from "$lib/utils";
+  import { createSimpleSubscriber } from "$lib/wrappers";
+  import { onDestroy } from "svelte";
+  import { writable } from "svelte/store";
 
   const simpleSubscriber = createSimpleSubscriber();
 
@@ -17,9 +17,9 @@
 
   $effect(() => {
     if ($mainButton && form) {
-      $mainButton.setText('Deploy Simple Subscriber').enable().show();
+      $mainButton.setText("Deploy Simple Subscriber").enable().show();
 
-      const unsubscribe = $mainButton.on('click', () => form?.requestSubmit());
+      const unsubscribe = $mainButton.on("click", () => form?.requestSubmit());
 
       return unsubscribe;
     } else {
@@ -36,16 +36,16 @@
   async function handleDeploySSSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const args = {
-      stream: formData.get('stream') as string,
-      notificationsCount: BigInt(formData.get('notificationsCount') as string),
-      expiresAt: BigInt(new Date(formData.get('exp') as string).getTime() / 1000),
-      subscriberId: BigInt(formData.get('subscriberId') as string)
+      stream: formData.get("stream") as string,
+      notificationsCount: BigInt(formData.get("notificationsCount") as string),
+      expiresAt: BigInt(new Date(formData.get("exp") as string).getTime() / 1000),
+      subscriberId: BigInt(formData.get("subscriberId") as string),
     };
 
     await $simpleSubscriber.deploy(args);

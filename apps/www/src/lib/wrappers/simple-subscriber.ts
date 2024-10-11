@@ -1,16 +1,16 @@
-import { SIMPLE_SUBSCRIBER_STORAGE_KEY } from '$lib/constants';
-import { getValidUntil } from '$lib/utils';
-import { Address, beginCell, toNano, type TonClient4 } from '@ton/ton';
-import { CHAIN, type TonConnectUI } from '@tonconnect/ui';
+import { SIMPLE_SUBSCRIBER_STORAGE_KEY } from "$lib/constants";
+import { getValidUntil } from "$lib/utils";
+import { Address, beginCell, toNano, type TonClient4 } from "@ton/ton";
+import { CHAIN, type TonConnectUI } from "@tonconnect/ui";
 import {
   NOTIFICATION_DEPOSIT,
   NOTIFICATION_PREMIUM,
   SimpleSubscriber,
   storeSimpleSubscriberDeploy,
-  storeSubscriberCheckTimeout
-} from 'nenuma-contracts';
-import type { OpenContract } from '.';
-import { loadData, saveContractAddress } from './utils';
+  storeSubscriberCheckTimeout,
+} from "nenuma-contracts";
+import type { OpenContract } from ".";
+import { loadData, saveContractAddress } from "./utils";
 
 export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubscriber> {
   private readonly publicClient: TonClient4;
@@ -21,7 +21,7 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
   constructor(
     publicClient: TonClient4,
     tonConnectUI: TonConnectUI,
-    simpleSubscriberAddress?: string
+    simpleSubscriberAddress?: string,
   ) {
     this.publicClient = publicClient;
     this.tonConnectUI = tonConnectUI;
@@ -40,7 +40,7 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
 
       if (!contractAddress) {
         throw new Error(
-          'No simple subscriber address found. Did you deploy the simple subscriber?'
+          "No simple subscriber address found. Did you deploy the simple subscriber?",
         );
       }
     }
@@ -59,12 +59,12 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
     const deployer = this.tonConnectUI.account?.address;
 
     if (!deployer) {
-      throw new Error('No account connected. Did you connect to the wallet?');
+      throw new Error("No account connected. Did you connect to the wallet?");
     }
 
     const simpleSubscriber = await SimpleSubscriber.fromInit(
       Address.parse(deployer),
-      args.subscriberId
+      args.subscriberId,
     );
 
     const message = {
@@ -76,22 +76,22 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
       payload: beginCell()
         .store(
           storeSimpleSubscriberDeploy({
-            $$type: 'SimpleSubscriberDeploy',
+            $$type: "SimpleSubscriberDeploy",
             queryId: args.queryId,
             stream: Address.parse(args.stream),
             notificationsCount: args.notificationsCount,
-            expiration: args.expiration
-          })
+            expiration: args.expiration,
+          }),
         )
         .endCell()
         .toBoc()
-        .toString('base64')
+        .toString("base64"),
     };
 
     await this.tonConnectUI.sendTransaction({
       validUntil: getValidUntil(),
       messages: [message],
-      network: CHAIN.TESTNET
+      network: CHAIN.TESTNET,
     });
 
     return this;
@@ -101,7 +101,7 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
     const checker = this.tonConnectUI.account?.address;
 
     if (!checker) {
-      throw new Error('No account connected. Did you connect to the wallet?');
+      throw new Error("No account connected. Did you connect to the wallet?");
     }
 
     const contract = this.getOpenedContract();
@@ -112,19 +112,19 @@ export default class SimpleSubscriberWrapper implements OpenContract<SimpleSubsc
       payload: beginCell()
         .store(
           storeSubscriberCheckTimeout({
-            $$type: 'SubscriberCheckTimeout',
-            queryId: args.queryId
-          })
+            $$type: "SubscriberCheckTimeout",
+            queryId: args.queryId,
+          }),
         )
         .endCell()
         .toBoc()
-        .toString('base64')
+        .toString("base64"),
     };
 
     await this.tonConnectUI.sendTransaction({
       validUntil: getValidUntil(),
       messages: [message],
-      network: CHAIN.TESTNET
+      network: CHAIN.TESTNET,
     });
 
     return this;

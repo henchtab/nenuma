@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate } from '$lib/utils';
-  import { useBrokerageAccount } from '$lib/wrappers';
-  import { fromNano } from '@ton/core';
-  import { writable } from 'svelte/store';
-  import Output from '../../components/Output.svelte';
-  import Section from './Section.svelte';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { formatOutputDate } from "$lib/utils";
+  import { useBrokerageAccount } from "$lib/wrappers";
+  import { fromNano } from "@ton/core";
+  import { writable } from "svelte/store";
+  import Output from "../../components/Output.svelte";
+  import Section from "./Section.svelte";
 
-  const brokerageAddress = writable('');
+  const brokerageAddress = writable("");
   const brokerageAccount = useBrokerageAccount(brokerageAddress);
 
   let output = $state<{ date: string; message: string }[]>([]);
@@ -37,7 +37,7 @@
         const result = await $brokerageAccount.getBrokerage();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true }), null, 2),
         });
       }}>Get Brokerage</Button
     >
@@ -49,7 +49,7 @@
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true }), null, 2),
         });
       }}>Get Trader</Button
     >
@@ -61,7 +61,7 @@
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          message: JSON.stringify(`${fromNano(result)} TON`, null, 2),
         });
       }}>Get Storage Reserve</Button
     >

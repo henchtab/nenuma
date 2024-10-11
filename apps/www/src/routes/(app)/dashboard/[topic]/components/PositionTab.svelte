@@ -1,29 +1,29 @@
 <script lang="ts">
-  import { PUBLIC_API_URL, PUBLIC_BROKER_ADDRESS } from '$env/static/public';
-  import * as Accordion from '$lib/components/ui/accordion';
-  import { Badge } from '$lib/components/ui/badge';
-  import { Button } from '$lib/components/ui/button';
-  import { TON_CONNECT_UI_CONTEXT } from '$lib/constants';
-  import { hapticFeedback } from '$lib/stores/tma';
-  import { shortenAddress } from '$lib/shorten-address';
-  import { isConnected, isDisconnected, type TonConnectStore } from '$lib/stores/ton-connect';
-  import { cn } from '$lib/utils';
-  import { openedPositionsCount } from '$lib/stores/positions';
-  import { createQuery } from '@tanstack/svelte-query';
-  import { fromNano } from '@ton/ton';
-  import { Microscope, TrendingDown, TrendingUp } from 'lucide-svelte';
-  import { getContext } from 'svelte';
-  import { type Writable, derived } from 'svelte/store';
+  import { PUBLIC_API_URL, PUBLIC_BROKER_ADDRESS } from "$env/static/public";
+  import * as Accordion from "$lib/components/ui/accordion";
+  import { Badge } from "$lib/components/ui/badge";
+  import { Button } from "$lib/components/ui/button";
+  import { TON_CONNECT_UI_CONTEXT } from "$lib/constants";
+  import { hapticFeedback } from "$lib/stores/tma";
+  import { shortenAddress } from "$lib/shorten-address";
+  import { isConnected, isDisconnected, type TonConnectStore } from "$lib/stores/ton-connect";
+  import { cn } from "$lib/utils";
+  import { openedPositionsCount } from "$lib/stores/positions";
+  import { createQuery } from "@tanstack/svelte-query";
+  import { fromNano } from "@ton/ton";
+  import { Microscope, TrendingDown, TrendingUp } from "lucide-svelte";
+  import { getContext } from "svelte";
+  import { type Writable, derived } from "svelte/store";
 
   const tonConnect = getContext<TonConnectStore>(TON_CONNECT_UI_CONTEXT);
-  const activeTab = getContext<Writable<string>>('activeTab');
+  const activeTab = getContext<Writable<string>>("activeTab");
 
   const options = createQuery(
     derived(isConnected, ($isConnected) => ({
-      queryKey: ['positions'],
+      queryKey: ["positions"],
       queryFn: async () => {
         const res = await fetch(
-          `${PUBLIC_API_URL}/api/${$tonConnect.connection.wallet?.account.address}/${PUBLIC_BROKER_ADDRESS}/options`
+          `${PUBLIC_API_URL}/api/${$tonConnect.connection.wallet?.account.address}/${PUBLIC_BROKER_ADDRESS}/options`,
         );
 
         if (!res.ok) {
@@ -33,8 +33,8 @@
         return res.json();
       },
       refetchInterval: 1000 * 10,
-      enabled: $isConnected
-    }))
+      enabled: $isConnected,
+    })),
   );
 
   $effect(() => {
@@ -80,10 +80,10 @@
 
             <Badge
               class={cn({
-                'text-ds-teal-900 bg-ds-teal-200': option.status === 'deployed',
-                'text-ds-green-900 bg-ds-green-200': option.status === 'initiated',
-                'text-ds-amber-900 bg-ds-amber-200': option.status === 'expired',
-                'text-ds-blue-900 bg-ds-blue-200': option.status === 'settled'
+                "text-ds-teal-900 bg-ds-teal-200": option.status === "deployed",
+                "text-ds-green-900 bg-ds-green-200": option.status === "initiated",
+                "text-ds-amber-900 bg-ds-amber-200": option.status === "expired",
+                "text-ds-blue-900 bg-ds-blue-200": option.status === "settled",
               })}
             >
               {option.status}
@@ -130,7 +130,7 @@
             <div class="grid gap-1">
               <span class="text-ds-gray-900">Strike Price</span>
               <span class="text-ds-gray-1000 font-medium"
-                >{option?.strikePrice ? Number(option?.strikePrice) / 100 : 'N/A'}</span
+                >{option?.strikePrice ? Number(option?.strikePrice) / 100 : "N/A"}</span
               >
             </div>
 
@@ -174,8 +174,8 @@
       <Button
         variant="secondary"
         onclick={() => {
-          activeTab.set('trade');
-          $hapticFeedback.impactOccurred('light');
+          activeTab.set("trade");
+          $hapticFeedback.impactOccurred("light");
         }}>Trade Options</Button
       >
     </div>

@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { cn, formatOutputDate } from '$lib/utils';
-  import { createDataStream } from '$lib/wrappers';
-  import { Address, fromNano } from '@ton/core';
-  import { toast } from 'svelte-sonner';
-  import { derived, writable } from 'svelte/store';
-  import Output from '../../components/Output.svelte';
-  import Section from './Section.svelte';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { cn, formatOutputDate } from "$lib/utils";
+  import { createDataStream } from "$lib/wrappers";
+  import { Address, fromNano } from "@ton/core";
+  import { toast } from "svelte-sonner";
+  import { derived, writable } from "svelte/store";
+  import Output from "../../components/Output.svelte";
+  import Section from "./Section.svelte";
 
-  const streamAddress = writable('');
+  const streamAddress = writable("");
   const stream = createDataStream(streamAddress);
 
   const shouldDisableActions = derived([streamAddress], ([$streamAddress]) => !$streamAddress);
@@ -20,34 +20,34 @@
   async function handleSessionAddressSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const subscriberAddress = formData.get('subscriberAddress') as string;
+    const subscriberAddress = formData.get("subscriberAddress") as string;
 
     const result = await $stream.getSessionAddress(Address.parse(subscriberAddress));
     output.unshift({
       date: formatOutputDate(new Date()),
-      message: JSON.stringify(result, null, 2)
+      message: JSON.stringify(result, null, 2),
     });
   }
 
   async function handleBatchAddressSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const batchId = formData.get('batchId') as string;
+    const batchId = formData.get("batchId") as string;
 
     const result = await $stream.getBatchAddress(BigInt(batchId));
     output.unshift({
       date: formatOutputDate(new Date()),
-      message: JSON.stringify(result, null, 2)
+      message: JSON.stringify(result, null, 2),
     });
   }
 </script>
@@ -81,17 +81,17 @@
     class="flex gap-4 pb-6 items-end overflow-x-auto snap-x snap-mandatory [-webkit-overflow-scrolling:_touch] scroll-smooth"
   >
     <a
-      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
-      href={`/playground/streams-api/deploy?contract=stream&title=${encodeURIComponent('Data Stream')}&subtitle=stream`}
+      class={cn("snap-start", $shouldDisableActions && "cursor-not-allowed")}
+      href={`/playground/streams-api/deploy?contract=stream&title=${encodeURIComponent("Data Stream")}&subtitle=stream`}
     >
       <Button class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white">Deploy Stream</Button>
     </a>
 
     <a
-      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
+      class={cn("snap-start", $shouldDisableActions && "cursor-not-allowed")}
       href={$shouldDisableActions
         ? undefined
-        : `/playground/streams-api/deploy?contract=batch&title=${encodeURIComponent('Subscription Batch')}&subtitle=batch&streamAddress=${$streamAddress}`}
+        : `/playground/streams-api/deploy?contract=batch&title=${encodeURIComponent("Subscription Batch")}&subtitle=batch&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -100,10 +100,10 @@
     </a>
 
     <a
-      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
+      class={cn("snap-start", $shouldDisableActions && "cursor-not-allowed")}
       href={$shouldDisableActions
         ? undefined
-        : `/playground/streams-api/deploy?contract=session&title=${encodeURIComponent('Session')}&subtitle=session&streamAddress=${$streamAddress}`}
+        : `/playground/streams-api/deploy?contract=session&title=${encodeURIComponent("Session")}&subtitle=session&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -112,10 +112,10 @@
     </a>
 
     <a
-      class={cn('snap-start', $shouldDisableActions && 'cursor-not-allowed')}
+      class={cn("snap-start", $shouldDisableActions && "cursor-not-allowed")}
       href={$shouldDisableActions
         ? undefined
-        : `/playground/streams-api/deploy?contract=candlestick&title=${encodeURIComponent('Candlestick')}&subtitle=candlestick&streamAddress=${$streamAddress}`}
+        : `/playground/streams-api/deploy?contract=candlestick&title=${encodeURIComponent("Candlestick")}&subtitle=candlestick&streamAddress=${$streamAddress}`}
     >
       <Button
         disabled={$shouldDisableActions}
@@ -131,7 +131,7 @@
           const result = await $stream.getTopic();
           output.unshift({
             date: formatOutputDate(new Date()),
-            message: JSON.stringify(result, null, 2)
+            message: JSON.stringify(result, null, 2),
           });
         } catch (error) {
           if (error instanceof Error) {
@@ -148,7 +148,7 @@
         const result = await $stream.getBalance();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          message: JSON.stringify(`${fromNano(result)} TON`, null, 2),
         });
       }}>Get Balance</Button
     >
@@ -160,7 +160,7 @@
         const result = await $stream.getNextBatchId();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString(), null, 2)
+          message: JSON.stringify(result.toString(), null, 2),
         });
       }}>Get Next Batch Id</Button
     >
@@ -206,13 +206,13 @@
         for (const [address, info] of result) {
           batches.push({
             [address.toString({ testOnly: true, bounceable: false })]:
-              info.subscriptionsCount.toString()
+              info.subscriptionsCount.toString(),
           });
         }
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(batches, null, 2)
+          message: JSON.stringify(batches, null, 2),
         });
       }}>Get Batches</Button
     >

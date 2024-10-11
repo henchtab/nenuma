@@ -1,18 +1,18 @@
-import { THEME, TonConnectUI, Wallet } from '@tonconnect/ui';
-import { Writable, derived, readable, writable } from 'svelte/store';
-import { browser } from '$app/environment';
-import type { SenderArguments } from '@ton/core';
+import { THEME, TonConnectUI, Wallet } from "@tonconnect/ui";
+import { Writable, derived, readable, writable } from "svelte/store";
+import { browser } from "$app/environment";
+import type { SenderArguments } from "@ton/core";
 
 export const tonConnectUI = readable<TonConnectUI>(undefined, (set) => {
   const update = () => {
     if (!browser) return;
 
     const sdk = new TonConnectUI({
-      manifestUrl: 'https://nenuma.telegram-mini-apps.manuvantara.com/tonconnect-manifest.json',
-      widgetRootId: 'ton-connect',
+      manifestUrl: "https://nenuma.telegram-mini-apps.manuvantara.com/tonconnect-manifest.json",
+      widgetRootId: "ton-connect",
       uiPreferences: {
-        theme: THEME.DARK
-      }
+        theme: THEME.DARK,
+      },
     });
 
     set(sdk);
@@ -22,11 +22,11 @@ export const tonConnectUI = readable<TonConnectUI>(undefined, (set) => {
 
   return () => {
     if (browser) {
-      const el = document.getElementById('ton-connect');
+      const el = document.getElementById("ton-connect");
 
       if (el) {
-        el.innerHTML = '';
-        console.log('tonConnectUI cleanup');
+        el.innerHTML = "";
+        console.log("tonConnectUI cleanup");
       }
     }
   };
@@ -35,7 +35,7 @@ export const tonConnectUI = readable<TonConnectUI>(undefined, (set) => {
 type TonConnect = {
   sdk: TonConnectUI | null;
   connection: {
-    status: 'reconnecting' | 'connected' | 'disconnected';
+    status: "reconnecting" | "connected" | "disconnected";
     wallet: Wallet | null;
   };
   connectWallet: () => Promise<void>;
@@ -47,25 +47,25 @@ export type TonConnectStore = Writable<TonConnect>;
 export const tonConnect = writable<TonConnect>({
   sdk: null,
   connection: {
-    status: 'reconnecting',
-    wallet: null
+    status: "reconnecting",
+    wallet: null,
   },
   connectWallet: async () => {},
-  disconnectWallet: async () => {}
+  disconnectWallet: async () => {},
 });
 
 export const isReconnecting = derived(
   tonConnect,
-  ($tonConnect) => $tonConnect.connection.status === 'reconnecting'
+  ($tonConnect) => $tonConnect.connection.status === "reconnecting",
 );
 export const isConnected = derived(
   tonConnect,
-  ($tonConnect) => $tonConnect.connection.status === 'connected'
+  ($tonConnect) => $tonConnect.connection.status === "connected",
 );
 
 export const isDisconnected = derived(
   tonConnect,
-  ($tonConnect) => $tonConnect.connection.status === 'disconnected'
+  ($tonConnect) => $tonConnect.connection.status === "disconnected",
 );
 
 export const sender = derived(tonConnectUI, ($tonConnectUI) => {
@@ -76,12 +76,12 @@ export const sender = derived(tonConnectUI, ($tonConnectUI) => {
           {
             address: args.to.toString(),
             amount: args.value.toString(),
-            payload: args.body?.toBoc().toString('base64')
-          }
+            payload: args.body?.toBoc().toString("base64"),
+          },
         ],
-        validUntil: Date.now() + 5 * 60 * 1000
+        validUntil: Date.now() + 5 * 60 * 1000,
       });
     },
-    connected: $tonConnectUI.connected
+    connected: $tonConnectUI.connected,
   };
 });

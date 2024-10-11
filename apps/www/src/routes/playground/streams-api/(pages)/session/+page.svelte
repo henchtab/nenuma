@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Session } from '../../components';
+  import { Session } from "../../components";
 </script>
 
 <svelte:head>

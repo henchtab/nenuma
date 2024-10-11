@@ -1,15 +1,15 @@
-import { browser } from '$app/environment';
-import { PUBLIC_API_URL } from '$env/static/public';
-import type { UTCTimestamp } from 'lightweight-charts';
-import { writable } from 'svelte/store';
-import { timeToLocal } from '../utils';
+import { browser } from "$app/environment";
+import { PUBLIC_API_URL } from "$env/static/public";
+import type { UTCTimestamp } from "lightweight-charts";
+import { writable } from "svelte/store";
+import { timeToLocal } from "../utils";
 
 const WS_DISCONNECT_RETRY_INTERVAL = 1000;
 
 type Ws = {
-  send: WebSocket['send'];
-  close: WebSocket['close'];
-  addEventListener: WebSocket['addEventListener'];
+  send: WebSocket["send"];
+  close: WebSocket["close"];
+  addEventListener: WebSocket["addEventListener"];
   reconnect: () => void;
   isConnected: boolean;
   isError: boolean;
@@ -18,20 +18,20 @@ type Ws = {
 
 const initialState: Ws = {
   send: () => {
-    console.error('WebSocket connection not established');
+    console.error("WebSocket connection not established");
   },
   close: () => {
-    console.error('WebSocket connection not established');
+    console.error("WebSocket connection not established");
   },
   addEventListener: () => {
-    console.error('WebSocket connection not established');
+    console.error("WebSocket connection not established");
   },
   reconnect: () => {
-    console.error('WebSocket connection not established');
+    console.error("WebSocket connection not established");
   },
   isConnected: false,
   isError: false,
-  currentMessage: null
+  currentMessage: null,
 };
 
 export const ws = writable(initialState, (set) => {
@@ -50,15 +50,13 @@ export const ws = writable(initialState, (set) => {
       return;
     }
 
-    ws = new WebSocket(
-      `${PUBLIC_API_URL.replace('https', 'wss')}/api/kline`
-    );
+    ws = new WebSocket(`${PUBLIC_API_URL.replace("https", "wss")}/api/kline`);
 
-    ws?.addEventListener('open', () => {
+    ws?.addEventListener("open", () => {
       isConnected = true;
     });
 
-    ws?.addEventListener('message', (event) => {
+    ws?.addEventListener("message", (event) => {
       const message = JSON.parse(event.data) as WsMessage;
       message.data.time = timeToLocal(message.data.time as number) as UTCTimestamp;
       lastMessage = message;
@@ -69,13 +67,13 @@ export const ws = writable(initialState, (set) => {
       });
     });
 
-    ws?.addEventListener('close', (e) => {
+    ws?.addEventListener("close", (e) => {
       console.log(`WebSocket connection closed with code: ${e.code} and reason: ${e.reason}`);
       set(initialState);
     });
 
-    ws.addEventListener('error', (e) => {
-      console.error('WebSocket error:', e);
+    ws.addEventListener("error", (e) => {
+      console.error("WebSocket error:", e);
       isError = true;
       set(initialState);
     });
@@ -93,13 +91,13 @@ export const ws = writable(initialState, (set) => {
       },
       get currentMessage() {
         return lastMessage;
-      }
+      },
     });
   }
 
   function cleanup() {
     if (ws?.bufferedAmount === 0) {
-      ws?.close(1000, 'User closed the connection');
+      ws?.close(1000, "User closed the connection");
     } else {
       setTimeout(cleanup, WS_DISCONNECT_RETRY_INTERVAL);
     }
@@ -111,11 +109,11 @@ export const ws = writable(initialState, (set) => {
 });
 
 export enum KlineTopic {
-  BTCUSDT = 'BTCUSDT',
-  ETHUSDT = 'ETHUSDT',
-  SOLUSDT = 'SOLUSDT',
-  TONUSDT = 'TONUSDT',
-  BNBUSDT = 'BNBUSDT'
+  BTCUSDT = "BTCUSDT",
+  ETHUSDT = "ETHUSDT",
+  SOLUSDT = "SOLUSDT",
+  TONUSDT = "TONUSDT",
+  BNBUSDT = "BNBUSDT",
 }
 
 export type WsMessage = {
@@ -134,5 +132,5 @@ export const latestPrices = writable<Record<KlineTopic, number>>({
   [KlineTopic.ETHUSDT]: 0,
   [KlineTopic.SOLUSDT]: 0,
   [KlineTopic.TONUSDT]: 0,
-  [KlineTopic.BNBUSDT]: 0
+  [KlineTopic.BNBUSDT]: 0,
 });

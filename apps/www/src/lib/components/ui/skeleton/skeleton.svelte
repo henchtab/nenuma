@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { HTMLAttributes } from 'svelte/elements';
-  import { cn } from '$lib/utils.js';
+  import type { HTMLAttributes } from "svelte/elements";
+  import { cn } from "$lib/utils.js";
 
   type Props = HTMLAttributes<HTMLDivElement> & {
     show?: boolean;
@@ -15,10 +15,10 @@
 
 <div
   class={cn(
-    'relative rounded-md inline-block',
+    "relative rounded-md inline-block",
     show &&
-      'after:absolute after:rounded-md after:inset-0 after:bg-[length:400%_400%] after:bg-skeleton after:animate-skeleton',
-    className
+      "after:absolute after:rounded-md after:inset-0 after:bg-[length:400%_400%] after:bg-skeleton after:animate-skeleton",
+    className,
   )}
   {...rest}
 >

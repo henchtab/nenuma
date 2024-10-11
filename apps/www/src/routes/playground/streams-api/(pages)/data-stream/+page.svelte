@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DataStream } from '../../components';
+  import { DataStream } from "../../components";
 </script>
 
 <svelte:head>

@@ -1,38 +1,38 @@
 <script lang="ts">
-  import { recreateTonProofPayload } from '$lib';
-  import { TON_CONNECT_UI_CONTEXT, TON_PROOF_REFRESH_INTERVAL_MS } from '$lib/constants';
-  import { checkProof, removeAccessTokenCookie } from '$lib/data';
-  import { tonConnect, tonConnectUI } from '$lib/stores/ton-connect';
-  import { mediaQuery } from '$lib/utils';
-  import { createPostEvent, postEvent, retrieveLaunchParams } from '@telegram-apps/sdk';
-  import { CHAIN, type ConnectedWallet } from '@tonconnect/ui';
-  import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
-  import { onMount, setContext } from 'svelte';
-  import { toast, Toaster } from 'svelte-sonner';
-  import { browser } from '$app/environment';
-  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
-  import posthog from 'posthog-js';
-  
-  import '../app.css';
+  import { recreateTonProofPayload } from "$lib";
+  import { TON_CONNECT_UI_CONTEXT, TON_PROOF_REFRESH_INTERVAL_MS } from "$lib/constants";
+  import { checkProof, removeAccessTokenCookie } from "$lib/data";
+  import { tonConnect, tonConnectUI } from "$lib/stores/ton-connect";
+  import { mediaQuery } from "$lib/utils";
+  import { createPostEvent, postEvent, retrieveLaunchParams } from "@telegram-apps/sdk";
+  import { CHAIN, type ConnectedWallet } from "@tonconnect/ui";
+  import TriangleAlert from "lucide-svelte/icons/triangle-alert";
+  import { onMount, setContext } from "svelte";
+  import { toast, Toaster } from "svelte-sonner";
+  import { browser } from "$app/environment";
+  import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
+  import { afterNavigate, beforeNavigate } from "$app/navigation";
+  import posthog from "posthog-js";
+
+  import "../app.css";
 
   let { children } = $props();
   let wrapper = $state<HTMLDivElement>();
 
   if (browser) {
-    beforeNavigate(() => posthog.capture('$pageleave'));
-    afterNavigate(() => posthog.capture('$pageview'));
+    beforeNavigate(() => posthog.capture("$pageleave"));
+    afterNavigate(() => posthog.capture("$pageview"));
   }
 
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        enabled: browser
-      }
-    }
+        enabled: browser,
+      },
+    },
   });
 
-  const isDesktop = mediaQuery('(min-width: 768px)');
+  const isDesktop = mediaQuery("(min-width: 768px)");
 
   setContext(TON_CONNECT_UI_CONTEXT, tonConnect);
   let isFirstProofLoading = $state(true);
@@ -43,9 +43,9 @@
 
       expandApp(lp.platform);
 
-      const postEvent = createPostEvent('7.1');
-      postEvent('web_app_set_header_color', { color: '#000000' });
-      postEvent('web_app_set_background_color', { color: '#000000' });
+      const postEvent = createPostEvent("7.1");
+      postEvent("web_app_set_header_color", { color: "#000000" });
+      postEvent("web_app_set_background_color", { color: "#000000" });
     } catch (error) {
       console.error(error);
     }
@@ -59,24 +59,24 @@
 
       setInterval(
         async () => await recreateTonProofPayload(isFirstProofLoading, tonConnectUI),
-        TON_PROOF_REFRESH_INTERVAL_MS
+        TON_PROOF_REFRESH_INTERVAL_MS,
       );
 
       tonConnectUI.onStatusChange((w) => {
         handleStatusChange(w);
 
         if (w) {
-          const result = posthog.capture('Wallet Connected', w);
+          const result = posthog.capture("Wallet Connected", w);
 
-          console.log('Posthog capture result: ', result);
+          console.log("Posthog capture result: ", result);
         }
 
         tonConnect.update((value) => ({
           ...value,
           connection: {
-            status: w ? 'connected' : 'disconnected',
-            wallet: w
-          }
+            status: w ? "connected" : "disconnected",
+            wallet: w,
+          },
         }));
       });
 
@@ -85,11 +85,11 @@
         ...value,
         sdk: tonConnectUI,
         connection: {
-          status: tonConnectUI.connected ? 'connected' : 'disconnected',
-          wallet: tonConnectUI.wallet
+          status: tonConnectUI.connected ? "connected" : "disconnected",
+          wallet: tonConnectUI.wallet,
         },
         connectWallet,
-        disconnectWallet
+        disconnectWallet,
       }));
     });
   });
@@ -97,14 +97,14 @@
   function expandApp(platform: string) {
     try {
       // Some versions of Telegram don't need the classes above.
-      if (['macos', 'tdesktop', 'weba', 'web', 'webk'].includes(platform)) {
+      if (["macos", "tdesktop", "weba", "web", "webk"].includes(platform)) {
         return;
       }
 
-      postEvent('web_app_expand');
+      postEvent("web_app_expand");
 
-      document.body.setAttribute('data-sticky-app', 'true');
-      wrapper?.setAttribute('data-sticky-app', 'true');
+      document.body.setAttribute("data-sticky-app", "true");
+      wrapper?.setAttribute("data-sticky-app", "true");
     } catch (error) {
       console.error(error);
     }
@@ -117,19 +117,19 @@
     }
 
     if (wallet.account.chain === CHAIN.MAINNET) {
-      toast.error('You are using the mainnet wallet. Please switch to the testnet wallet.');
+      toast.error("You are using the mainnet wallet. Please switch to the testnet wallet.");
       disconnectWallet();
       return;
     }
 
-    if (wallet.connectItems?.tonProof && 'proof' in wallet.connectItems.tonProof) {
+    if (wallet.connectItems?.tonProof && "proof" in wallet.connectItems.tonProof) {
       await checkProof(wallet.connectItems.tonProof.proof, wallet.account);
     }
   }
 
   async function connectWallet() {
     if (!$tonConnectUI) {
-      console.warn('TonConnectUI is not initialized');
+      console.warn("TonConnectUI is not initialized");
       return;
     }
 
@@ -146,7 +146,7 @@
 
   async function disconnectWallet() {
     if (!$tonConnectUI) {
-      console.warn('TonConnectUI is not initialized');
+      console.warn("TonConnectUI is not initialized");
       return;
     }
 
@@ -183,13 +183,13 @@
 </QueryClientProvider>
 
 <Toaster
-  position={$isDesktop ? 'bottom-right' : 'top-center'}
+  position={$isDesktop ? "bottom-right" : "top-center"}
   richColors
   theme="dark"
   toastOptions={{
     classes: {
-      default: '',
-      error: '!bg-ds-red-100 !text-ds-red-900'
-    }
+      default: "",
+      error: "!bg-ds-red-100 !text-ds-red-900",
+    },
   }}
 />

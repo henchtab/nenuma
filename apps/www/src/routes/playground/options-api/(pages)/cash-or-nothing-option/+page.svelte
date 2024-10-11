@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CashOrNothingOption } from '../../components';
+  import { CashOrNothingOption } from "../../components";
 </script>
 
 <svelte:head>

@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { Skeleton } from '$lib/components/ui/skeleton';
-  import { getAccountInfo } from '$lib/data';
-  import { isConnected } from '$lib/stores/ton-connect';
-  import { createQuery } from '@tanstack/svelte-query';
-  import { derived } from 'svelte/store';
+  import { Skeleton } from "$lib/components/ui/skeleton";
+  import { getAccountInfo } from "$lib/data";
+  import { isConnected } from "$lib/stores/ton-connect";
+  import { createQuery } from "@tanstack/svelte-query";
+  import { derived } from "svelte/store";
 
   const accountInfo = createQuery(
     derived(isConnected, ($isConnected) => ({
-      queryKey: ['accountInfo'],
+      queryKey: ["accountInfo"],
       queryFn: getAccountInfo,
       refetchInterval: 1000 * 5,
-      enabled: $isConnected
-    }))
+      enabled: $isConnected,
+    })),
   );
 </script>
 

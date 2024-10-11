@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Brokerage } from '../../components';
+  import { Brokerage } from "../../components";
 </script>
 
 <svelte:head>

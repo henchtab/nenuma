@@ -1,13 +1,13 @@
 <script lang="ts">
-  import * as Tabs from '$lib/components/ui/tabs';
-  import { hapticFeedback } from '$lib/stores/tma';
-  import { openedPositionsCount } from '$lib/stores/positions';
-  import { writable } from 'svelte/store';
-  import { ChartTab, PositionTab, TradeTab } from './components';
-  import { setContext } from 'svelte';
+  import * as Tabs from "$lib/components/ui/tabs";
+  import { hapticFeedback } from "$lib/stores/tma";
+  import { openedPositionsCount } from "$lib/stores/positions";
+  import { writable } from "svelte/store";
+  import { ChartTab, PositionTab, TradeTab } from "./components";
+  import { setContext } from "svelte";
 
-  let activeTab = writable('chart');
-  setContext('activeTab', activeTab);
+  let activeTab = writable("chart");
+  setContext("activeTab", activeTab);
 </script>
 
 <Tabs.Root
@@ -25,7 +25,8 @@
     <Tabs.List class="w-full">
       <Tabs.Trigger class="flex-1" value="chart">Chart</Tabs.Trigger>
       <Tabs.Trigger class="flex-1" value="trade">Trade</Tabs.Trigger>
-      <Tabs.Trigger class="flex-1" value="positions">Positions ({$openedPositionsCount})</Tabs.Trigger
+      <Tabs.Trigger class="flex-1" value="positions"
+        >Positions ({$openedPositionsCount})</Tabs.Trigger
       >
     </Tabs.List>
   </div>

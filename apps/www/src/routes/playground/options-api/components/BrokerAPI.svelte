@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { formatOutputDate } from '$lib/utils';
-  import { useBroker } from '$lib/wrappers';
-  import { fromNano, toNano } from '@ton/core';
-  import { toast } from 'svelte-sonner';
-  import { derived, writable } from 'svelte/store';
-  import Output from '../../components/Output.svelte';
-  import Section from './Section.svelte';
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { formatOutputDate } from "$lib/utils";
+  import { useBroker } from "$lib/wrappers";
+  import { fromNano, toNano } from "@ton/core";
+  import { toast } from "svelte-sonner";
+  import { derived, writable } from "svelte/store";
+  import Output from "../../components/Output.svelte";
+  import Section from "./Section.svelte";
 
-  const brokerAddress = writable('');
+  const brokerAddress = writable("");
   const broker = useBroker(brokerAddress);
 
   const shouldDisableActions = derived([brokerAddress], ([$brokerAddress]) => !$brokerAddress);
@@ -20,12 +20,12 @@
   async function handleOptionAddressSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const optionId = BigInt(formData.get('optionId') as string);
+    const optionId = BigInt(formData.get("optionId") as string);
 
     const optionAddress = await $broker.getOptionAddress(optionId);
 
@@ -34,11 +34,11 @@
       message: JSON.stringify(
         optionAddress.toString({
           testOnly: true,
-          bounceable: false
+          bounceable: false,
         }),
         null,
-        2
-      )
+        2,
+      ),
     });
   }
 </script>
@@ -64,7 +64,7 @@
       class="snap-start"
       href={$shouldDisableActions
         ? undefined
-        : `/playground/options-api/deploy?contract=brokerDeposit&title=${encodeURIComponent('Deposit Broker')}&forceTitle=true&broker=${$brokerAddress}`}
+        : `/playground/options-api/deploy?contract=brokerDeposit&title=${encodeURIComponent("Deposit Broker")}&forceTitle=true&broker=${$brokerAddress}`}
     >
       <Button
         class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white"
@@ -84,7 +84,7 @@
       class="snap-start"
       href={$shouldDisableActions
         ? undefined
-        : `/playground/options-api/deploy?contract=brokerOption&title=${encodeURIComponent('Cash-or-Nothing Option')}&broker=${$brokerAddress}`}
+        : `/playground/options-api/deploy?contract=brokerOption&title=${encodeURIComponent("Cash-or-Nothing Option")}&broker=${$brokerAddress}`}
     >
       <Button
         class="bg-ds-teal-800 hover:bg-ds-teal-700 text-white"
@@ -99,7 +99,7 @@
         const result = await $broker.getBalance();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          message: JSON.stringify(`${fromNano(result)} TON`, null, 2),
         });
       }}>Get Balance</Button
     >
@@ -111,7 +111,7 @@
         const result = await $broker.getOwner();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Owner</Button
     >
@@ -136,7 +136,7 @@
         const result = await $broker.getNextOptionId();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString(), null, 2)
+          message: JSON.stringify(result.toString(), null, 2),
         });
       }}>Get Next Option ID</Button
     >
@@ -148,7 +148,7 @@
         const result = await $broker.getStream();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true }), null, 2),
         });
       }}>Get Stream</Button
     >
@@ -163,11 +163,11 @@
           message: JSON.stringify(
             {
               nominator: result.nominator.toString(),
-              denominator: result.denominator.toString()
+              denominator: result.denominator.toString(),
             },
             null,
-            2
-          )
+            2,
+          ),
         });
       }}>Get Payout Coefficient</Button
     >

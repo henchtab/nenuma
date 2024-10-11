@@ -1,6 +1,13 @@
-import { readable } from 'svelte/store';
-import { browser } from '$app/environment';
-import { BackButton, HapticFeedback, MainButton, initBackButton, initHapticFeedback, initMainButton } from '@telegram-apps/sdk';
+import { readable } from "svelte/store";
+import { browser } from "$app/environment";
+import {
+  BackButton,
+  HapticFeedback,
+  MainButton,
+  initBackButton,
+  initHapticFeedback,
+  initMainButton,
+} from "@telegram-apps/sdk";
 
 export const hapticFeedback = readable<HapticFeedback>(undefined, (set) => {
   if (!browser) {
@@ -17,7 +24,7 @@ export const mainButton = readable<MainButton>(undefined, (set) => {
   }
 
   const mb = initMainButton();
-  set(mb[0].setBgColor('#ffffff').setTextColor('#000000'));
+  set(mb[0].setBgColor("#ffffff").setTextColor("#000000"));
 
   return () => mb[1]();
 });

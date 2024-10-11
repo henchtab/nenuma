@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { formatOutputDate } from '$lib/utils';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { createBrokerage } from '$lib/wrappers';
-  import { Address, fromNano } from '@ton/core';
-  import Section from './Section.svelte';
-  import Output from '../../components/Output.svelte';
+  import { formatOutputDate } from "$lib/utils";
+  import { Button } from "$lib/components/ui/button";
+  import { Input } from "$lib/components/ui/input";
+  import { Label } from "$lib/components/ui/label";
+  import { createBrokerage } from "$lib/wrappers";
+  import { Address, fromNano } from "@ton/core";
+  import Section from "./Section.svelte";
+  import Output from "../../components/Output.svelte";
 
   const brokerage = createBrokerage();
 
@@ -15,13 +15,13 @@
   async function handleDeploySubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const args = {
-      queryId: BigInt(formData.get('queryId') as string)
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $brokerage.deploy(args);
@@ -30,14 +30,14 @@
   async function handleDeployBrokerSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const args = {
-      stream: Address.parse(formData.get('stream') as string),
-      queryId: BigInt(formData.get('queryId') as string)
+      stream: Address.parse(formData.get("stream") as string),
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $brokerage.deployBroker(args);
@@ -46,13 +46,13 @@
   async function handleDeployAccountSubmit(
     e: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const args = {
-      queryId: BigInt(formData.get('queryId') as string)
+      queryId: BigInt(formData.get("queryId") as string),
     };
 
     await $brokerage.deployAccount(args);
@@ -113,7 +113,7 @@
         const result = await $brokerage.getOwner();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}>Get Owner</Button
     >
@@ -125,11 +125,11 @@
 
         const formData = new FormData(e.currentTarget);
 
-        const result = await $brokerage.getBroker(Address.parse(formData.get('stream') as string));
+        const result = await $brokerage.getBroker(Address.parse(formData.get("stream") as string));
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}
     >
@@ -155,11 +155,11 @@
 
         const formData = new FormData(e.currentTarget);
 
-        const result = await $brokerage.getAccount(Address.parse(formData.get('trader') as string));
+        const result = await $brokerage.getAccount(Address.parse(formData.get("trader") as string));
 
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2)
+          message: JSON.stringify(result.toString({ testOnly: true, bounceable: false }), null, 2),
         });
       }}
     >
@@ -184,7 +184,7 @@
         const result = await $brokerage.getStorageReserve();
         output.unshift({
           date: formatOutputDate(new Date()),
-          message: JSON.stringify(`${fromNano(result)} TON`, null, 2)
+          message: JSON.stringify(`${fromNano(result)} TON`, null, 2),
         });
       }}>Get Storage Reserve</Button
     >

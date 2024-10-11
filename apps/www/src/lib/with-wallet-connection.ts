@@ -1,5 +1,5 @@
-import { get } from 'svelte/store';
-import { tonConnect, isConnected } from './stores/ton-connect';
+import { get } from "svelte/store";
+import { tonConnect, isConnected } from "./stores/ton-connect";
 
 export function withWalletConnection(callbackfn: () => void) {
   const _tonConnect = get(tonConnect);

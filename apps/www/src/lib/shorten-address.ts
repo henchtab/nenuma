@@ -1,21 +1,21 @@
-import { Address } from '@ton/ton';
+import { Address } from "@ton/ton";
 
 class InvalidAddressError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'InvalidAddressError';
+    this.name = "InvalidAddressError";
   }
 }
 
 const addressFormatOptions = {
   testOnly: true,
-  bounceable: false
+  bounceable: false,
 };
 
 function formatAddressString(
   addressString: string,
   prefixLength: number,
-  suffixLength: number
+  suffixLength: number,
 ): string {
   return `${addressString.slice(0, prefixLength)}...${addressString.slice(-suffixLength)}`;
 }
@@ -35,7 +35,7 @@ function getAddressString(address: string | Address): string {
 export function shortenAddress(
   address: string | Address,
   prefixLength: number = 6,
-  suffixLength: number = 6
+  suffixLength: number = 6,
 ): string {
   const addressString = getAddressString(address);
   return formatAddressString(addressString, prefixLength, suffixLength);
