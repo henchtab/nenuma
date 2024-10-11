@@ -1,9 +1,5 @@
 {
   "name": "nenuma",
   "private": true,
-  "scripts": {
-    "docker:macos": "export LOCALNODE_IP=$(ifconfig en0 | grep inet | grep -v inet6 | awk '{print $2}') && docker-compose up",
-    "docker:linux": "export LOCALNODE_IP=$(ifconfig eth0 | grep inet | grep -v inet6 | awk '{print $2}') && docker-compose up"
-  },
   "dependencies": {}
 }
