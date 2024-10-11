@@ -1,7 +1,7 @@
-import prettierConfig from '@nenuma/prettier-config';
+import prettierConfig from "@nenuma/prettier-config" with { type: "json" };
 
 export default {
   ...prettierConfig,
-  plugins: ['prettier-plugin-svelte'],
-  overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }]
+  plugins: ["prettier-plugin-svelte"],
+  overrides: [{ files: "*.svelte", options: { parser: "svelte" } }],
 };
